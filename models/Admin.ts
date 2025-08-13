@@ -8,6 +8,7 @@ const AdminSchema = new mongoose.Schema({
     authtoken: { type: String, required: false },
     bio: { type: String, default: "" },
     phone: { type: String, default: "" },
+    iscentraladmin: { type: Boolean, default: false },
     twofactor: { type: Boolean, default: false },
 }, { timestamps: true })
 export default mongoose.models.Admin || mongoose.model('Admin', AdminSchema);

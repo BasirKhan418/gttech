@@ -29,7 +29,7 @@ const SendSignupEmail = async (email: string, name: string, username: string, pa
         <!-- Header -->
         <tr>
           <td style="background-color:#1f2937;padding:20px;text-align:center;">
-            <img src="https://res.cloudinary.com/df5zkeut4/image/upload/v1755084161/logo1_tag0c3.png" alt="GTTech Logo" style="max-width:120px;height:auto;">
+            <img src="https://res.cloudinary.com/df5zkeut4/image/upload/v1755086230/logo_zgeqvc.png" alt="GTTech Logo" style="max-width:120px;height:auto;">
           </td>
         </tr>
 
