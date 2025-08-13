@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import AdminLogin from '../../utils/admin/login-page';
 const Footer = () => {
   const footerLinks = {
     company: [
@@ -170,6 +171,12 @@ const Footer = () => {
               <button className="px-6 py-3 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition-all duration-300 hover:scale-105">
                 Subscribe
               </button>
+              <br/>
+              <Link href="/login">
+               <button className="px-6 py-3 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition-all duration-300 hover:scale-105">
+                Admin-Login
+              </button>
+              </Link>
             </div>
           </div>
         </div>
