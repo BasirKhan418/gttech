@@ -1,14 +1,14 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Eye, EyeOff, Shield, AlertCircle } from "lucide-react"
+import { Eye, EyeOff, AlertCircle } from "lucide-react"
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
@@ -16,24 +16,31 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
-    // Simulate login process
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
 
-      // Add your authentication logic here
-      if (email === "admin@gttech.com" && password === "admin123") {
-        // Redirect to admin dashboard
-        window.location.href = "/admin/dashboard"
-      } else {
-        setError("Invalid credentials. Please check your email and password.")
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.message || "Login failed")
+        return
       }
+
+      // Redirect on success
+      router.push("/admin/dashboard")
     } catch (err) {
+      console.error("Login error:", err)
       setError("An error occurred. Please try again.")
     } finally {
       setIsLoading(false)
@@ -41,19 +48,19 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4 ">
+    <div className="min-h-screen dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-xl mb-4">
-            <Shield className="w-8 h-8 text-primary-foreground" />
+            <img src="/logo.png" alt="GTTech Logo" className="w-auto" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground text-white">GTTech</h1>
-          <p className="text-muted-foreground mt-2 text-white">Admin Portal</p>
+          <h1 className="text-3xl font-bold text-white">GTTech</h1>
+          <p className="text-white mt-2">Admin Portal</p>
         </div>
 
         <Card className="shadow-lg">
-          <CardHeader className="space-y-1">
+          <CardHeader>
             <CardTitle className="text-2xl font-semibold text-center">Admin Login</CardTitle>
             <CardDescription className="text-center">
               Enter your credentials to access the admin dashboard
@@ -121,20 +128,12 @@ export default function AdminLogin() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                Forgot your password?{" "}
-                <a href="#" className="text-primary hover:underline font-medium">
-                  Contact IT Support
-                </a>
-              </p>
-            </div>
+           
           </CardContent>
         </Card>
 
-        <div className="mt- text-center ">
-            
-          <p className="text-xs text-muted-foreground">© 202 GTTech. All rights reserved.</p>
+        <div className="mt-16 text-center">
+          <p className="text-xs text-muted-foreground">© 2025 GTTech. All rights reserved.</p>
         </div>
       </div>
     </div>
