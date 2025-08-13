@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ThemeProvider } from "next-themes";
 import NextTopLoader from 'nextjs-toploader';
 import { cn } from "@/lib/utils";
+import AdminLayout from "@/components/admin/AdminLayout";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -18,6 +19,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith('/admin');
+
   return (
     <html lang="en" className="relative" suppressHydrationWarning>
       <body className={dmSans.className}>
@@ -44,7 +48,12 @@ export default function RootLayout({
             showAtBottom={false}
           />
           
-          {children}
+          {/* Conditional Layout Rendering */}
+          {isAdminRoute ? (
+            <AdminLayout>{children}</AdminLayout>
+          ) : (
+            children
+          )}
         </ThemeProvider>
       </body>
     </html>
