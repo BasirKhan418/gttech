@@ -47,38 +47,7 @@ const TechnologiesSection = () => {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Technologies Section */}
-        <div className="text-center mb-20">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm text-gray-300 mb-6">
-            Advanced Technologies
-          </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Cutting-Edge
-            <span className="block bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
-              Tech Stack
-            </span>
-          </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-16">
-            We leverage the latest technologies and industry-standard tools to deliver exceptional digital solutions.
-          </p>
-
-          {/* Technologies Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-20">
-            {technologies.map((tech, index) => (
-              <div
-                key={index}
-                className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
-              >
-                <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                  {tech.logo}
-                </div>
-                <h3 className="text-white font-semibold text-sm mb-1">{tech.name}</h3>
-                <p className="text-gray-400 text-xs">{tech.category}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
+        
         {/* Industries Section */}
         <div className="text-center">
           <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">

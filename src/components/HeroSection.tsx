@@ -478,7 +478,7 @@ const HeroSection = () => {
                 <div className="absolute -bottom-2 -left-2 lg:-bottom-4 lg:-left-4 w-6 h-6 lg:w-8 lg:h-8 bg-slate-800/30 backdrop-blur-sm rounded-full animate-float hidden sm:block" style={{ animationDelay: '2s' }}></div>
               </div>
 
-              <div className="hidden sm:flex justify-center mt-4 lg:mt-6 space-x-2 lg:space-x-4 overflow-x-auto pb-2">
+              <div className="hidden sm:flex justify-center mt-4 lg:mt-6 space-x-2 lg:space-x-4  pb-2">
                 {showcases.map((showcase, index) => (
                   <button
                     key={showcase.id}
