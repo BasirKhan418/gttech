@@ -79,13 +79,13 @@ const HeroSection = () => {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-gray-900 to-black pt-16 lg:pt-20">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-gray-950 via-slate-950 to-black pt-16 lg:pt-20">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-5 lg:opacity-10">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(59,130,246,0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59,130,246,0.1) 1px, transparent 1px)
+            linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)
           `,
           backgroundSize: '30px 30px'
         }}></div>
@@ -102,7 +102,7 @@ const HeroSection = () => {
           <div
             key={i}
             className={`absolute w-1 h-1 rounded-full animate-float hidden sm:block ${
-              i % 2 === 0 ? 'bg-blue-400/30' : 'bg-white/20'
+              i % 2 === 0 ? 'bg-sky-400/40' : 'bg-white/15'
             }`}
             style={{
               left: `${particle.left}%`,
@@ -122,7 +122,7 @@ const HeroSection = () => {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-blue-400/30 to-transparent animate-data-flow"
+                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/25 to-transparent animate-data-flow"
                 style={{
                   left: `${i * 15}%`,
                   height: '100%',
@@ -145,8 +145,8 @@ const HeroSection = () => {
                   animationDelay: `${i * 0.4}s`
                 }}
               >
-                <div className={`rounded-full border ${i % 2 === 0 ? 'border-blue-400/40' : 'border-white/30'} ${i % 3 === 0 ? 'w-3 h-3' : i % 3 === 1 ? 'w-2 h-2' : 'w-1 h-1'}`}>
-                  <div className={`rounded-full w-full h-full animate-ping ${i % 2 === 0 ? 'bg-blue-400/20' : 'bg-white/10'}`}
+                <div className={`rounded-full border ${i % 2 === 0 ? 'border-sky-400/35' : 'border-white/25'} ${i % 3 === 0 ? 'w-3 h-3' : i % 3 === 1 ? 'w-2 h-2' : 'w-1 h-1'}`}>
+                  <div className={`rounded-full w-full h-full animate-ping ${i % 2 === 0 ? 'bg-sky-400/15' : 'bg-white/8'}`}
                        style={{ animationDelay: `${i * 0.6}s` }}></div>
                 </div>
               </div>
@@ -160,7 +160,7 @@ const HeroSection = () => {
                 <div
                   key={i}
                   className={`animate-matrix-blink ${i % 7 === 0 ? 'h-2' : i % 5 === 0 ? 'h-1' : 'h-0.5'} ${
-                    i % 3 === 0 ? 'bg-blue-400/20' : 'bg-white/10'
+                    i % 3 === 0 ? 'bg-sky-400/15' : 'bg-white/8'
                   }`}
                   style={{ 
                     animationDelay: `${i * 0.1}s`,
@@ -174,10 +174,10 @@ const HeroSection = () => {
           {/* Orbital Rings */}
           <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
             <div className="relative w-16 h-16">
-              <div className="absolute inset-0 rounded-full border border-blue-400/30 animate-spin-slow"></div>
-              <div className="absolute inset-2 rounded-full border border-white/20 animate-spin-reverse"></div>
-              <div className="absolute inset-4 rounded-full border border-blue-400/50"></div>
-              <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-blue-400/60 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+              <div className="absolute inset-0 rounded-full border border-sky-400/25 animate-spin-slow"></div>
+              <div className="absolute inset-2 rounded-full border border-white/15 animate-spin-reverse"></div>
+              <div className="absolute inset-4 rounded-full border border-sky-400/40"></div>
+              <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-sky-400/50 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
             </div>
           </div>
 
@@ -201,14 +201,14 @@ const HeroSection = () => {
               />
               <defs>
                 <linearGradient id="gradientLeft1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(59,130,246,0.2)" />
-                  <stop offset="50%" stopColor="rgba(59,130,246,0.5)" />
-                  <stop offset="100%" stopColor="rgba(59,130,246,0.2)" />
+                  <stop offset="0%" stopColor="rgba(14,165,233,0.15)" />
+                  <stop offset="50%" stopColor="rgba(14,165,233,0.35)" />
+                  <stop offset="100%" stopColor="rgba(14,165,233,0.15)" />
                 </linearGradient>
                 <linearGradient id="gradientLeft2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(255,255,255,0.1)" />
-                  <stop offset="50%" stopColor="rgba(255,255,255,0.3)" />
-                  <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+                  <stop offset="0%" stopColor="rgba(255,255,255,0.05)" />
+                  <stop offset="50%" stopColor="rgba(255,255,255,0.2)" />
+                  <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
                 </linearGradient>
               </defs>
             </svg>
@@ -510,97 +510,6 @@ const HeroSection = () => {
           <div className="w-0.5 h-2 lg:w-1 lg:h-3 bg-blue-400 rounded-full mt-1.5 lg:mt-2 animate-pulse"></div>
         </div>
       </div>
-
-      {/* CSS for animations */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes dash {
-          0% { stroke-dasharray: 0, 100; }
-          50% { stroke-dasharray: 50, 100; }
-          100% { stroke-dasharray: 100, 0; }
-        }
-
-        @keyframes data-flow {
-          0% { 
-            transform: translateY(-100%);
-            opacity: 0;
-          }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { 
-            transform: translateY(100vh);
-            opacity: 0;
-          }
-        }
-
-        @keyframes matrix-blink {
-          0%, 70% { opacity: 0.1; }
-          15%, 55% { opacity: 0.8; }
-        }
-
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        @keyframes spin-reverse {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-        }
-        
-        .animate-on-scroll {
-          transition: all 1s ease-out;
-        }
-        
-        .animate-on-scroll.animate-fade-in-up {
-          opacity: 1 !important;
-          transform: translateY(0) translateX(0) !important;
-        }
-
-        .animate-dash {
-          stroke-dasharray: 100;
-          animation: dash 4s ease-in-out infinite;
-        }
-
-        .animate-data-flow {
-          animation: data-flow 3s linear infinite;
-        }
-
-        .animate-matrix-blink {
-          animation: matrix-blink 2s ease-in-out infinite;
-        }
-
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-
-        .animate-spin-reverse {
-          animation: spin-reverse 15s linear infinite;
-        }
-      `}</style>
     </section>
   )
 }
