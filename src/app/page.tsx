@@ -10,8 +10,8 @@ const HomePage = () => {
     <main className="min-h-screen bg-black">
       <Navbar />
       <HeroSection />
-      <ServicesPreview />
       <TechnologiesSection />
+      <ServicesPreview />
       <Footer />
     </main>
   )

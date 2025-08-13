@@ -35,7 +35,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             <Image
-            src ="/logo1.png"
+            src ="/logo.png"
             alt='ooop'
             width={150}
             height={150}
