@@ -345,9 +345,9 @@ const HeroSection = () => {
 
               <div className="space-y-3 lg:space-y-4">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-200">
-                  <span className="block">Empowering</span>
+                 <span className="block">Empowering</span>
                   <span className="block bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
-                    Industry 4.0
+                    Industry
                   </span>
                   <span className="block text-gray-300">Transformation</span>
                 </h1>
