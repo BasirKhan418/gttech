@@ -212,11 +212,11 @@ body {
           100% { transform: translateX(-50%); }
         }
 
-        @keyframes scroll-industries {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-
+     .carousel-track {
+  display: flex;
+  animation: scroll-industries 25s linear infinite;
+  will-change: transform;
+}
         @keyframes float-particle {
           0%, 100% { 
             transform: translateY(0px) translateX(0px);
@@ -269,10 +269,16 @@ body {
         .animate-scroll-left:hover {
           animation-play-state: paused;
         }
+@keyframes scroll-industries {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); } 
+}
 
-        .animate-scroll-industries {
-          animation: scroll-industries 25s linear infinite;
-        }
+.animate-scroll-industries {
+  display: flex;
+  animation: scroll-industries 30s linear infinite;
+}
+
 
         .animate-scroll-industries:hover {
           animation-play-state: paused;

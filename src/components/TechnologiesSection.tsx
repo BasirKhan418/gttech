@@ -29,7 +29,6 @@ const TechnologiesSection = () => {
 
   return (
     <section className="py-24 bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
-      {/* Background Elements - Matching Hero Section */}
       <div className="absolute inset-0 opacity-5 lg:opacity-10">
         <div className="absolute inset-0" style={{
           backgroundImage: `
@@ -40,7 +39,6 @@ const TechnologiesSection = () => {
         }}></div>
       </div>
 
-      {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[
           { left: 5, top: 10, delay: 0, duration: 4 },
@@ -65,7 +63,6 @@ const TechnologiesSection = () => {
         ))}
       </div>
 
-      {/* Circuit Pattern - Left Side */}
       <div className="absolute left-0 top-0 bottom-0 w-20 hidden lg:block overflow-hidden opacity-30">
         <div className="relative h-full">
           <div className="absolute inset-0">
@@ -85,7 +82,6 @@ const TechnologiesSection = () => {
         </div>
       </div>
 
-      {/* Circuit Pattern - Right Side */}
       <div className="absolute right-0 top-0 bottom-0 w-20 hidden lg:block overflow-hidden opacity-30">
         <div className="relative h-full">
           <div className="absolute inset-0">
@@ -253,13 +249,13 @@ const TechnologiesSection = () => {
                       className="flex-shrink-0 group cursor-pointer"
                     >
                       <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-sky-400/30 transition-all duration-300 hover:scale-105 hover:bg-white/10">
-                        <div className="w-32 h-16 flex items-center border rounded-md justify-center">
+                        <div className="w-32 h-16 flex items-center  rounded-md justify-center">
                           <Image
                             src={partner.logo}
                             alt={partner.name}
-                            width={120}
+                            width={80}
                             height={60}
-                            className="max-w-full max-h-full  object-contain filter brightness-90 group-hover:brightness-110 transition-all duration-300"
+                            className="object-contain filter rounded-md  brightness-90 group-hover:brightness-110 transition-all duration-300"
                           />
                         </div>
                         <div className="text-center mt-3">
