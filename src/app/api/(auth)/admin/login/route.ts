@@ -22,7 +22,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         if (decryptpss !== password) {
             return NextResponse.json({ success: false, message: "Invalid credentials!" }, { status: 401 });
         }
-        const token = jwt.sign({ email, name: result.data.name, username: result.data.username }, process.env.JWT_SECRET || "");
+        const token = jwt.sign({ email, name: result.data.name, userid: result.data._id }, process.env.JWT_SECRET || "");
         //setting cookies
         cookieObj.set('token', token, {
             httpOnly: true,
