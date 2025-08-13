@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
+import NextTopLoader from 'nextjs-toploader';
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -65,7 +66,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="relative" suppressHydrationWarning>
-      <body className={dmSans.className}>{children}</body>
+      <body className={dmSans.className}>
+        <NextTopLoader
+          color="#2563eb"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={true}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #2563eb,0 0 5px #2563eb"
+          template='<div class="bar" role="bar"><div class="peg"></div></div> 
+                    <div class="spinner" role="spinner"><div class="spinner-icon"></div></div>'
+          zIndex={1600}
+          showAtBottom={false}
+        />
+        {children}
+      </body>
     </html>
   );
 }
