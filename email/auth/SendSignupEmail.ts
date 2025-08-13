@@ -8,7 +8,7 @@ const SendSignupEmail = async (email: string, name: string, username: string, pa
         }
 
         const info = await client.sendMail({
-            from: `GTTech Admin <${process.env.EMAIL_PASS_1}>`,
+            from: `GT-Tech Admin <${process.env.EMAIL_PASS_1}>`,
             to: `${email}`,
             subject: `Welcome to GT-Tech Admin Panel - Access Granted`,
             text: `Hello ${name},\n\nYou have been successfully granted access to the GTTech Admin Panel.\n\nUsername: ${username}\nPassword: ${password}\n\nLogin and start managing now!`,

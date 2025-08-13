@@ -30,5 +30,19 @@ catch(err){
 }
 }
 
+const DeleteUser=async(id:string)=>{
+try{
+await ConnectDb();
+const user = await Admin.findByIdAndDelete(id);
+if (!user) {
+    return { success: false, message: "User not found", data: null };
+}
+return { success: true, message: "User deleted successfully", data: user };
+}
+catch(err){
+    return {success:false,message:"Error deleting user.Please try again later",data:null};
+}
+}
 
-export { finduser, CreateUser };
+
+export { finduser, CreateUser, DeleteUser };

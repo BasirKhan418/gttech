@@ -1,7 +1,9 @@
 import { NextResponse,NextRequest } from "next/server";
 import cryptojs from 'crypto-js'
-import { finduser,CreateUser } from "../../../../../../repository/db/auth";
+import { finduser,CreateUser,DeleteUser } from "../../../../../../repository/db/auth";
 import SendSignupEmail from "../../../../../../email/auth/SendSignupEmail";
+
+
 export const POST = async(req: NextRequest, res: NextResponse)=>{
 try{
   const data = await req.json();
@@ -27,3 +29,21 @@ catch(err){
 return NextResponse.json({success:false,message:"Error signing up user.Please try again later"}, {status:500});
 }
 }
+
+
+
+export const DELETE = async(req: NextRequest, res: NextResponse)=>{
+    try{
+     const data = await req.json();
+     const result = await DeleteUser(data.id);
+     if(!result.success){
+       return NextResponse.json({success:false,message:result.message}, {status:500});
+     }
+     return NextResponse.json({success:true,message:result.message}, {status:200});
+    }
+
+    catch(err){
+        return NextResponse.json({success:false,message:"Error deleting user.Please try again later"}, {status:500});
+    }
+}
+
