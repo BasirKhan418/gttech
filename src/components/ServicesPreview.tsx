@@ -4,12 +4,12 @@ import Link from 'next/link'
 
 // GT Tech specific constants
 const CAL_LINKS = {
-  discovery: "https://cal.com/gttech/discovery-calls",
-  strategy: "https://cal.com/gttech/strategy-sessions", 
-  enterprise: "https://cal.com/gttech/enterprise-consultation",
-  consultation: "https://cal.com/gttech/general-consultation",
-  kickoff: "https://cal.com/gttech/project-kickoff",
-  followup: "https://cal.com/gttech/follow-up-meetings"
+  discovery: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true",
+  strategy: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true", 
+  enterprise: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true",
+  consultation: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true",
+  kickoff: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true",
+  followup: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true"
 } as const;
 
 const CONSULTATION_PACKAGES = [
@@ -385,6 +385,10 @@ const ServicesPreview = () => {
           box-shadow: 
             0 4px 16px rgba(0, 0, 0, 0.2),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative;
+            z-index: 50;
         }
 
         .glass-badge {
