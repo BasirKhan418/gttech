@@ -228,7 +228,7 @@ const ServicesPreview = () => {
                     <div className="px-8 pb-6">
                       <button 
                         onClick={() => handleBooking(package_item.id)}
-                        className={`glass-button w-full group flex items-center justify-center px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] border ${
+                        className={`glass-button z-auto w-full group flex items-center justify-center px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] border ${
                           isEnterprise
                             ? 'bg-gradient-to-r from-sky-500/80 to-sky-600/80 hover:from-sky-600/90 hover:to-sky-700/90 text-white border-sky-400/50 shadow-lg shadow-sky-500/25 backdrop-blur-sm'
                             : 'bg-white/10 border-white/30 text-white hover:bg-white/20 hover:border-white/50 backdrop-blur-sm'
@@ -327,7 +327,7 @@ const ServicesPreview = () => {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/contact"
+                  href="/gta"
                   className="glass-button group px-8 py-4 bg-gradient-to-r from-sky-500/80 to-sky-600/80 text-white rounded-full font-semibold text-lg hover:from-sky-600/90 hover:to-sky-700/90 transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-sky-500/25 backdrop-blur-sm border border-sky-400/50"
                 >
                   Start Your Project

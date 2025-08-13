@@ -357,7 +357,60 @@ body {
         .animate-ping-slow {
           animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
+ @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
 
+        /* Additional CSS for full height */
+        .glass-sidebar {
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 0 0 1px rgba(14, 165, 233, 0.1);
+          height: 100vh !important;
+          min-height: 100vh !important;
+        }
+
+        .glass-card {
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          background: rgba(14, 165, 233, 0.1);
+          box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .scrollbar-thin {
+          scrollbar-width: thin;
+        }
+
+        .scrollbar-track-transparent {
+          scrollbar-color: rgba(14, 165, 233, 0.3) transparent;
+        }
+
+        .scrollbar-thumb-sky-500\/30::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .scrollbar-thumb-sky-500\/30::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .scrollbar-thumb-sky-500\/30::-webkit-scrollbar-thumb {
+          background-color: rgba(14, 165, 233, 0.3);
+          border-radius: 3px;
+        }
+
+        .scrollbar-thumb-sky-500\/30::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(14, 165, 233, 0.5);
+        }
         
 
         @layer base {
@@ -426,3 +479,42 @@ body {
     @apply bg-background text-foreground;
   }
 }
+@keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-6px); }
+        }
+        
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .glass-header {
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 0 0 1px rgba(14, 165, 233, 0.1);
+        }
+
+        .glass-button {
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 
+            0 2px 8px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-search {
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .glass-dropdown {
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 0 0 1px rgba(14, 165, 233, 0.2);
+        }
