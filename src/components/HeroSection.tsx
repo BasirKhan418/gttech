@@ -11,35 +11,35 @@ const HeroSection = () => {
       id: 1,
       title: "Smart Manufacturing Dashboard",
       category: "Industry 4.0",
-      image: "/api/placeholder/600/400",
+      image: "/1.jpeg",
       description: "AI-powered production monitoring system with real-time analytics"
     },
     {
       id: 2,
       title: "Digital Twin Simulation",
       category: "Engineering Solutions",
-      image: "/api/placeholder/600/400", 
+      image: "/1.jpeg", 
       description: "Advanced 3D modeling and simulation with Dassault Systemes"
     },
     {
       id: 3,
       title: "Augmented Reality Training",
       category: "AR/VR Solutions",
-      image: "/api/placeholder/600/400",
+      image: "/1.jpeg",
       description: "Immersive learning experiences for industrial applications"
     },
     {
       id: 4,
       title: "Robotics Automation",
       category: "Automation",
-      image: "/api/placeholder/600/400",
+      image: "/1.jpeg",
       description: "Intelligent robotic solutions for manufacturing excellence"
     },
     {
       id: 5,
       title: "Centre of Excellence",
       category: "Skill Development",
-      image: "/api/placeholder/600/400",
+      image: "/1.jpeg",
       description: "Advanced training programs for emerging technologies"
     }
   ]
