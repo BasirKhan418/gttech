@@ -38,11 +38,10 @@ const Navbar = () => {
             src ="/logo1.png"
             alt='ooop'
             width={150}
-            height={100}
+            height={150}
             />
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <Link
@@ -56,7 +55,6 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
               href="/contact"
@@ -66,7 +64,6 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 text-white"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

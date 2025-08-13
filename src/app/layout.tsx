@@ -10,7 +10,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://thegttech.com"),
-  title: "Gramtrang Technology",
+  title: "GT Tech",
   description:
     "The GT Tech brings you the latest technology news, unbiased reviews, buying guides, and tips. Stay ahead with insights on gadgets, mobiles, laptops, AI, and emerging tech trends.",
   keywords: [
