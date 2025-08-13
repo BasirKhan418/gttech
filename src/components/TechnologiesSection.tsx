@@ -146,7 +146,7 @@ const TechnologiesSection = () => {
                     {[...Array(3)].map((_, i) => (
                       <div
                         key={i}
-                        className="absolute w-1 h-1 bg-sky-400/60 rounded-full animate-float-particle"
+                        className="absolute w-1 h-1  bg-sky-400/60 rounded-full animate-float-particle"
                         style={{
                           left: `${20 + i * 30}%`,
                           top: `${10 + i * 20}%`,
