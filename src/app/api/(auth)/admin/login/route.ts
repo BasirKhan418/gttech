@@ -10,6 +10,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         const data = await req.json();
         const { email, password } = data;
         const result = await finduser(email);
+        
         console.log("User found:", result);
         if (!result.success) {
             console.error("Error finding user:", result.message);
