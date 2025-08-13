@@ -1,11 +1,9 @@
 import { NextResponse,NextRequest } from "next/server";
 import cryptojs from 'crypto-js'
-import ConnectDb from "../../../../../../middlewares/connectdb";
 import { finduser,CreateUser } from "../../../../../../repository/db/auth";
 import SendSignupEmail from "../../../../../../email/auth/SendSignupEmail";
 export const POST = async(req: NextRequest, res: NextResponse)=>{
 try{
-  await ConnectDb();
   const data = await req.json();
   const {email,name,username,password,img,phone}=data;
 
