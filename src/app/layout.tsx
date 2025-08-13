@@ -1,12 +1,9 @@
 "use client"
-import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ThemeProvider } from "next-themes";
 import NextTopLoader from 'nextjs-toploader';
-import { AdminSidebar } from "../../utils/admin/sidebar/admin-sidebar";
-import { AdminHeader } from "../../utils/admin/sidebar/admin-header";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -21,13 +18,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const isAdminRoute = pathname?.startsWith('/admin');
-  
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
-
   return (
     <html lang="en" className="relative" suppressHydrationWarning>
       <body className={dmSans.className}>
@@ -54,93 +44,7 @@ export default function RootLayout({
             showAtBottom={false}
           />
           
-          {isAdminRoute ? (
-            <div className={cn("min-h-screen h-screen overflow-hidden bg-gradient-to-br from-gray-950 via-slate-950 to-black dark:from-gray-950 dark:via-slate-950 dark:to-black relative")}>
-            
-            <AdminSidebar
-              sidebarCollapsed={sidebarCollapsed}
-              mobileMenuOpen={mobileMenuOpen}
-              setMobileMenuOpen={setMobileMenuOpen}
-            />
-            
-            <div className={cn(
-              "fixed top-0 right-0 z-20 transition-all duration-300",
-              sidebarCollapsed ? "lg:left-20" : "lg:left-72",
-              "left-0" 
-            )}>
-              <AdminHeader
-                sidebarCollapsed={sidebarCollapsed}
-                setSidebarCollapsed={setSidebarCollapsed}
-                mobileMenuOpen={mobileMenuOpen}
-                setMobileMenuOpen={setMobileMenuOpen}
-                darkMode={darkMode}
-                setDarkMode={setDarkMode}
-              />
-            </div>
-            
-            <main className={cn(
-              "h-screen overflow-y-auto transition-all duration-300 pt-16 relative z-10", 
-              sidebarCollapsed ? "lg:ml-20" : "lg:ml-72", 
-              "ml-0" 
-            )}>
-              <div className="relative h-full">
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0" style={{
-                    backgroundImage: `
-                      linear-gradient(rgba(14,165,233,0.05) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(14,165,233,0.05) 1px, transparent 1px)
-                    `,
-                    backgroundSize: '40px 40px'
-                  }}></div>
-                </div>
-
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  {[...Array(8)].map((_, i) => (
-                    <div
-                      key={i}
-                      className={`absolute w-1 h-1 rounded-full animate-float ${
-                        i % 2 === 0 ? 'bg-sky-400/20' : 'bg-white/10'
-                      }`}
-                      style={{
-                        left: `${10 + (i * 12)}%`,
-                        top: `${20 + (i * 10)}%`,
-                        animationDelay: `${i * 0.6}s`,
-                        animationDuration: `${4 + (i % 3)}s`
-                      }}
-                    ></div>
-                  ))}
-                </div>
-
-                <div className="relative z-10 p-4 lg:p-6 h-full">
-                  <div className="glass-content backdrop-blur-sm bg-slate-800/20 rounded-2xl border border-slate-700/30 h-full overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-800/30 via-transparent to-slate-900/20 opacity-50"></div>
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-slate-700/10 to-transparent opacity-30"></div>
-                    
-                    <div className="relative z-10 p-6 h-full overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-sky-500/30">
-                      {children}
-                    </div>
-
-                    <div className="absolute top-4 right-4 w-3 h-3 bg-sky-400/20 rounded-full animate-pulse"></div>
-                    <div className="absolute bottom-4 left-4 w-2 h-2 bg-cyan-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-                    
-                    <div className="absolute top-3 left-3 w-8 h-8 border-l-2 border-t-2 border-sky-400/20 rounded-tl-xl"></div>
-                    <div className="absolute bottom-3 right-3 w-8 h-8 border-r-2 border-b-2 border-sky-400/20 rounded-br-xl"></div>
-                  </div>
-                </div>
-              </div>
-            </main>
-          </div>
-        ) : (
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={true}
-            disableTransitionOnChange={false}
-            themes={['light', 'dark', 'system']}
-          >
-            {children}
-          </ThemeProvider>
-        )}
+          {children}
         </ThemeProvider>
       </body>
     </html>
