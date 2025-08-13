@@ -1,12 +1,14 @@
 "use client"
 import { DM_Sans } from "next/font/google";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { ThemeProvider } from "next-themes";
 import NextTopLoader from 'nextjs-toploader';
-import { cn } from "@/lib/utils";
 import AdminLayout from "@/components/admin/AdminLayout";
+import Chatbot from "@/components/Chatbot";
 import "./globals.css";
+import RedesignedPreloader from "@/components/Preloader";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -21,6 +23,7 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith('/admin');
+  const isLoginRoute = pathname === '/login';
 
   return (
     <html lang="en" className="relative" suppressHydrationWarning>
@@ -32,6 +35,7 @@ export default function RootLayout({
           disableTransitionOnChange={false}
           themes={['light', 'dark', 'system']}
         >
+          <RedesignedPreloader/>
           <NextTopLoader
             color="#0ea5e9"
             initialPosition={0.08}
@@ -48,12 +52,17 @@ export default function RootLayout({
             showAtBottom={false}
           />
           
-          {/* Conditional Layout Rendering */}
           {isAdminRoute ? (
             <AdminLayout>{children}</AdminLayout>
           ) : (
-            children
+            <>
+              <Navbar/> 
+              {children}
+              <Footer/>
+            </>
           )}
+
+          {!isAdminRoute && !isLoginRoute && <Chatbot />}
         </ThemeProvider>
       </body>
     </html>
