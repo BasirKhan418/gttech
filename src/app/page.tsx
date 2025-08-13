@@ -4,6 +4,7 @@ import HeroSection from '@/components/HeroSection'
 import ServicesPreview from '@/components/ServicesPreview'
 import TechnologiesSection from '@/components/TechnologiesSection'
 import Footer from '@/components/Footer'
+import DynamicBannerSection from '@/components/banner'
 
 const HomePage = () => {
   return (
@@ -11,6 +12,7 @@ const HomePage = () => {
       <Navbar />
       <HeroSection />
       <TechnologiesSection />
+      <DynamicBannerSection/>
       <ServicesPreview />
       <Footer />
     </main>

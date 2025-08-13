@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-
+import Image from 'next/image'
 const Footer = () => {
   const footerLinks = {
     company: [
@@ -56,15 +56,11 @@ const Footer = () => {
             {/* Company Info */}
             <div className="lg:col-span-4">
               <Link href="/" className="flex items-center space-x-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-white to-gray-300 rounded-lg flex items-center justify-center">
-                  <span className="text-black font-bold text-xl">GT</span>
-                </div>
-                <div>
-                  <h1 className="text-white font-bold text-xl tracking-tight">
-                    GramTarang
-                  </h1>
-                  <p className="text-gray-400 text-sm -mt-1">TECHNOLOGIES</p>
-                </div>
+                <Image
+                src="/logo.png"
+                alt='none'
+                width={200}
+                height={100}/>
               </Link>
               
               <p className="text-gray-400 mb-6 leading-relaxed">
