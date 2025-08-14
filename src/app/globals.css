@@ -28,10 +28,10 @@ body {
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(114, 140, 142, 0.1);
   }
   50% {
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.3), 0 0 60px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 40px rgba(134, 220, 225, 0.3), 0 0 60px rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -237,7 +237,7 @@ body {
         }
 
         .bg-gradient-radial {
-          background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.2) 80%);
+          background: radial-gradient(circle at center, transparent 40%, rgba(133, 219, 212, 0.2) 80%);
         }
         
         .animate-float {
