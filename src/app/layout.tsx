@@ -6,6 +6,7 @@ import NextTopLoader from 'nextjs-toploader';
 import AdminLayout from "@/components/admin/AdminLayout";
 import Chatbot from "@/components/Chatbot";
 import "./globals.css";
+import { Toaster } from "sonner";
 import RedesignedPreloader from "@/components/Preloader";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -51,6 +52,7 @@ export default function RootLayout({
             zIndex={1600}
             showAtBottom={false}
           />
+          <Toaster/>
           
           {isAdminRoute ? (
             <AdminLayout>{children}</AdminLayout>
