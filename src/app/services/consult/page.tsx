@@ -78,12 +78,12 @@ const ConsultingPage = () => {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
+      <main className="min-h-screen bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-8">
           <div className="absolute inset-0" style={{
             backgroundImage: `
-              linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)
+              linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
             `,
             backgroundSize: '30px 30px'
           }}></div>
@@ -91,8 +91,8 @@ const ConsultingPage = () => {
         
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sky-400 mx-auto mb-4"></div>
-            <p className="text-white text-lg">Loading consulting services...</p>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-500 mx-auto mb-4"></div>
+            <p className="text-gray-700 text-lg">Loading consulting services...</p>
           </div>
         </div>
       </main>
@@ -101,15 +101,15 @@ const ConsultingPage = () => {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
+      <main className="min-h-screen bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="text-red-400 text-6xl mb-4">⚠️</div>
-            <h1 className="text-2xl font-bold text-white mb-2">Error Loading Services</h1>
-            <p className="text-gray-400 mb-4">{error}</p>
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Error Loading Services</h1>
+            <p className="text-gray-600 mb-4">{error}</p>
             <button 
               onClick={fetchConsultingServices}
-              className="px-6 py-3 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
+              className="px-6 py-3 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
             >
               Try Again
             </button>
@@ -120,14 +120,14 @@ const ConsultingPage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
       
       {/* Enhanced Background Elements */}
-      <div className="absolute inset-0 opacity-5 lg:opacity-10">
+      <div className="absolute inset-0 opacity-8 lg:opacity-12">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)
+            linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
           `,
           backgroundSize: '30px 30px'
         }}></div>
@@ -139,7 +139,7 @@ const ConsultingPage = () => {
           <div
             key={i}
             className={`absolute w-1 h-1 rounded-full animate-float hidden sm:block ${
-              i % 3 === 0 ? 'bg-sky-400/40' : i % 3 === 1 ? 'bg-cyan-400/30' : 'bg-white/20'
+              i % 3 === 0 ? 'bg-cyan-400/40' : i % 3 === 1 ? 'bg-cyan-300/30' : 'bg-cyan-200/20'
             }`}
             style={{
               left: `${5 + (i * 8)}%`,
@@ -158,7 +158,7 @@ const ConsultingPage = () => {
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/20 to-transparent animate-data-flow"
+                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-cyan-400/20 to-transparent animate-data-flow"
                 style={{
                   left: `${i * 25}%`,
                   height: '100%',
@@ -195,19 +195,19 @@ const ConsultingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <div className="animate-on-scroll opacity-0 translate-y-10">
-              <div className="inline-flex items-center px-6 py-3 bg-cyan-500/15 backdrop-blur-sm border border-cyan-400/30 rounded-full text-sm text-cyan-200 mb-6">
+              <div className="inline-flex items-center px-6 py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-lg">
                 <Users className="w-4 h-4 mr-2" />
                 <span className="font-medium">Expert Consulting Services</span>
               </div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
                 <span className="block">Strategic Technology</span>
-                <span className="block bg-gradient-to-r from-cyan-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
                   Consulting
                 </span>
               </h1>
               
-              <p className="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
                 Transform your business with expert guidance from our seasoned consultants. 
                 We provide strategic insights and actionable roadmaps for digital transformation success.
               </p>
@@ -223,19 +223,22 @@ const ConsultingPage = () => {
           {consultingServices.length === 0 ? (
             <div className="text-center py-20">
               <div className="animate-on-scroll opacity-0 translate-y-10">
-                <div className="relative bg-gray-900/40 backdrop-blur-sm border border-cyan-500/20 rounded-3xl p-12 max-w-2xl mx-auto">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent"></div>
-                  <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/5 via-transparent to-blue-500/5"></div>
+                <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-600/50 rounded-3xl p-12 max-w-2xl mx-auto shadow-xl">
+                  {/* Glass Effects */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+                  <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
                   
                   <div className="relative z-10">
-                    <Lightbulb className="w-16 h-16 text-cyan-400 mx-auto mb-6" />
-                    <h3 className="text-2xl font-bold text-white mb-4">Coming Soon</h3>
-                    <p className="text-gray-400 mb-8">
+                    <div className="w-16 h-16 bg-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-cyan-400/40 backdrop-blur-sm shadow-lg">
+                      <Lightbulb className="w-8 h-8 text-cyan-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4">Coming Soon</h3>
+                    <p className="text-gray-600 mb-8">
                       Our consulting services are being prepared. We'll have exciting offerings available soon!
                     </p>
                     <Link
                       href="/contact"
-                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 hover:scale-105"
+                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-lg shadow-cyan-500/25 backdrop-blur-sm border border-cyan-400/50"
                     >
                       Get Notified
                       <ArrowRight className="w-4 h-4 ml-2" />
@@ -253,14 +256,14 @@ const ConsultingPage = () => {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <Link href={`/services/consult/${service._id}`}>
-                    <div className="group relative bg-gray-900/40 backdrop-blur-sm border border-cyan-500/20 rounded-3xl overflow-hidden hover:border-cyan-400/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/10">
+                    <div className="group relative bg-white/70 backdrop-blur-sm border border-cyan-600/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/15 group-hover:bg-white/80">
                       
                       {/* Glass Effects */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent"></div>
-                      <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/[0.08] via-transparent to-blue-500/[0.05]"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+                      <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
                       
                       {/* Hover Glow */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-cyan-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                       {/* Image Section */}
                       {service.poster && (
@@ -275,8 +278,8 @@ const ConsultingPage = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
                           
                           {/* View Indicator */}
-                          <div className="absolute top-4 right-4 p-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/30 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <Eye className="w-4 h-4 text-cyan-400" />
+                          <div className="absolute top-4 right-4 p-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
+                            <Eye className="w-4 h-4 text-cyan-600" />
                           </div>
                         </div>
                       )}
@@ -284,7 +287,7 @@ const ConsultingPage = () => {
                       {/* Content Section */}
                       <div className="relative z-10 p-6">
                         <div className="flex items-center justify-between mb-4">
-                          <span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-medium rounded-full border border-cyan-400/30">
+                          <span className="px-3 py-1 bg-cyan-500/20 text-cyan-700 text-xs font-medium rounded-full border border-cyan-400/40 backdrop-blur-sm">
                             {service.designType}
                           </span>
                           <span className="text-gray-500 text-xs">
@@ -292,11 +295,11 @@ const ConsultingPage = () => {
                           </span>
                         </div>
 
-                        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-200 transition-colors duration-300 line-clamp-2">
+                        <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-cyan-700 transition-colors duration-300 line-clamp-2">
                           {service.title}
                         </h3>
                         
-                        <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3 group-hover:text-gray-300 transition-colors duration-300">
+                        <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 group-hover:text-gray-700 transition-colors duration-300">
                           {service.description}
                         </p>
 
@@ -306,12 +309,12 @@ const ConsultingPage = () => {
                             <div className="flex flex-wrap gap-2">
                               {service.lists.slice(0, 3).map((item, idx) => (
                                 <div key={idx} className="flex items-center space-x-1">
-                                  <CheckCircle className="w-3 h-3 text-cyan-400" />
-                                  <span className="text-xs text-gray-400">{item}</span>
+                                  <CheckCircle className="w-3 h-3 text-cyan-600" />
+                                  <span className="text-xs text-gray-600">{item}</span>
                                 </div>
                               ))}
                               {service.lists.length > 3 && (
-                                <span className="text-xs text-cyan-400">+{service.lists.length - 3} more</span>
+                                <span className="text-xs text-cyan-600 font-medium">+{service.lists.length - 3} more</span>
                               )}
                             </div>
                           </div>
@@ -319,16 +322,16 @@ const ConsultingPage = () => {
 
                         {/* CTA */}
                         <div className="flex items-center justify-between">
-                          <span className="text-cyan-400 font-semibold text-sm group-hover:text-cyan-300 transition-colors duration-300">
+                          <span className="text-cyan-600 font-semibold text-sm group-hover:text-cyan-700 transition-colors duration-300">
                             Learn More
                           </span>
-                          <ArrowRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-1 group-hover:text-cyan-300 transition-all duration-300" />
+                          <ArrowRight className="w-4 h-4 text-cyan-600 group-hover:translate-x-1 group-hover:text-cyan-700 transition-all duration-300" />
                         </div>
                       </div>
 
                       {/* Decorative Elements */}
-                      <div className="absolute top-3 left-3 w-2 h-2 bg-cyan-400/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
-                      <div className="absolute bottom-3 right-3 w-1 h-1 bg-blue-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+                      <div className="absolute top-3 left-3 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+                      <div className="absolute bottom-3 right-3 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
                     </div>
                   </Link>
                 </div>
@@ -342,10 +345,10 @@ const ConsultingPage = () => {
       <section className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="animate-on-scroll opacity-0 translate-y-10">
-            <div className="relative bg-gray-900/40 backdrop-blur-sm border border-cyan-500/20 rounded-3xl p-12 overflow-hidden">
+            <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-600/50 rounded-3xl p-12 overflow-hidden shadow-2xl">
               {/* Glass Effects */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent"></div>
-              <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/5 via-transparent to-blue-500/5"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+              <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
               
               {/* Floating Particles */}
               <div className="absolute inset-0 pointer-events-none">
@@ -353,7 +356,7 @@ const ConsultingPage = () => {
                   <div
                     key={i}
                     className={`absolute w-1 h-1 rounded-full animate-float ${
-                      i % 2 === 0 ? 'bg-cyan-400/60' : 'bg-white/40'
+                      i % 2 === 0 ? 'bg-cyan-400/60' : 'bg-cyan-200/40'
                     }`}
                     style={{
                       left: `${10 + (i * 15)}%`,
@@ -366,14 +369,14 @@ const ConsultingPage = () => {
               </div>
 
               <div className="relative z-10">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
                   <span className="block">Ready to Transform</span>
-                  <span className="block bg-gradient-to-r from-cyan-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
                     Your Business?
                   </span>
                 </h2>
                 
-                <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
                   Partner with our expert consultants to unlock your organization's full potential 
                   through strategic technology guidance and digital transformation expertise.
                 </p>
@@ -381,14 +384,14 @@ const ConsultingPage = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/contact"
-                    className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full font-semibold text-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-cyan-500/25"
+                    className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-full font-semibold text-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-cyan-500/25"
                   >
                     Schedule Consultation
                     <Calendar className="w-5 h-5 ml-2 inline-block group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                   <Link
                     href="/services"
-                    className="px-8 py-4 bg-transparent border-2 border-cyan-400/50 text-white rounded-full font-semibold text-lg hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-300"
+                    className="px-8 py-4 bg-white/80 border-2 border-cyan-400/60 text-cyan-700 rounded-full font-semibold text-lg hover:bg-cyan-50/80 hover:border-cyan-500/70 backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
                     View All Services
                   </Link>
@@ -396,12 +399,67 @@ const ConsultingPage = () => {
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute top-6 right-6 w-12 h-12 border-2 border-cyan-400/30 rounded-xl rotate-45 animate-pulse"></div>
-              <div className="absolute bottom-6 left-6 w-8 h-8 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-full animate-bounce"></div>
+              <div className="absolute top-6 right-6 w-12 h-12 border-2 border-cyan-400/40 rounded-xl rotate-45 animate-pulse backdrop-blur-sm"></div>
+              <div className="absolute bottom-6 left-6 w-8 h-8 bg-gradient-to-br from-cyan-400/40 to-cyan-300/30 rounded-full animate-bounce backdrop-blur-sm"></div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Custom Animations */}
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes data-flow {
+          0% { transform: translateY(-100%); opacity: 0; }
+          50% { opacity: 1; }
+          100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-data-flow {
+          animation: data-flow 3s linear infinite;
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 1s ease-out forwards;
+        }
+
+        .animate-on-scroll {
+          transition: all 1s ease-out;
+        }
+
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
     </main>
   )
 }
