@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, AlertCircle, Shield, Lock, Mail } from "lucide-react"
 import { toast ,Toaster} from "sonner"
 import { useRouter } from "next/navigation"
+
 export default function AdminLogin() {
   const router = useRouter()
   const [email, setEmail] = useState("")
@@ -76,21 +77,22 @@ export default function AdminLogin() {
   // Prevent hydration mismatch by not rendering dynamic content on server
   if (!isClient) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-gray-950 via-slate-950 to-black flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-screen w-full bg-gradient-to-br from-white via-cyan-50 to-cyan-100 flex items-center justify-center">
+        <div className="text-gray-700">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
       <Toaster/>
+      
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-8 lg:opacity-12">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)
+            linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px'
         }}></div>
@@ -102,7 +104,7 @@ export default function AdminLogin() {
           <div
             key={i}
             className={`absolute w-1 h-1 rounded-full animate-pulse ${
-              i % 3 === 0 ? 'bg-sky-400/30' : i % 3 === 1 ? 'bg-cyan-400/20' : 'bg-white/15'
+              i % 3 === 0 ? 'bg-cyan-400/60' : i % 3 === 1 ? 'bg-cyan-300/40' : 'bg-cyan-200/30'
             }`}
             style={{
               left: `${Math.random() * 100}%`,
@@ -115,14 +117,14 @@ export default function AdminLogin() {
       </div>
 
       {/* Left Side - Circuit Tech Pattern */}
-      <div className="absolute left-0 top-0 bottom-0 w-16 lg:w-32 overflow-hidden opacity-20">
+      <div className="absolute left-0 top-0 bottom-0 w-16 lg:w-32 overflow-hidden opacity-40">
         <div className="relative h-full">
           {/* Data Stream Effect */}
           <div className="absolute inset-0">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/30 to-transparent animate-pulse"
+                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-cyan-400/30 to-transparent animate-pulse"
                 style={{
                   left: `${i * 20}%`,
                   height: '100%',
@@ -145,8 +147,8 @@ export default function AdminLogin() {
                   animationDelay: `${i * 0.5}s`
                 }}
               >
-                <div className={`rounded-full border ${i % 2 === 0 ? 'border-sky-400/40' : 'border-white/20'} ${i % 3 === 0 ? 'w-2 h-2' : 'w-1 h-1'}`}>
-                  <div className={`rounded-full w-full h-full animate-ping ${i % 2 === 0 ? 'bg-sky-400/20' : 'bg-white/10'}`}
+                <div className={`rounded-full border ${i % 2 === 0 ? 'border-cyan-500/40' : 'border-cyan-300/30'} ${i % 3 === 0 ? 'w-2 h-2' : 'w-1 h-1'}`}>
+                  <div className={`rounded-full w-full h-full animate-ping ${i % 2 === 0 ? 'bg-cyan-400/30' : 'bg-cyan-300/20'}`}
                        style={{ animationDelay: `${i * 0.8}s` }}></div>
                 </div>
               </div>
@@ -156,7 +158,7 @@ export default function AdminLogin() {
       </div>
 
       {/* Right Side - Circuit Tech Pattern (Mirrored) */}
-      <div className="absolute right-0 top-0 bottom-0 w-16 lg:w-32 overflow-hidden opacity-20">
+      <div className="absolute right-0 top-0 bottom-0 w-16 lg:w-32 overflow-hidden opacity-40">
         <div className="relative h-full">
           <div className="absolute inset-0">
             {[...Array(4)].map((_, i) => (
@@ -176,39 +178,44 @@ export default function AdminLogin() {
       </div>
 
       {/* Main Content Container */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-4">
         <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl">
           
           {/* Logo Section */}
-          <div className="text-center mb-8 lg:mb-12">
+          <div className="text-center mb-4 lg:mb-4">
             <div className="relative group inline-block">
               {/* Glow Effects */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-sky-500/20 via-cyan-500/20 to-blue-500/20 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-700"></div>
-              <div className="absolute -inset-2 bg-gradient-to-r from-sky-400/10 to-cyan-400/10 rounded-xl blur-lg"></div>
+              <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/20 via-cyan-400/20 to-cyan-600/20 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-700"></div>
+              <div className="absolute -inset-2 bg-gradient-to-r from-cyan-300/10 to-cyan-500/10 rounded-xl blur-lg"></div>
               
               {/* Logo Container */}
-              <div className="relative mt-16 bg-slate-900/80 backdrop-blur-xl border border-sky-500/30 rounded-2xl p-6 lg:p-8 shadow-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/5 via-transparent to-cyan-500/5"></div>
+              <div className="relative mt-16 bg-white/80 backdrop-blur-xl border border-cyan-400/40 rounded-2xl p-6 lg:p-8 shadow-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+                <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
                 
                 <div className="relative z-10 flex items-center justify-center">
-                  <Shield className="w-16 h-16 lg:w-20 lg:h-20 text-sky-400" />
+                  <Image
+                    src="/logo.png"
+                    alt="GT Technologies Logo"
+                    width={180}
+                    height={64}
+                  />
                 </div>
                 
                 {/* Corner Accents */}
-                <div className="absolute top-3 left-3 w-3 h-3 border-l-2 border-t-2 border-sky-400/60 rounded-tl-lg"></div>
+                <div className="absolute top-3 left-3 w-3 h-3 border-l-2 border-t-2 border-cyan-500/60 rounded-tl-lg"></div>
                 <div className="absolute top-3 right-3 w-3 h-3 border-r-2 border-t-2 border-cyan-400/60 rounded-tr-lg"></div>
                 <div className="absolute bottom-3 left-3 w-3 h-3 border-l-2 border-b-2 border-cyan-400/60 rounded-bl-lg"></div>
-                <div className="absolute bottom-3 right-3 w-3 h-3 border-r-2 border-b-2 border-sky-400/60 rounded-br-lg"></div>
+                <div className="absolute bottom-3 right-3 w-3 h-3 border-r-2 border-b-2 border-cyan-500/60 rounded-br-lg"></div>
               </div>
             </div>
             
-            <div className="mt-6 space-y-2">
-              <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r from-white via-sky-200 to-cyan-200 bg-clip-text text-transparent">
+            <div className="space-y-2">
+              <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r from-gray-800 via-cyan-600 to-cyan-700 bg-clip-text text-transparent">
                 Admin Portal
               </h1>
-              <p className="text-slate-400 text-sm lg:text-base flex items-center justify-center gap-2">
-                <Shield className="w-4 h-4 lg:w-5 lg:h-5 text-sky-400" />
+              <p className="text-gray-600 text-sm lg:text-base flex items-center justify-center gap-2">
+                <Shield className="w-4 h-4 lg:w-5 lg:h-5 text-cyan-600" />
                 Secure Access Dashboard
               </p>
             </div>
@@ -217,26 +224,26 @@ export default function AdminLogin() {
           {/* Login Form Container */}
           <div className="relative">
             {/* Background Glow */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-sky-500/20 to-cyan-500/20 rounded-3xl blur-lg"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-cyan-400/20 rounded-3xl blur-lg"></div>
             
             {/* Main Form */}
-            <div className="relative bg-slate-900/90 backdrop-blur-2xl border border-sky-500/30 rounded-3xl shadow-2xl overflow-hidden">
+            <div className="relative bg-white/80 backdrop-blur-2xl border border-cyan-400/40 rounded-3xl shadow-2xl overflow-hidden">
               
               {/* Glass Effects */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent"></div>
-              <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/[0.08] via-transparent to-cyan-500/[0.05]"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+              <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
               
               {/* Animated Border Shine */}
               <div className="absolute inset-0 rounded-3xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-400/30 to-transparent opacity-20"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-20"></div>
               </div>
 
               <div className="relative z-10 p-6 sm:p-8 lg:p-10">
                 
                 {/* Header */}
                 <div className="text-center mb-8">
-                  <h2 className="text-2xl lg:text-3xl font-bold text-white mb-2">Welcome Back</h2>
-                  <p className="text-slate-400 text-sm lg:text-base">Enter your credentials to access the admin dashboard</p>
+                  <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Welcome Back</h2>
+                  <p className="text-gray-600 text-sm lg:text-base">Enter your credentials to access the admin dashboard</p>
                 </div>
 
                 {/* Form */}
@@ -246,17 +253,17 @@ export default function AdminLogin() {
                   {error && (
                     <div className="relative">
                       <div className="absolute inset-0 bg-red-500/10 rounded-xl blur-sm"></div>
-                      <Alert variant="destructive" className="relative bg-red-500/20 border-red-400/50 backdrop-blur-sm">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription className="text-red-200">{error}</AlertDescription>
+                      <Alert variant="destructive" className="relative bg-red-50/80 border-red-300/60 backdrop-blur-sm">
+                        <AlertCircle className="h-4 w-4 text-red-600" />
+                        <AlertDescription className="text-red-700">{error}</AlertDescription>
                       </Alert>
                     </div>
                   )}
 
                   {/* Email Field */}
                   <div className="space-y-3">
-                    <Label htmlFor="email" className="text-white font-medium flex items-center gap-2 text-sm lg:text-base">
-                      <Mail className="w-4 h-4 lg:w-5 lg:h-5 text-sky-400" />
+                    <Label htmlFor="email" className="text-gray-800 font-medium flex items-center gap-2 text-sm lg:text-base">
+                      <Mail className="w-4 h-4 lg:w-5 lg:h-5 text-cyan-600" />
                       Email Address
                     </Label>
                     <div className="relative group">
@@ -268,16 +275,16 @@ export default function AdminLogin() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         disabled={isLoading}
-                        className="h-12 lg:h-14 text-base lg:text-lg bg-black/20 backdrop-blur-sm border-sky-500/30 text-white placeholder-slate-400 focus:border-sky-400/60 focus:ring-sky-400/30 transition-all duration-300 hover:border-sky-400/50"
+                        className="h-12 lg:h-14 text-base lg:text-lg bg-white/60 backdrop-blur-sm border-cyan-600/50 text-gray-800 placeholder-gray-500 focus:border-cyan-500/80 focus:ring-cyan-400/30 transition-all duration-300 hover:border-cyan-400/70"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-cyan-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-cyan-300/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </div>
 
                   {/* Password Field */}
                   <div className="space-y-3">
-                    <Label htmlFor="password" className="text-white font-medium flex items-center gap-2 text-sm lg:text-base">
-                      <Lock className="w-4 h-4 lg:w-5 lg:h-5 text-sky-400" />
+                    <Label htmlFor="password" className="text-gray-800 font-medium flex items-center gap-2 text-sm lg:text-base">
+                      <Lock className="w-4 h-4 lg:w-5 lg:h-5 text-cyan-600" />
                       Password
                     </Label>
                     <div className="relative group">
@@ -289,23 +296,9 @@ export default function AdminLogin() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         disabled={isLoading}
-                        className="h-12 lg:h-14 text-base lg:text-lg bg-black/20 backdrop-blur-sm border-sky-500/30 text-white placeholder-slate-400 focus:border-sky-400/60 focus:ring-sky-400/30 transition-all duration-300 hover:border-sky-400/50 pr-12 lg:pr-14"
+                        className="h-12 lg:h-14 text-base lg:text-lg bg-white/60 backdrop-blur-sm border-cyan-600/50 text-gray-800 placeholder-gray-500 focus:border-cyan-500/80 focus:ring-cyan-400/30 transition-all duration-300 hover:border-cyan-400/70 pr-12 lg:pr-14"
                       />
-                      {/* <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        disabled={isLoading}
-                        className="absolute left-1 top-1/2 -translate-y-1/2 h-10 lg:h-12 w-10 lg:w-12 text-slate-400 hover:text-white hover:bg-sky-500/20 transition-all duration-300"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 lg:h-5 lg:w-5" />
-                        ) : (
-                          <Eye className="h-4 w-4 lg:h-5 lg:w-5" />
-                        )}
-                      </Button> */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-cyan-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-cyan-300/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </div>
 
@@ -314,7 +307,7 @@ export default function AdminLogin() {
                     type="submit"
                     disabled={isLoading}
                     onClick={handleButtonClick}
-                    className="w-full h-12 lg:h-16 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold text-base lg:text-lg rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-sky-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border border-sky-400/50 backdrop-blur-sm group relative overflow-hidden"
+                    className="w-full h-12 lg:h-16 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-semibold text-base lg:text-lg rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border border-cyan-400/50 backdrop-blur-sm group relative overflow-hidden"
                   >
                     {/* Button Background Effects */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[300%] transition-transform duration-700"></div>
@@ -333,11 +326,11 @@ export default function AdminLogin() {
                   </Button>
 
                   {/* Additional Info */}
-                  <div className="text-center pt-4 lg:pt-6 border-t border-sky-500/20">
-                    <p className="text-xs lg:text-sm text-slate-500 mb-2">
+                  <div className="text-center pt-4 lg:pt-6 border-t border-cyan-300/40">
+                    <p className="text-xs lg:text-sm text-gray-500 mb-2">
                       Secure admin access powered by GT Technologies
                     </p>
-                    <div className="flex items-center justify-center space-x-4 text-xs lg:text-sm text-slate-600">
+                    <div className="flex items-center justify-center space-x-4 text-xs lg:text-sm text-gray-600">
                       <span className="flex items-center gap-1">
                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                         System Online
@@ -355,7 +348,7 @@ export default function AdminLogin() {
                   {[...Array(4)].map((_, i) => (
                     <div
                       key={i}
-                      className="w-1 h-1 lg:w-1.5 lg:h-1.5 bg-sky-400/60 rounded-full animate-pulse backdrop-blur-sm"
+                      className="w-1 h-1 lg:w-1.5 lg:h-1.5 bg-cyan-500/60 rounded-full animate-pulse backdrop-blur-sm"
                       style={{ animationDelay: `${i * 0.3}s` }}
                     ></div>
                   ))}
@@ -366,10 +359,10 @@ export default function AdminLogin() {
 
           {/* Footer */}
           <div className="mt-8 lg:mt-12 text-center">
-            <p className="text-xs lg:text-sm text-slate-500">
+            <p className="text-xs lg:text-sm text-gray-500">
               © 2025 GT Technologies. All rights reserved.
             </p>
-            <p className="text-xs lg:text-sm text-slate-600 mt-1">
+            <p className="text-xs lg:text-sm text-gray-600 mt-1">
               Admin Panel v2.0 - Secure Access Portal
             </p>
           </div>
@@ -377,13 +370,13 @@ export default function AdminLogin() {
       </div>
 
       {/* Decorative Corner Elements */}
-      <div className="fixed top-4 lg:top-8 right-4 lg:right-8 w-8 h-8 lg:w-12 lg:h-12 border-2 border-sky-400/20 rounded-xl rotate-45 animate-pulse backdrop-blur-sm bg-white/5 pointer-events-none"></div>
-      <div className="fixed bottom-4 lg:bottom-8 left-4 lg:left-8 w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-sky-400/20 to-cyan-400/20 rounded-full animate-bounce backdrop-blur-sm pointer-events-none"></div>
-      <div className="fixed top-16 lg:top-20 left-16 lg:left-20 w-2 h-2 bg-white/40 rounded-full animate-ping pointer-events-none"></div>
+      <div className="fixed top-4 lg:top-8 right-4 lg:right-8 w-8 h-8 lg:w-12 lg:h-12 border-2 border-cyan-400/40 rounded-xl rotate-45 animate-pulse backdrop-blur-sm bg-white/20 pointer-events-none"></div>
+      <div className="fixed bottom-4 lg:bottom-8 left-4 lg:left-8 w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-cyan-400/30 to-cyan-500/30 rounded-full animate-bounce backdrop-blur-sm pointer-events-none"></div>
+      <div className="fixed top-16 lg:top-20 left-16 lg:left-20 w-2 h-2 bg-cyan-400/60 rounded-full animate-ping pointer-events-none"></div>
 
       {/* Additional Mobile Decorative Elements */}
-      <div className="fixed top-1/4 right-4 w-1 h-1 bg-cyan-400/60 rounded-full animate-pulse pointer-events-none lg:hidden"></div>
-      <div className="fixed bottom-1/4 left-4 w-1 h-1 bg-sky-400/60 rounded-full animate-pulse pointer-events-none lg:hidden"></div>
+      <div className="fixed top-1/4 right-4 w-1 h-1 bg-cyan-500/60 rounded-full animate-pulse pointer-events-none lg:hidden"></div>
+      <div className="fixed bottom-1/4 left-4 w-1 h-1 bg-cyan-400/60 rounded-full animate-pulse pointer-events-none lg:hidden"></div>
 
     </div>
   )

@@ -233,10 +233,10 @@ const ServicesPage = () => {
                     {/* Key Highlights */}
                     <div className="space-y-3 mb-8">
                       {[
-                        "Smart Manufacturing & Industry 4.0",
+                        "Virtual twin development",
                         "AR/VR Implementation & Training",
                         "Robotics & Process Automation",
-                        "Digital Twin Development"
+                        "All type of Simulations"
                       ].map((item, index) => (
                         <div key={index} className="flex items-center space-x-3 group/item">
                           <div className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-400/60 flex items-center justify-center backdrop-blur-sm group-hover:bg-cyan-500/30 transition-colors duration-300">
@@ -330,9 +330,9 @@ const ServicesPage = () => {
                     {/* Key Highlights */}
                     <div className="space-y-3 mb-8">
                       {[
-                        "Digital Transformation Strategy",
-                        "Technology Assessment & Planning",
-                        "Change Management & Training",
+                        "Industrial Consultation",
+                        "Academic Consultation",
+                        "Management aaa& Training",
                         "Performance Optimization"
                       ].map((item, index) => (
                         <div key={index} className="flex items-center space-x-3 group/item">
