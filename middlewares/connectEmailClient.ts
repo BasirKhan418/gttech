@@ -4,9 +4,9 @@ const ConnectEmailClient = async () => {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST||"",
       port: 587,
-      secure: false, // true for port 465, false for other ports
+      secure: false, 
       auth: {
-        user: process.env.EMAIL || "", // your email address
+        user: process.env.EMAIL || "", 
         pass: process.env.EMAIL_PASS || "",
       },
     });

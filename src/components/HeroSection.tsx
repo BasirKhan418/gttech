@@ -401,12 +401,10 @@ const HeroSection = () => {
 
             </div>
 
-            {/* Right Content - Image Carousel */}
             <div className="order-2 lg:order-2 py-8 lg:py-0 animate-on-scroll opacity-0 translate-y-10 lg:translate-x-10 lg:translate-y-0 transition-all duration-1000 delay-400">
               
               <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] rounded-2xl lg:rounded-3xl overflow-hidden bg-slate-800/30 backdrop-blur-sm border border-blue-500/20">
                 
-                {/* Main Image Display */}
                 <div className="relative h-full overflow-hidden">
                   {showcases.map((showcase, index) => (
                     <div

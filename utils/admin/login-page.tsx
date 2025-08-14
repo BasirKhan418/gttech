@@ -20,10 +20,8 @@ export default function AdminLogin() {
     setError("")
 
     try {
-      // Simulate login process
       await new Promise(resolve => setTimeout(resolve, 2000))
       console.log("Login attempt with:", { email, password })
-      // Redirect would happen here
       setError("Demo mode - login simulation complete")
     } catch (err) {
       console.error("Login error:", err)
