@@ -16,66 +16,18 @@ import {
   LinkedinIcon
 } from 'lucide-react'
 
-// Team Member Interface
+// Team Member Interface - Updated to match your API model
 interface TeamMember {
-  id: number
+  _id: string
   name: string
   title: string
   image: string
   linkedinUrl: string
-  category: 'directors' | 'management' | 'technical' | 'operations'
+  category: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
 }
-
-const teamMembers: TeamMember[] = [
-  {
-    id: 1,
-    name: "Dr. Rajesh Kumar",
-    title: "Chief Executive Officer & Founder",
-    image: "/team/ceo.jpg",
-    linkedinUrl: "https://linkedin.com/in/rajesh-kumar",
-    category: "directors"
-  },
-  {
-    id: 2,
-    name: "Priya Sharma",
-    title: "Chief Technology Officer",
-    image: "/team/cto.jpg",
-    linkedinUrl: "https://linkedin.com/in/priya-sharma",
-    category: "directors"
-  },
-  {
-    id: 3,
-    name: "Amit Patel",
-    title: "Director of Operations",
-    image: "/team/operations.jpg",
-    linkedinUrl: "https://linkedin.com/in/amit-patel",
-    category: "directors"
-  },
-  {
-    id: 4,
-    name: "Sneha Gupta",
-    title: "Head of Product Design",
-    image: "/team/design.jpg",
-    linkedinUrl: "https://linkedin.com/in/sneha-gupta",
-    category: "management"
-  },
-  {
-    id: 5,
-    name: "Vikram Singh",
-    title: "Lead Engineer - Automation",
-    image: "/team/engineer1.jpg",
-    linkedinUrl: "https://linkedin.com/in/vikram-singh",
-    category: "technical"
-  },
-  {
-    id: 6,
-    name: "Ananya Reddy",
-    title: "Project Manager - Digital Solutions",
-    image: "/team/pm.jpg",
-    linkedinUrl: "https://linkedin.com/in/ananya-reddy",
-    category: "operations"
-  }
-]
 
 // Memoized Team Cards Component
 const TeamCards = memo(({ filteredMembers, isLoading }: { 
@@ -108,7 +60,7 @@ const TeamCards = memo(({ filteredMembers, isLoading }: {
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
       {filteredMembers.map((member, index) => (
-        <div key={member.id} className="animate-on-scroll opacity-0 translate-y-10" style={{ animationDelay: `${index * 0.1}s` }}>
+        <div key={member._id} className="animate-on-scroll opacity-0 translate-y-10" style={{ animationDelay: `${index * 0.1}s` }}>
           <div className="glass-card bg-white/80 backdrop-blur-xl border border-cyan-200/60 rounded-3xl p-4 md:p-6 hover:border-cyan-400/70 transition-all duration-300 hover:scale-105 group overflow-hidden shadow-lg hover:shadow-cyan-500/20">
             <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-transparent"></div>
             <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
@@ -123,7 +75,20 @@ const TeamCards = memo(({ filteredMembers, isLoading }: {
               <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 to-cyan-600/25 rounded-2xl animate-pulse"></div>
                 <div className="relative w-full h-full bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-2xl flex items-center justify-center border-2 border-cyan-400/40 group-hover:border-cyan-400/70 transition-all duration-300 overflow-hidden shadow-md">
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-100/30 to-cyan-200/30">
+                  {member.image ? (
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      width={160}
+                      height={160}
+                      className="w-full h-full object-cover rounded-2xl"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden')
+                      }}
+                    />
+                  ) : null}
+                  <div className={`w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-100/30 to-cyan-200/30 ${member.image ? 'hidden' : ''}`}>
                     <Users className="w-12 h-12 md:w-16 md:h-16 text-cyan-600 mb-2" />
                     <div className="text-xs text-cyan-600/70 font-medium">Photo</div>
                   </div>
@@ -174,18 +139,34 @@ const TeamCards = memo(({ filteredMembers, isLoading }: {
 TeamCards.displayName = 'TeamCards'
 
 // Memoized Filter Buttons Component
-const TeamFilters = memo(({ selectedCategory, onCategoryChange, isLoading }: {
+const TeamFilters = memo(({ selectedCategory, onCategoryChange, isLoading, categories }: {
   selectedCategory: string,
   onCategoryChange: (category: string) => void,
-  isLoading: boolean
+  isLoading: boolean,
+  categories: string[]
 }) => {
-  const filters = [
+  const defaultFilters = [
     { key: 'all', label: 'All Team' },
     { key: 'directors', label: 'Leadership' },
     { key: 'management', label: 'Management' },
     { key: 'technical', label: 'Technical' },
     { key: 'operations', label: 'Operations' }
   ]
+
+  // Create filters based on available categories and defaults
+  const filters = defaultFilters.filter(filter => 
+    filter.key === 'all' || categories.includes(filter.key)
+  )
+
+  // Add any additional categories that aren't in the default list
+  categories.forEach(category => {
+    if (!defaultFilters.some(filter => filter.key === category)) {
+      filters.push({
+        key: category,
+        label: category.charAt(0).toUpperCase() + category.slice(1)
+      })
+    }
+  })
 
   return (
     <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-12">
@@ -235,8 +216,44 @@ TeamSectionHeader.displayName = 'TeamSectionHeader'
 
 const AboutPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [filteredMembers, setFilteredMembers] = useState<TeamMember[]>(teamMembers) // Initialize with all members
-  const [isLoading, setIsLoading] = useState(false)
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
+  const [filteredMembers, setFilteredMembers] = useState<TeamMember[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch team data from API
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        
+        const response = await fetch('/api/team')
+        const data = await response.json()
+        
+        if (data.success) {
+          // Filter only active team members
+          const activeMembers = data.data.data.filter((member: TeamMember) => member.isActive)
+          setTeamMembers(activeMembers)
+          setFilteredMembers(activeMembers)
+        } else {
+          throw new Error(data.message || 'Failed to fetch team data')
+        }
+      } catch (error) {
+        console.error('Error fetching team data:', error)
+        setError(error instanceof Error ? error.message : 'Failed to load team data')
+        setTeamMembers([])
+        setFilteredMembers([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchTeamData()
+  }, [])
+
+  // Get unique categories from team members
+  const availableCategories = [...new Set(teamMembers.map(member => member.category))]
 
   // Memoized category change handler
   const handleCategoryChange = useCallback((category: string) => {
@@ -280,20 +297,13 @@ const AboutPage = () => {
 
   // Handle category filtering
   useEffect(() => {
-    setIsLoading(true)
-    
-    const timer = setTimeout(() => {
-      if (selectedCategory === 'all') {
-        setFilteredMembers([...teamMembers])
-      } else {
-        const filtered = teamMembers.filter(member => member.category === selectedCategory)
-        setFilteredMembers([...filtered])
-      }
-      setIsLoading(false)
-    }, 300)
-
-    return () => clearTimeout(timer)
-  }, [selectedCategory])
+    if (selectedCategory === 'all') {
+      setFilteredMembers([...teamMembers])
+    } else {
+      const filtered = teamMembers.filter(member => member.category === selectedCategory)
+      setFilteredMembers([...filtered])
+    }
+  }, [selectedCategory, teamMembers])
 
   const partners = [
     { name: 'Dassault Systèmes', logo: '/images.png' },
@@ -517,7 +527,7 @@ const AboutPage = () => {
                 <span className="font-semibold">Our Foundation</span>
               </div>
               
-              <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-6 leading-tight">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-6 leading-tight">
                 <span className="block">Incubated by</span>
                 <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
                   Excellence,
@@ -692,18 +702,43 @@ const AboutPage = () => {
           {/* Static Header - Won't Re-render */}
           <TeamSectionHeader />
 
-          {/* Memoized Filter Buttons */}
-          <TeamFilters 
-            selectedCategory={selectedCategory}
-            onCategoryChange={handleCategoryChange}
-            isLoading={isLoading}
-          />
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-12">
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-8 max-w-md mx-auto">
+                <div className="text-red-600 mb-4">
+                  <Users className="w-16 h-16 mx-auto mb-4" />
+                </div>
+                <h3 className="text-xl font-semibold text-red-800 mb-2">Unable to load team data</h3>
+                <p className="text-red-600 mb-4">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          )}
 
-          {/* Memoized Team Cards - Only this will re-render */}
-          <TeamCards 
-            filteredMembers={filteredMembers}
-            isLoading={isLoading}
-          />
+          {/* Team Content */}
+          {!error && (
+            <>
+              {/* Memoized Filter Buttons */}
+              <TeamFilters 
+                selectedCategory={selectedCategory}
+                onCategoryChange={handleCategoryChange}
+                isLoading={isLoading}
+                categories={availableCategories}
+              />
+
+              {/* Memoized Team Cards - Only this will re-render */}
+              <TeamCards 
+                filteredMembers={filteredMembers}
+                isLoading={isLoading}
+              />
+            </>
+          )}
         </div>
       </section>
 
