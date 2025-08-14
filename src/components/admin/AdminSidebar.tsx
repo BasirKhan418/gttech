@@ -93,24 +93,14 @@ const AdminSidebar = () => {
       icon: Users,
       subItems: [
         { name: 'All Admins', href: '/admin/users', icon: Users },
-        { name: 'Add Admin', href: '/admin/users/add', icon: UserPlus },
-        { name: 'Permissions', href: '/admin/users/permissions', icon: Settings }
+        
       ]
     },
     {
-      name: 'Analytics',
-      href: '/admin/analytics',
+      name: 'Teams',
+      href: '/admin/teams',
       icon: BarChart3
     },
-    {
-      name: 'Website Settings',
-      icon: Settings,
-      subItems: [
-        { name: 'General', href: '/admin/settings/general', icon: Settings },
-        { name: 'SEO Settings', href: '/admin/settings/seo', icon: Globe },
-        { name: 'Email Config', href: '/admin/settings/email', icon: Database }
-      ]
-    }
   ]
 
   const toggleExpanded = (itemName: string) => {
