@@ -57,67 +57,98 @@ const HeroSection = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        cache: 'no-store' // Ensure fresh data
+        cache: 'no-store',
+        next: { revalidate: 0 } // Ensure fresh data
       })
       
       console.log('Response status:', response.status)
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       
-      const data = await response.json()
-      console.log('Raw API response:', data)
+      const rawData = await response.json()
+      console.log('Raw API response:', rawData)
       
-      // Handle different possible response structures
+      // Handle different possible response structures more robustly
       let slides: SliderItem[] = []
       
-      if (data.success && data.data && Array.isArray(data.data)) {
-        // Standard format: { success: true, data: [...] }
-        slides = data.data
-        console.log('Using data.data format')
-      } else if (data.data && Array.isArray(data.data)) {
-        // Format: { data: [...] }
-        slides = data.data
-        console.log('Using data.data format (no success field)')
-      } else if (Array.isArray(data)) {
-        // Direct array format: [...]
-        slides = data
+      // Try multiple possible response formats
+      if (rawData?.success === true && Array.isArray(rawData?.data)) {
+        slides = rawData.data
+        console.log('Using rawData.data format (success: true)')
+      } else if (rawData?.success !== false && Array.isArray(rawData?.data)) {
+        slides = rawData.data
+        console.log('Using rawData.data format (no explicit success field)')
+      } else if (Array.isArray(rawData?.data)) {
+        slides = rawData.data
+        console.log('Using rawData.data format (array found)')
+      } else if (Array.isArray(rawData)) {
+        slides = rawData
         console.log('Using direct array format')
-      } else if (data.success && Array.isArray(data.message)) {
-        // Some APIs return data in message field
-        slides = data.message
-        console.log('Using data.message format')
+      } else if (rawData?.message && Array.isArray(rawData.message)) {
+        slides = rawData.message
+        console.log('Using rawData.message format')
+      } else if (rawData?.sliders && Array.isArray(rawData.sliders)) {
+        slides = rawData.sliders
+        console.log('Using rawData.sliders format')
       } else {
-        console.log('Unknown response format, using fallback')
-        slides = fallbackSlides
+        console.log('Unknown response format, checking for any array property...')
+        // Last resort: find any array property
+        const possibleArrays = Object.values(rawData).filter(Array.isArray)
+        if (possibleArrays.length > 0) {
+          slides = possibleArrays[0] as SliderItem[]
+          console.log('Found array in response:', slides)
+        } else {
+          console.log('No array found in response, using fallback')
+          slides = fallbackSlides
+        }
       }
       
-      console.log('Processed slides:', slides)
+      console.log('Processed slides before filtering:', slides)
       
       if (slides && slides.length > 0) {
-        // Filter active slides and ensure they have required fields
-        const activeSlides = slides.filter((slide: SliderItem) => {
-          const isValid = slide && 
-                         slide.title && 
-                         slide.description &&
-                         slide._id &&
-                         slide.isActive !== false
+        // Filter and validate slides more thoroughly
+        const validSlides = slides.filter((slide: any) => {
+          // More flexible validation
+          const hasTitle = slide && (slide.title || slide.name || slide.heading)
+          const hasDescription = slide && (slide.description || slide.content || slide.text)
+          const hasId = slide && (slide._id || slide.id)
+          const isNotInactive = slide.isActive !== false // Allow undefined or true
+          
+          const isValid = hasTitle && hasDescription && hasId && isNotInactive
           
           if (!isValid) {
-            console.log('Filtering out invalid slide:', slide)
+            console.log('Filtering out invalid slide:', {
+              slide,
+              hasTitle,
+              hasDescription,
+              hasId,
+              isNotInactive
+            })
           }
           
           return isValid
-        })
+        }).map((slide: any) => ({
+          // Normalize the slide object structure
+          _id: slide._id || slide.id || `slide-${Date.now()}-${Math.random()}`,
+          title: slide.title || slide.name || slide.heading || 'Untitled',
+          description: slide.description || slide.content || slide.text || 'No description available',
+          category: slide.category || slide.type || slide.tag || 'General',
+          imageUrl: slide.imageUrl || slide.image || slide.src || slide.photo || '/1.jpeg',
+          isActive: slide.isActive !== false,
+          createdAt: slide.createdAt,
+          updatedAt: slide.updatedAt
+        }))
         
-        console.log('Active slides after filtering:', activeSlides)
+        console.log('Valid slides after filtering and normalization:', validSlides)
         
-        if (activeSlides.length > 0) {
-          setSliderData(activeSlides)
-          console.log(`Successfully loaded ${activeSlides.length} slides`)
+        if (validSlides.length > 0) {
+          setSliderData(validSlides)
+          console.log(`Successfully loaded ${validSlides.length} slides`)
         } else {
-          console.log('No active slides found, using fallback data')
+          console.log('No valid slides found after filtering, using fallback data')
           setSliderData(fallbackSlides)
         }
       } else {
@@ -126,7 +157,11 @@ const HeroSection = () => {
       }
     } catch (err) {
       console.error('Error fetching slider data:', err)
-      setError('Failed to load slider content')
+      console.error('Error details:', {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined
+      })
+      setError(`Failed to load slider content: ${err instanceof Error ? err.message : 'Unknown error'}`)
       setSliderData(fallbackSlides)
     } finally {
       setLoading(false)
@@ -137,12 +172,12 @@ const HeroSection = () => {
     fetchSliderData()
   }, [])
 
-  // Auto-advance slides
+  // Auto-advance slides with longer duration
   useEffect(() => {
     if (sliderData.length > 1) {
       const timer = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % sliderData.length)
-      }, 4000)
+      }, 5000) // Increased from 4000ms to 5000ms (5 seconds)
       return () => clearInterval(timer)
     }
   }, [sliderData.length])
@@ -173,9 +208,17 @@ const HeroSection = () => {
     return () => observer.disconnect()
   }, [])
 
-  // Get image URL with fallback
+  // Get image URL with better fallback handling
   const getImageUrl = (slide: SliderItem): string => {
-    return slide.imageUrl || '/1.jpeg'
+    const imageUrl = slide.imageUrl || '/1.jpeg'
+    
+    // Handle different possible URL formats
+    if (imageUrl.startsWith('http') || imageUrl.startsWith('/') || imageUrl.startsWith('./')) {
+      return imageUrl
+    }
+    
+    // If it's just a filename, assume it's in public folder
+    return `/${imageUrl}`
   }
 
   return (
@@ -511,13 +554,16 @@ const HeroSection = () => {
                   <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
                     <div className="text-center">
                       <div className="text-red-500 text-4xl mb-4">⚠️</div>
-                      <p className="text-gray-600">{error}</p>
+                      <p className="text-gray-600 mb-2">{error}</p>
                       <button 
                         onClick={fetchSliderData}
                         className="mt-4 px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
                       >
                         Retry
                       </button>
+                      <div className="mt-2 text-xs text-gray-500">
+                        Using fallback images in the meantime
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -526,25 +572,23 @@ const HeroSection = () => {
                       {sliderData.map((slide, index) => (
                         <div
                           key={slide._id}
-                          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
                             index === currentSlide 
                               ? 'opacity-100 scale-100' 
                               : 'opacity-0 scale-105'
                           }`}
                         >
-                          <Image
-                            src={getImageUrl(slide)}
-                            alt={slide.title}
-                            fill
-                            className="object-cover"
-                            priority={index === 0}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
-                            onError={(e) => {
-                              // Fallback to default image if the image fails to load
-                              const target = e.target as HTMLImageElement;
-                              target.src = '/1.jpeg';
-                            }}
-                          />
+                         <img
+  src={getImageUrl(slide)}
+  alt={slide.title}
+  className="w-full h-full object-cover"  
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
+  onError={(e) => {
+    console.log(`Image failed to load: ${getImageUrl(slide)}`)
+    const target = e.target as HTMLImageElement;
+    target.src = '/1.jpeg';
+  }}
+/>
                           
                           {/* Overlay Gradient */}
                           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent"></div>
@@ -620,10 +664,9 @@ const HeroSection = () => {
                           : 'opacity-60 hover:opacity-80 border-cyan-800'
                       }`}
                     >
-                      <Image
+                      <img
                         src={getImageUrl(slide)}
                         alt={slide.title}
-                        fill
                         className="object-cover"
                         sizes="80px"
                         onError={(e) => {
@@ -640,30 +683,11 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
       <div className="absolute bottom-4 lg:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce hidden sm:block">
         <div className="w-5 h-8 lg:w-6 lg:h-10 border-2 border-cyan-900/60 rounded-full flex justify-center">
           <div className="w-0.5 h-2 lg:w-1 lg:h-3 bg-cyan-900 rounded-full mt-1.5 lg:mt-2 animate-pulse"></div>
         </div>
-      </div>
-
-      {/* Debug Info - Shows in development mode */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg text-xs z-50 max-w-xs">
-          <div><strong>Debug Info:</strong></div>
-          <div>Slides: {sliderData.length}</div>
-          <div>Current: {currentSlide + 1}</div>
-          <div>Loading: {loading ? 'Yes' : 'No'}</div>
-          {error && <div className="text-red-400">Error: {error}</div>}
-          <div>Data: {sliderData.length > 0 ? '✅' : '❌'}</div>
-          <button 
-            onClick={fetchSliderData}
-            className="mt-2 px-2 py-1 bg-cyan-500 text-white rounded text-xs hover:bg-cyan-600"
-          >
-            Refresh
-          </button>
-        </div>
-      )}
+      </div>     
     </section>
   )
 }
