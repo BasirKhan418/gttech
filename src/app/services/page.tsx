@@ -274,7 +274,7 @@ const ServicesPage = () => {
 
                     {/* CTA Button */}
                     <Link
-                      href="/solutions"
+                      href="/solution"
                       className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-sky-500/80 to-sky-600/80 hover:from-sky-600/90 hover:to-sky-700/90 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-sky-500/25 backdrop-blur-sm border border-sky-400/50"
                     >
                       Explore Solutions
@@ -378,7 +378,7 @@ const ServicesPage = () => {
 
                     {/* CTA Button */}
                     <Link
-                      href="/consulting"
+                      href="/consult"
                       className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-cyan-500/80 to-cyan-600/80 hover:from-cyan-600/90 hover:to-cyan-700/90 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-cyan-500/25 backdrop-blur-sm border border-cyan-400/50"
                     >
                       Explore Consulting
