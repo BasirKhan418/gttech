@@ -3,83 +3,156 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-type Showcase = {
+interface SliderItem {
   _id: string
-  id: number
   title: string
   category: string
-  image: string
+  imageUrl?: string
   description: string
+  isActive?: boolean
+  createdAt?: string
+  updatedAt?: string
 }
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [sliderData, setSliderData] = useState<Showcase[]>([])
-  const fetchSlider = async ()=>{
-    try{
-      const response = await fetch("/api/slider")
-      const data = await response.json()
-      setSliderData(data.data)
-    }
-    catch(err){
+  const [sliderData, setSliderData] = useState<SliderItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-    }
-  }
-  useEffect(() => {
-    fetchSlider()
-  }, [])
-  const showcases = [
+  // Fallback data in case API fails or returns empty
+  const fallbackSlides: SliderItem[] = [
     {
-      id: 1,
+      _id: 'fallback-1',
       title: "Smart Manufacturing Dashboard",
       category: "Industry 4.0",
-      image: "/1.jpeg",
+      imageUrl: "/1.jpeg",
       description: "AI-powered production monitoring system with real-time analytics"
     },
     {
-      id: 2,
+      _id: 'fallback-2',
       title: "Digital Twin Simulation",
       category: "Engineering Solutions",
-      image: "/1.jpeg", 
+      imageUrl: "/1.jpeg", 
       description: "Advanced 3D modeling and simulation with Dassault Systemes"
     },
     {
-      id: 3,
+      _id: 'fallback-3',
       title: "Augmented Reality Training",
       category: "AR/VR Solutions",
-      image: "/1.jpeg",
+      imageUrl: "/1.jpeg",
       description: "Immersive learning experiences for industrial applications"
-    },
-    {
-      id: 4,
-      title: "Robotics Automation",
-      category: "Automation",
-      image: "/1.jpeg",
-      description: "Intelligent robotic solutions for manufacturing excellence"
-    },
-    {
-      id: 5,
-      title: "Centre of Excellence",
-      category: "Skill Development",
-      image: "/1.jpeg",
-      description: "Advanced training programs for emerging technologies"
     }
   ]
 
+  const fetchSliderData = async () => {
+    try {
+      setLoading(true)
+      setError('')
+      
+      console.log('Fetching slider data from /api/slider...')
+      
+      const response = await fetch("/api/slider", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store' // Ensure fresh data
+      })
+      
+      console.log('Response status:', response.status)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      console.log('Raw API response:', data)
+      
+      // Handle different possible response structures
+      let slides: SliderItem[] = []
+      
+      if (data.success && data.data && Array.isArray(data.data)) {
+        // Standard format: { success: true, data: [...] }
+        slides = data.data
+        console.log('Using data.data format')
+      } else if (data.data && Array.isArray(data.data)) {
+        // Format: { data: [...] }
+        slides = data.data
+        console.log('Using data.data format (no success field)')
+      } else if (Array.isArray(data)) {
+        // Direct array format: [...]
+        slides = data
+        console.log('Using direct array format')
+      } else if (data.success && Array.isArray(data.message)) {
+        // Some APIs return data in message field
+        slides = data.message
+        console.log('Using data.message format')
+      } else {
+        console.log('Unknown response format, using fallback')
+        slides = fallbackSlides
+      }
+      
+      console.log('Processed slides:', slides)
+      
+      if (slides && slides.length > 0) {
+        // Filter active slides and ensure they have required fields
+        const activeSlides = slides.filter((slide: SliderItem) => {
+          const isValid = slide && 
+                         slide.title && 
+                         slide.description &&
+                         slide._id &&
+                         slide.isActive !== false
+          
+          if (!isValid) {
+            console.log('Filtering out invalid slide:', slide)
+          }
+          
+          return isValid
+        })
+        
+        console.log('Active slides after filtering:', activeSlides)
+        
+        if (activeSlides.length > 0) {
+          setSliderData(activeSlides)
+          console.log(`Successfully loaded ${activeSlides.length} slides`)
+        } else {
+          console.log('No active slides found, using fallback data')
+          setSliderData(fallbackSlides)
+        }
+      } else {
+        console.log('No slides data found, using fallback data')
+        setSliderData(fallbackSlides)
+      }
+    } catch (err) {
+      console.error('Error fetching slider data:', err)
+      setError('Failed to load slider content')
+      setSliderData(fallbackSlides)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchSliderData()
+  }, [])
+
   // Auto-advance slides
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % showcases.length)
-    }, 4000)
-    return () => clearInterval(timer)
-  }, [showcases.length])
+    if (sliderData.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % sliderData.length)
+      }, 4000)
+      return () => clearInterval(timer)
+    }
+  }, [sliderData.length])
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % showcases.length)
+    setCurrentSlide((prev) => (prev + 1) % sliderData.length)
   }
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + showcases.length) % showcases.length)
+    setCurrentSlide((prev) => (prev - 1 + sliderData.length) % sliderData.length)
   }
 
   useEffect(() => {
@@ -99,6 +172,11 @@ const HeroSection = () => {
 
     return () => observer.disconnect()
   }, [])
+
+  // Get image URL with fallback
+  const getImageUrl = (slide: SliderItem): string => {
+    return slide.imageUrl || '/1.jpeg'
+  }
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-white via-cyan-50 to-cyan-100 pt-16 lg:pt-20">
@@ -349,10 +427,6 @@ const HeroSection = () => {
             {/* Left Content */}
             <div className="order-1 lg:order-1 space-y-6 lg:space-y-8 py-5 lg:py-0">
               
-              <div className="animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000">
-                
-              </div>
-
               <div className="animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-100">
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="relative">
@@ -363,11 +437,9 @@ const HeroSection = () => {
                         alt="GT Technologies Logo"
                         width={300}
                         height={100}
-                        
                       />
                     </div>
                   </div>
-                  
                 </div>
               </div>
 
@@ -423,102 +495,146 @@ const HeroSection = () => {
 
             </div>
 
+            {/* Right Side - Image Slider */}
             <div className="order-2 lg:order-2 py-8 lg:py-0 animate-on-scroll opacity-0 translate-y-10 lg:translate-x-10 lg:translate-y-0 transition-all duration-1000 delay-400">
               
               <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] rounded-2xl lg:rounded-3xl overflow-hidden bg-white/60 backdrop-blur-sm border border-cyan-200/50 shadow-xl">
                 
-                <div className="relative h-full overflow-hidden">
-                  {sliderData && sliderData.map((showcase, index) => (
-                    <div
-                      key={showcase._id}
-                      className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                {loading ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto mb-4"></div>
+                      <p className="text-gray-600">Loading slider content...</p>
+                    </div>
+                  </div>
+                ) : error ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                    <div className="text-center">
+                      <div className="text-red-500 text-4xl mb-4">⚠️</div>
+                      <p className="text-gray-600">{error}</p>
+                      <button 
+                        onClick={fetchSliderData}
+                        className="mt-4 px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="relative h-full overflow-hidden">
+                      {sliderData.map((slide, index) => (
+                        <div
+                          key={slide._id}
+                          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                            index === currentSlide 
+                              ? 'opacity-100 scale-100' 
+                              : 'opacity-0 scale-105'
+                          }`}
+                        >
+                          <Image
+                            src={getImageUrl(slide)}
+                            alt={slide.title}
+                            fill
+                            className="object-cover"
+                            priority={index === 0}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
+                            onError={(e) => {
+                              // Fallback to default image if the image fails to load
+                              const target = e.target as HTMLImageElement;
+                              target.src = '/1.jpeg';
+                            }}
+                          />
+                          
+                          {/* Overlay Gradient */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent"></div>
+                          
+                          {/* Content Overlay - Responsive Padding */}
+                          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8">
+                            <div className="space-y-2 lg:space-y-3">
+                              <div className="inline-block px-2 py-1 lg:px-3 lg:py-1 bg-cyan-800/40 backdrop-blur-sm rounded-full text-xs text-white border border-cyan-800/40">
+                                {slide.category}
+                              </div>
+                              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white leading-tight">
+                                {slide.title}
+                              </h3>
+                              <p className="text-gray-200 text-sm lg:text-base leading-relaxed">
+                                {slide.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Navigation Arrows - Only show if there are multiple slides */}
+                    {sliderData.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevSlide}
+                          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/70 backdrop-blur-sm border border-cyan-300/60 rounded-full flex items-center justify-center text-gray-700 hover:bg-white/90 hover:border-cyan-400/80 transition-all duration-300 hover:scale-110 text-sm sm:text-base shadow-md"
+                        >
+                          ←
+                        </button>
+                        <button
+                          onClick={nextSlide}
+                          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/70 backdrop-blur-sm border border-cyan-300/60 rounded-full flex items-center justify-center text-gray-700 hover:bg-white/90 hover:border-cyan-400/80 transition-all duration-300 hover:scale-110 text-sm sm:text-base shadow-md"
+                        >
+                          →
+                        </button>
+
+                        {/* Slide Indicators */}
+                        <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex space-x-1.5 sm:space-x-2">
+                          {sliderData.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setCurrentSlide(index)}
+                              className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
+                                index === currentSlide 
+                                  ? 'bg-cyan-800 w-6 sm:w-8' 
+                                  : 'bg-white/60 hover:bg-cyan-800/70 w-1.5 sm:w-2'
+                              }`}
+                            ></button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {/* Decorative Elements */}
+                    <div className="absolute -top-3 -right-3 lg:-top-6 lg:-right-6 w-8 h-8 lg:w-12 lg:h-12 bg-cyan-400/30 backdrop-blur-sm rounded-full animate-float hidden sm:block"></div>
+                    <div className="absolute -bottom-2 -left-2 lg:-bottom-4 lg:-left-4 w-6 h-6 lg:w-8 lg:h-8 bg-white/50 backdrop-blur-sm rounded-full animate-float hidden sm:block" style={{ animationDelay: '2s' }}></div>
+                  </>
+                )}
+              </div>
+
+              {/* Thumbnail Navigation - Only show if there are multiple slides and not loading */}
+              {!loading && !error && sliderData.length > 1 && (
+                <div className="hidden sm:flex justify-center mt-4 lg:mt-6 space-x-2 lg:space-x-4 pb-2">
+                  {sliderData.map((slide, index) => (
+                    <button
+                      key={slide._id}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`relative flex-shrink-0 w-16 h-12 lg:w-20 lg:h-16 rounded-lg overflow-hidden transition-all duration-300 border ${
                         index === currentSlide 
-                          ? 'opacity-100 scale-100' 
-                          : 'opacity-0 scale-105'
+                          ? 'ring-2 ring-cyan-800 scale-105 border-cyan-800' 
+                          : 'opacity-60 hover:opacity-80 border-cyan-800'
                       }`}
                     >
-                      <img
-                        src={showcase.image}
-                        alt={showcase.title}
-                        
+                      <Image
+                        src={getImageUrl(slide)}
+                        alt={slide.title}
+                        fill
                         className="object-cover"
-                        
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
+                        sizes="80px"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/1.jpeg';
+                        }}
                       />
-                      
-                      {/* Overlay Gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent"></div>
-                      
-                      {/* Content Overlay - Responsive Padding */}
-                      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8">
-                        <div className="space-y-2 lg:space-y-3">
-                          <div className="inline-block px-2 py-1 lg:px-3 lg:py-1 bg-cyan-800/40 backdrop-blur-sm rounded-full text-xs text-white border border-cyan-800/40">
-                            {showcase.category}
-                          </div>
-                          <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white leading-tight">
-                            {showcase.title}
-                          </h3>
-                          <p className="text-gray-200 text-sm lg:text-base leading-relaxed">
-                            {showcase.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
-
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/70 backdrop-blur-sm border border-cyan-300/60 rounded-full flex items-center justify-center text-gray-700 hover:bg-white/90 hover:border-cyan-400/80 transition-all duration-300 hover:scale-110 text-sm sm:text-base shadow-md"
-                >
-                  ←
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/70 backdrop-blur-sm border border-cyan-300/60 rounded-full flex items-center justify-center text-gray-700 hover:bg-white/90 hover:border-cyan-400/80 transition-all duration-300 hover:scale-110 text-sm sm:text-base shadow-md"
-                >
-                  →
-                </button>
-
-                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex space-x-1.5 sm:space-x-2">
-                  {showcases.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentSlide(index)}
-                      className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
-                        index === currentSlide 
-                          ? 'bg-cyan-800 w-6 sm:w-8' 
-                          : 'bg-white/60 hover:bg-cyan-800/70 w-1.5 sm:w-2'
-                      }`}
-                    ></button>
-                  ))}
-                </div>
-
-                <div className="absolute -top-3 -right-3 lg:-top-6 lg:-right-6 w-8 h-8 lg:w-12 lg:h-12 bg-cyan-400/30 backdrop-blur-sm rounded-full animate-float hidden sm:block"></div>
-                <div className="absolute -bottom-2 -left-2 lg:-bottom-4 lg:-left-4 w-6 h-6 lg:w-8 lg:h-8 bg-white/50 backdrop-blur-sm rounded-full animate-float hidden sm:block" style={{ animationDelay: '2s' }}></div>
-              </div>
-
-              <div className="hidden sm:flex justify-center mt-4 lg:mt-6 space-x-2 lg:space-x-4  pb-2">
-                {showcases.map((showcase, index) => (
-                  <button
-                    key={showcase.id}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`relative flex-shrink-0 w-16 h-12 lg:w-20 lg:h-16 rounded-lg overflow-hidden transition-all duration-300 border ${
-                      index === currentSlide 
-                        ? 'ring-2 ring-cyan-800 scale-105 border-cyan-800' 
-                        : 'opacity-60 hover:opacity-80 border-cyan-800'
-                    }`}
-                  >
-                    <Image
-                      src={showcase.image}
-                      alt={showcase.title}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
-                  </button>
-                ))}
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -530,6 +646,24 @@ const HeroSection = () => {
           <div className="w-0.5 h-2 lg:w-1 lg:h-3 bg-cyan-900 rounded-full mt-1.5 lg:mt-2 animate-pulse"></div>
         </div>
       </div>
+
+      {/* Debug Info - Shows in development mode */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 right-4 bg-black/80 text-white p-3 rounded-lg text-xs z-50 max-w-xs">
+          <div><strong>Debug Info:</strong></div>
+          <div>Slides: {sliderData.length}</div>
+          <div>Current: {currentSlide + 1}</div>
+          <div>Loading: {loading ? 'Yes' : 'No'}</div>
+          {error && <div className="text-red-400">Error: {error}</div>}
+          <div>Data: {sliderData.length > 0 ? '✅' : '❌'}</div>
+          <button 
+            onClick={fetchSliderData}
+            className="mt-2 px-2 py-1 bg-cyan-500 text-white rounded text-xs hover:bg-cyan-600"
+          >
+            Refresh
+          </button>
+        </div>
+      )}
     </section>
   )
 }
