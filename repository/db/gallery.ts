@@ -4,7 +4,7 @@ import Gallery from "../../models/Gallery";
 const getGallery = async () => {
     try {
         await ConnectDb();
-        let data = await Gallery.find()
+        let data = await Gallery.find({})
             .populate("author lastEditedAuthor")
             .sort({ createdAt: -1 });
         return { success: true, message: "Gallery items fetched successfully", data };

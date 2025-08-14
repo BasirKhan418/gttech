@@ -7,7 +7,7 @@ import { finduser } from "../../../../repository/db/auth";
 export const GET = async (req: NextRequest) => {
     try {
         let response = await getGallery();
-        return NextResponse.json(response);
+        return NextResponse.json({ success: true, data: response.data });
     } catch (error) {
         return NextResponse.json({ success: false, message: "Something went wrong please try again after sometime" });
     }
