@@ -203,9 +203,9 @@ const ProjectsPage = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 pt-18 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
+          <div className="text-center">
             <div className="animate-on-scroll opacity-0 translate-y-10">
               <div className="inline-flex items-center px-6 py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-lg">
                 <Folder className="w-4 h-4 mr-2" />
@@ -336,7 +336,7 @@ const ProjectsPage = () => {
       )}
 
       {/* Category Filter */}
-      <section className="relative z-10 py-8 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="flex flex-wrap justify-center gap-3 mb-8">
@@ -359,7 +359,7 @@ const ProjectsPage = () => {
       </section>
 
       {/* All Projects Grid */}
-      <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           
           {filteredProjects.length === 0 ? (
@@ -396,7 +396,7 @@ const ProjectsPage = () => {
             </div>
           ) : (
             <>
-              <div className="animate-on-scroll opacity-0 translate-y-10 mb-8">
+              <div className="animate-on-scroll opacity-0 translate-y-10 mb-4">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">
                   {selectedCategory === 'all' ? 'All Products' : `${selectedCategory} Products`}
                 </h2>
@@ -498,7 +498,7 @@ const ProjectsPage = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-12 overflow-hidden shadow-2xl">

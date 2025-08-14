@@ -230,9 +230,9 @@ const GalleryPage = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 pt-18 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
+          <div className="text-center mb-8">
             <div className="animate-on-scroll opacity-0 translate-y-10">
               <div className="inline-flex items-center px-6 py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-lg">
                 <ImageIcon className="w-4 h-4 mr-2" />
@@ -256,10 +256,10 @@ const GalleryPage = () => {
       </section>
 
       {/* Gallery Navigation */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 mb-16">
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 mb-2">
         <div className="max-w-7xl mx-auto">
           <div className="animate-on-scroll opacity-0 translate-y-10">
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center">
               <div className="bg-white/70 backdrop-blur-sm border border-cyan-600/50 rounded-2xl p-2 flex space-x-2 shadow-xl">
                 <button
                   onClick={() => setActiveTab('image')}
@@ -296,7 +296,7 @@ const GalleryPage = () => {
       </section>
 
       {/* Gallery Content */}
-      <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           
           {activeTab === 'image' ? (

@@ -207,7 +207,7 @@ const SolutionDetailPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 pb-12 sm:pb-16 lg:pb-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
             
@@ -431,7 +431,7 @@ const SolutionDetailPage = () => {
       </div>
 
       {/* Related Solutions CTA */}
-      <section className="relative z-10 py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-8 sm:py-12 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-600/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 overflow-hidden shadow-2xl">
