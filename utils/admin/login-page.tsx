@@ -1,59 +1,91 @@
 "use client"
 import Image from "next/image"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, AlertCircle, Shield, Lock, Mail } from "lucide-react"
-
+import { toast ,Toaster} from "sonner"
+import { useRouter } from "next/navigation"
 export default function AdminLogin() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [isClient, setIsClient] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  // Fix hydration error by ensuring client-side rendering
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Please fill in all fields")
+      return
+    }
+
     setIsLoading(true)
     setError("")
 
     try {
-      // Simulate login process
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      console.log("Login attempt with:", { email, password })
-      // Redirect would happen here
-      setError("Demo mode - login simulation complete")
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Login successful - you can redirect here
+        console.log("Login successful:", data.message)
+        // Example: window.location.href = '/admin/dashboard'
+        // Or use Next.js router: router.push('/admin/dashboard')
+        toast.success("Login successful! Redirecting...");
+        setTimeout(() => {
+          router.push('/admin/dashboard');
+        }, 2000);
+      } else {
+        setError(data.message || "Login failed")
+      }
     } catch (err) {
       console.error("Login error:", err)
-      setError("An error occurred. Please try again.")
+      setError("Network error. Please try again.")
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleButtonClick = async () => {
-    setIsLoading(true)
-    setError("")
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    await handleLogin()
+  }
 
-    try {
-      // Simulate login process
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      console.log("Login attempt with:", { email, password })
-      // Redirect would happen here
-      setError("Demo mode - login simulation complete")
-    } catch (err) {
-      console.error("Login error:", err)
-      setError("An error occurred. Please try again.")
-    } finally {
-      setIsLoading(false)
-    }
+  const handleButtonClick = async () => {
+    await handleLogin()
+  }
+
+  // Prevent hydration mismatch by not rendering dynamic content on server
+  if (!isClient) {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-950 via-slate-950 to-black flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
-      
+      <Toaster/>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -70,7 +102,7 @@ export default function AdminLogin() {
         {[...Array(30)].map((_, i) => (
           <div
             key={i}
-            className={`absolute w-1 h-1 rounded-full animate-float ${
+            className={`absolute w-1 h-1 rounded-full animate-pulse ${
               i % 3 === 0 ? 'bg-sky-400/30' : i % 3 === 1 ? 'bg-cyan-400/20' : 'bg-white/15'
             }`}
             style={{
@@ -91,7 +123,7 @@ export default function AdminLogin() {
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/30 to-transparent animate-data-flow"
+                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/30 to-transparent animate-pulse"
                 style={{
                   left: `${i * 20}%`,
                   height: '100%',
@@ -131,7 +163,7 @@ export default function AdminLogin() {
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="absolute right-0 w-px bg-gradient-to-b from-transparent via-cyan-400/30 to-transparent animate-data-flow"
+                className="absolute right-0 w-px bg-gradient-to-b from-transparent via-cyan-400/30 to-transparent animate-pulse"
                 style={{
                   right: `${i * 20}%`,
                   height: '100%',
@@ -156,17 +188,12 @@ export default function AdminLogin() {
               <div className="absolute -inset-2 bg-gradient-to-r from-sky-400/10 to-cyan-400/10 rounded-xl blur-lg"></div>
               
               {/* Logo Container */}
-              <div className="relative mt-16  bg-slate-900/80 backdrop-blur-xl border border-sky-500/30 rounded-2xl p-6 lg:p-8 shadow-2xl overflow-hidden">
+              <div className="relative mt-16 bg-slate-900/80 backdrop-blur-xl border border-sky-500/30 rounded-2xl p-6 lg:p-8 shadow-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/5 via-transparent to-cyan-500/5"></div>
                 
-                <div className="relative z-10">
-                 <Image
-                  src="/logo.png"
-                  width={150}
-                  height={150}
-                  alt="oops"
-                 />
+                <div className="relative z-10 flex items-center justify-center">
+                  <Shield className="w-16 h-16 lg:w-20 lg:h-20 text-sky-400" />
                 </div>
                 
                 {/* Corner Accents */}
@@ -202,7 +229,7 @@ export default function AdminLogin() {
               
               {/* Animated Border Shine */}
               <div className="absolute inset-0 rounded-3xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-400/30 to-transparent animate-border-shine"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-400/30 to-transparent opacity-20"></div>
               </div>
 
               <div className="relative z-10 p-6 sm:p-8 lg:p-10">
@@ -265,12 +292,12 @@ export default function AdminLogin() {
                         disabled={isLoading}
                         className="h-12 lg:h-14 text-base lg:text-lg bg-black/20 backdrop-blur-sm border-sky-500/30 text-white placeholder-slate-400 focus:border-sky-400/60 focus:ring-sky-400/30 transition-all duration-300 hover:border-sky-400/50 pr-12 lg:pr-14"
                       />
-                      <Button
+                      {/* <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         disabled={isLoading}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 h-10 lg:h-12 w-10 lg:w-12 text-slate-400 hover:text-white hover:bg-sky-500/20 transition-all duration-300"
+                        className="absolute left-1 top-1/2 -translate-y-1/2 h-10 lg:h-12 w-10 lg:w-12 text-slate-400 hover:text-white hover:bg-sky-500/20 transition-all duration-300"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -278,15 +305,16 @@ export default function AdminLogin() {
                         ) : (
                           <Eye className="h-4 w-4 lg:h-5 lg:w-5" />
                         )}
-                      </Button>
+                      </Button> */}
                       <div className="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-cyan-500/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </div>
 
                   {/* Submit Button */}
                   <Button 
-                    onClick={handleButtonClick} 
+                    type="submit"
                     disabled={isLoading}
+                    onClick={handleButtonClick}
                     className="w-full h-12 lg:h-16 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold text-base lg:text-lg rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-sky-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border border-sky-400/50 backdrop-blur-sm group relative overflow-hidden"
                   >
                     {/* Button Background Effects */}
@@ -356,7 +384,7 @@ export default function AdminLogin() {
 
       {/* Additional Mobile Decorative Elements */}
       <div className="fixed top-1/4 right-4 w-1 h-1 bg-cyan-400/60 rounded-full animate-pulse pointer-events-none lg:hidden"></div>
-      <div className="fixed bottom-1/4 left-4 w-1 h-1 bg-sky-400/60 rounded-full animate-ping pointer-events-none lg:hidden"></div>
+      <div className="fixed bottom-1/4 left-4 w-1 h-1 bg-sky-400/60 rounded-full animate-pulse pointer-events-none lg:hidden"></div>
 
     </div>
   )
