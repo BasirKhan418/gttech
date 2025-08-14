@@ -64,6 +64,21 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
     }
   }
 
+  const logout = async () => {
+    try {
+      const response = await fetch('/api/admin/logout', { method: 'GET' })
+      const data = await response.json()
+      if (!data.success) {
+        toast.error(data.message || 'Unknown error')
+        return
+      }
+      router.push('/login')
+    } catch (error) {
+      toast.error('Error logging out')
+      console.error('Error logging out:', error)
+    }
+  }
+
   useEffect(() => {
     getHealthCheck()
   }, [])
@@ -92,15 +107,7 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
     }))
   }
 
-  const handleLogout = async () => {
-    try {
-      // Add logout API call here
-      // await fetch('/api/admin/logout', { method: 'POST' })
-      router.push('/login')
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
-  }
+ 
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -316,8 +323,9 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
               <DropdownMenuSeparator className="bg-sky-500/20" />
               
               <DropdownMenuItem 
-                onClick={handleLogout}
+              
                 className="text-red-400 hover:bg-red-500/10 hover:text-red-300 focus:bg-red-500/10 focus:text-red-300 cursor-pointer"
+                onClick={logout}  
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
