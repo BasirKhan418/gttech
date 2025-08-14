@@ -91,26 +91,26 @@ const ServicesPage = () => {
   ]
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
       
-      {/* Enhanced Background Elements - Same as Consult Page */}
-      <div className="absolute inset-0 opacity-5 lg:opacity-10">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-8 lg:opacity-12">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)
+            linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
           `,
           backgroundSize: '30px 30px'
         }}></div>
       </div>
 
-      {/* Floating Particles - Same as Consult Page */}
+      {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
             className={`absolute w-1 h-1 rounded-full animate-float hidden sm:block ${
-              i % 3 === 0 ? 'bg-sky-400/40' : i % 3 === 1 ? 'bg-cyan-400/30' : 'bg-white/20'
+              i % 3 === 0 ? 'bg-cyan-400/40' : i % 3 === 1 ? 'bg-cyan-300/30' : 'bg-cyan-200/20'
             }`}
             style={{
               left: `${5 + (i * 8)}%`,
@@ -122,14 +122,14 @@ const ServicesPage = () => {
         ))}
       </div>
 
-      {/* Data Flow Lines - Same as Consult Page */}
+      {/* Data Flow Lines */}
       <div className="absolute left-0 top-0 bottom-0 w-20 hidden xl:block overflow-hidden opacity-30">
         <div className="relative h-full">
           <div className="absolute inset-0">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/20 to-transparent animate-data-flow"
+                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-cyan-400/20 to-transparent animate-data-flow"
                 style={{
                   left: `${i * 25}%`,
                   height: '100%',
@@ -166,19 +166,19 @@ const ServicesPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <div className="animate-on-scroll opacity-0 translate-y-10">
-              <div className="inline-flex items-center px-6 py-3 bg-sky-500/15 backdrop-blur-sm border border-sky-400/30 rounded-full text-sm text-sky-200 mb-6">
+              <div className="inline-flex items-center px-6 py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-lg">
                 <Zap className="w-4 h-4 mr-2" />
                 <span className="font-medium">Our Core Services</span>
               </div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
                 <span className="block">Comprehensive Technology</span>
-                <span className="block bg-gradient-to-r from-sky-400 via-sky-300 to-cyan-400 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
                   Solutions & Consulting
                 </span>
               </h1>
               
-              <p className="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
                 Partner with GT Technologies to unlock digital transformation potential through our 
                 comprehensive solutions and expert consulting services tailored for Industry 4.0 excellence.
               </p>
@@ -199,32 +199,33 @@ const ServicesPage = () => {
                 onMouseEnter={() => setActiveService('solutions')}
                 onMouseLeave={() => setActiveService(null)}
               >
-                <div className="relative bg-gray-900/40 backdrop-blur-sm border border-sky-500/20 rounded-3xl overflow-hidden hover:border-sky-400/40 transition-all duration-500 hover:shadow-2xl hover:shadow-sky-500/10">
+                <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/15 group-hover:bg-white/80">
                   
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent"></div>
-                  <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/[0.08] via-transparent to-cyan-500/[0.05]"></div>
+                  {/* Glass Effects */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+                  <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
                   
-                  <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-cyan-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   {/* Header Section */}
                   <div className="relative z-10 p-8 lg:p-10">
                     <div className="flex items-center justify-between mb-6">
-                      <div className="w-16 h-16 bg-gradient-to-r from-sky-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-sky-400/30 group-hover:scale-105 transition-transform duration-300">
-                        <Cog className="w-8 h-8 text-sky-400 group-hover:rotate-45 transition-transform duration-500" />
+                      <div className="w-16 h-16 bg-cyan-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-cyan-400/40 group-hover:scale-105 transition-transform duration-300 shadow-lg">
+                        <Cog className="w-8 h-8 text-cyan-600 group-hover:rotate-45 transition-transform duration-500" />
                       </div>
                       <div className="text-right">
-                        <div className="text-3xl font-bold text-white group-hover:text-sky-200 transition-colors duration-300">
+                        <div className="text-3xl font-bold text-gray-800 group-hover:text-cyan-700 transition-colors duration-300">
                           Technology
                         </div>
-                        <div className="text-sky-300 text-sm font-medium">Implementation</div>
+                        <div className="text-cyan-600 text-sm font-medium">Implementation</div>
                       </div>
                     </div>
                     
-                    <h3 className="text-3xl lg:text-4xl font-bold text-white mb-4 group-hover:text-sky-200 transition-colors duration-300">
+                    <h3 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4 group-hover:text-cyan-700 transition-colors duration-300">
                       Solutions
                     </h3>
                     
-                    <p className="text-gray-300 text-lg leading-relaxed mb-8 group-hover:text-gray-200 transition-colors duration-300">
+                    <p className="text-gray-600 text-lg leading-relaxed mb-8 group-hover:text-gray-700 transition-colors duration-300">
                       Cutting-edge technology implementations that drive digital transformation across 
                       manufacturing, automation, and industrial processes with measurable outcomes.
                     </p>
@@ -238,10 +239,10 @@ const ServicesPage = () => {
                         "Digital Twin Development"
                       ].map((item, index) => (
                         <div key={index} className="flex items-center space-x-3 group/item">
-                          <div className="w-5 h-5 rounded-full bg-sky-500/20 border border-sky-400/50 flex items-center justify-center backdrop-blur-sm group-hover:bg-sky-500/30 transition-colors duration-300">
-                            <CheckCircle className="w-3 h-3 text-sky-400" />
+                          <div className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-400/60 flex items-center justify-center backdrop-blur-sm group-hover:bg-cyan-500/30 transition-colors duration-300">
+                            <CheckCircle className="w-3 h-3 text-cyan-600" />
                           </div>
-                          <span className="text-gray-300 group-hover:text-white group-hover/item:text-sky-200 transition-colors duration-200">
+                          <span className="text-gray-600 group-hover:text-gray-800 group-hover/item:text-cyan-700 transition-colors duration-200">
                             {item}
                           </span>
                         </div>
@@ -251,7 +252,7 @@ const ServicesPage = () => {
                     {/* CTA Button */}
                     <Link
                       href="services/solution"
-                      className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-sky-500/80 to-sky-600/80 hover:from-sky-600/90 hover:to-sky-700/90 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-sky-500/25 backdrop-blur-sm border border-sky-400/50"
+                      className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 hover:from-cyan-600 hover:to-cyan-700 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-cyan-500/25 backdrop-blur-sm border border-cyan-400/50"
                     >
                       Explore Solutions
                       <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" />
@@ -260,9 +261,9 @@ const ServicesPage = () => {
 
                   {/* Animated Feature Preview */}
                   <div className="relative z-10 px-8 lg:px-10 pb-8">
-                    <div className="bg-black/20 backdrop-blur-sm border border-sky-500/20 rounded-2xl p-6 overflow-hidden">
-                      <h4 className="text-white font-semibold mb-4 flex items-center">
-                        <span className="w-2 h-2 bg-sky-400 rounded-full mr-3 animate-pulse"></span>
+                    <div className="bg-cyan-50/60 backdrop-blur-sm border border-cyan-300/40 rounded-2xl p-6 overflow-hidden">
+                      <h4 className="text-gray-800 font-semibold mb-4 flex items-center">
+                        <span className="w-2 h-2 bg-cyan-500 rounded-full mr-3 animate-pulse"></span>
                         Featured Technologies
                       </h4>
                       
@@ -270,19 +271,19 @@ const ServicesPage = () => {
                         {solutionsFeatures.slice(0, 4).map((feature, index) => (
                           <div 
                             key={index} 
-                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-sky-500/10 transition-colors duration-200"
+                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-cyan-100/50 transition-colors duration-200"
                           >
-                            <feature.icon className="w-4 h-4 text-sky-400 flex-shrink-0" />
-                            <span className="text-gray-300 text-sm truncate">{feature.title}</span>
+                            <feature.icon className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+                            <span className="text-gray-700 text-sm truncate">{feature.title}</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   </div>
 
-                  {/* Decorative Elements - Same as Consult Page */}
-                  <div className="absolute top-3 left-3 w-2 h-2 bg-sky-400/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
-                  <div className="absolute bottom-3 right-3 w-1 h-1 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+                  {/* Decorative Elements */}
+                  <div className="absolute top-3 left-3 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+                  <div className="absolute bottom-3 right-3 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -295,32 +296,33 @@ const ServicesPage = () => {
                 onMouseLeave={() => setActiveService(null)}
               >
 
-                <div className="relative bg-gray-900/40 backdrop-blur-sm border border-cyan-500/20 rounded-3xl overflow-hidden hover:border-cyan-400/40 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/10">
+                <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/15 group-hover:bg-white/80">
                   
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent"></div>
-                  <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/[0.08] via-transparent to-blue-500/[0.05]"></div>
+                  {/* Glass Effects */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+                  <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
                   
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-cyan-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   {/* Header Section */}
                   <div className="relative z-10 p-8 lg:p-10">
                     <div className="flex items-center justify-between mb-6">
-                      <div className="w-16 h-16 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-cyan-400/30 group-hover:scale-105 transition-transform duration-300">
-                        <Users className="w-8 h-8 text-cyan-400 group-hover:scale-105 transition-transform duration-300" />
+                      <div className="w-16 h-16 bg-cyan-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-cyan-400/40 group-hover:scale-105 transition-transform duration-300 shadow-lg">
+                        <Users className="w-8 h-8 text-cyan-600 group-hover:scale-105 transition-transform duration-300" />
                       </div>
                       <div className="text-right">
-                        <div className="text-3xl font-bold text-white group-hover:text-cyan-200 transition-colors duration-300">
+                        <div className="text-3xl font-bold text-gray-800 group-hover:text-cyan-700 transition-colors duration-300">
                           Strategic
                         </div>
-                        <div className="text-cyan-300 text-sm font-medium">Advisory</div>
+                        <div className="text-cyan-600 text-sm font-medium">Advisory</div>
                       </div>
                     </div>
                     
-                    <h3 className="text-3xl lg:text-4xl font-bold text-white mb-4 group-hover:text-cyan-200 transition-colors duration-300">
+                    <h3 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4 group-hover:text-cyan-700 transition-colors duration-300">
                       Consulting
                     </h3>
                     
-                    <p className="text-gray-300 text-lg leading-relaxed mb-8 group-hover:text-gray-200 transition-colors duration-300">
+                    <p className="text-gray-600 text-lg leading-relaxed mb-8 group-hover:text-gray-700 transition-colors duration-300">
                       Expert strategic guidance and advisory services that accelerate your digital transformation 
                       journey with proven methodologies and industry best practices.
                     </p>
@@ -334,10 +336,10 @@ const ServicesPage = () => {
                         "Performance Optimization"
                       ].map((item, index) => (
                         <div key={index} className="flex items-center space-x-3 group/item">
-                          <div className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center backdrop-blur-sm group-hover:bg-cyan-500/30 transition-colors duration-300">
-                            <CheckCircle className="w-3 h-3 text-cyan-400" />
+                          <div className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-400/60 flex items-center justify-center backdrop-blur-sm group-hover:bg-cyan-500/30 transition-colors duration-300">
+                            <CheckCircle className="w-3 h-3 text-cyan-600" />
                           </div>
-                          <span className="text-gray-300 group-hover:text-white group-hover/item:text-cyan-200 transition-colors duration-200">
+                          <span className="text-gray-600 group-hover:text-gray-800 group-hover/item:text-cyan-700 transition-colors duration-200">
                             {item}
                           </span>
                         </div>
@@ -347,7 +349,7 @@ const ServicesPage = () => {
                     {/* CTA Button */}
                     <Link
                       href="/services/consult"
-                      className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-cyan-500/80 to-cyan-600/80 hover:from-cyan-600/90 hover:to-cyan-700/90 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-cyan-500/25 backdrop-blur-sm border border-cyan-400/50"
+                      className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 hover:from-cyan-600 hover:to-cyan-700 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-cyan-500/25 backdrop-blur-sm border border-cyan-400/50"
                     >
                       Explore Consulting
                       <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" />
@@ -356,9 +358,9 @@ const ServicesPage = () => {
 
                   {/* Animated Feature Preview */}
                   <div className="relative z-10 px-8 lg:px-10 pb-8">
-                    <div className="bg-black/20 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 overflow-hidden">
-                      <h4 className="text-white font-semibold mb-4 flex items-center">
-                        <span className="w-2 h-2 bg-cyan-400 rounded-full mr-3 animate-pulse"></span>
+                    <div className="bg-cyan-50/60 backdrop-blur-sm border border-cyan-300/40 rounded-2xl p-6 overflow-hidden">
+                      <h4 className="text-gray-800 font-semibold mb-4 flex items-center">
+                        <span className="w-2 h-2 bg-cyan-500 rounded-full mr-3 animate-pulse"></span>
                         Service Areas
                       </h4>
                       
@@ -366,18 +368,18 @@ const ServicesPage = () => {
                         {consultingFeatures.slice(0, 4).map((feature, index) => (
                           <div 
                             key={index} 
-                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-cyan-500/10 transition-colors duration-200"
+                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-cyan-100/50 transition-colors duration-200"
                           >
-                            <feature.icon className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                            <span className="text-gray-300 text-sm truncate">{feature.title}</span>
+                            <feature.icon className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+                            <span className="text-gray-700 text-sm truncate">{feature.title}</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   </div>
 
-                  <div className="absolute top-3 left-3 w-2 h-2 bg-cyan-400/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
-                  <div className="absolute bottom-3 right-3 w-1 h-1 bg-blue-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+                  <div className="absolute top-3 left-3 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+                  <div className="absolute bottom-3 right-3 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -389,16 +391,18 @@ const ServicesPage = () => {
       <section className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
           <div className="animate-on-scroll opacity-0 translate-y-10">
-            <div className="relative bg-gray-900/40 backdrop-blur-sm border border-sky-500/20 rounded-3xl p-12 lg:p-16 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent"></div>
-              <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/5 via-transparent to-cyan-500/5"></div>
+            <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-12 lg:p-16 overflow-hidden shadow-2xl">
+              {/* Glass Background Effects */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+              <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
               
+              {/* Floating Particles */}
               <div className="absolute inset-0 pointer-events-none">
                 {[...Array(8)].map((_, i) => (
                   <div
                     key={i}
                     className={`absolute w-1 h-1 rounded-full animate-float ${
-                      i % 2 === 0 ? 'bg-sky-400/60' : 'bg-white/40'
+                      i % 2 === 0 ? 'bg-cyan-400/60' : 'bg-cyan-200/40'
                     }`}
                     style={{
                       left: `${10 + (i * 12)}%`,
@@ -411,14 +415,14 @@ const ServicesPage = () => {
               </div>
 
               <div className="relative z-10">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
                   <span className="block">Ready to Begin Your</span>
-                  <span className="block bg-gradient-to-r from-sky-400 via-sky-300 to-cyan-400 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
                     Digital Transformation?
                   </span>
                 </h2>
                 
-                <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
                   Connect with our expert team to discuss your specific requirements and discover how 
                   GT Technologies can accelerate your journey to Industry 4.0 excellence.
                 </p>
@@ -426,22 +430,23 @@ const ServicesPage = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/contact"
-                    className="group px-8 py-4 bg-gradient-to-r from-sky-500 to-cyan-500 text-white rounded-full font-semibold text-lg hover:from-sky-600 hover:to-cyan-600 transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-sky-500/25"
+                    className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-full font-semibold text-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-cyan-500/25"
                   >
                     Start Your Project
                     <ArrowRight className="w-5 h-5 ml-2 inline-block group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                   <Link
                     href="/about"
-                    className="px-8 py-4 bg-transparent border-2 border-sky-400/50 text-white rounded-full font-semibold text-lg hover:bg-sky-500/10 hover:border-sky-400 transition-all duration-300"
+                    className="px-8 py-4 bg-white/80 border-2 border-cyan-400/60 text-cyan-700 rounded-full font-semibold text-lg hover:bg-cyan-50/80 hover:border-cyan-500/70 transition-all duration-300 backdrop-blur-sm hover:scale-105"
                   >
                     Learn More About Us
                   </Link>
                 </div>
               </div>
 
-              <div className="absolute top-6 right-6 w-12 h-12 border-2 border-sky-400/30 rounded-xl rotate-45 animate-pulse"></div>
-              <div className="absolute bottom-6 left-6 w-8 h-8 bg-gradient-to-br from-sky-400/30 to-cyan-400/30 rounded-full animate-bounce"></div>
+              {/* Decorative Elements */}
+              <div className="absolute top-6 right-6 w-12 h-12 border-2 border-cyan-400/40 rounded-xl rotate-45 animate-pulse"></div>
+              <div className="absolute bottom-6 left-6 w-8 h-8 bg-gradient-to-br from-cyan-400/40 to-cyan-500/40 rounded-full animate-bounce"></div>
             </div>
           </div>
         </div>

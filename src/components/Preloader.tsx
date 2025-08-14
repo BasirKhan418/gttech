@@ -32,16 +32,16 @@ const RedesignedPreloader = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-gray-950 via-slate-950 to-black overflow-hidden">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-white via-cyan-50 to-cyan-100 overflow-hidden">
       
       {/* Animated Background Grid */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0 opacity-12">
         <div 
           className="absolute inset-0 animate-grid-flow"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(14,165,233,0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(14,165,233,0.3) 1px, transparent 1px)
+              linear-gradient(rgba(6,182,212,0.15) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(6,182,212,0.15) 1px, transparent 1px)
             `,
             backgroundSize: '60px 60px'
           }}
@@ -50,7 +50,7 @@ const RedesignedPreloader = () => {
 
       {/* Radial Glow Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-sky-500/10 via-blue-500/5 to-transparent rounded-full animate-pulse-glow" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-cyan-400/15 via-cyan-200/8 to-transparent rounded-full animate-pulse-glow" />
       </div>
 
       {/* Floating Energy Orbs */}
@@ -67,7 +67,7 @@ const RedesignedPreloader = () => {
             }}
           >
             <div className={`w-3 h-3 rounded-full ${
-              i % 3 === 0 ? 'bg-sky-400/60' : i % 3 === 1 ? 'bg-blue-400/50' : 'bg-cyan-400/40'
+              i % 3 === 0 ? 'bg-cyan-500/70' : i % 3 === 1 ? 'bg-cyan-400/60' : 'bg-cyan-300/50'
             } shadow-lg shadow-current animate-pulse-orb`} />
           </div>
         ))}
@@ -80,21 +80,21 @@ const RedesignedPreloader = () => {
         <div className="relative group">
           
           {/* Outer Glow Ring */}
-          <div className="absolute -inset-8 bg-gradient-to-r from-sky-500/20 via-blue-500/30 via-cyan-400/25 to-sky-500/20 rounded-2xl blur-2xl animate-rotate-glow" />
+          <div className="absolute -inset-8 bg-gradient-to-r from-cyan-400/25 via-cyan-500/35 via-cyan-300/30 to-cyan-400/25 rounded-2xl blur-2xl animate-rotate-glow" />
           
           {/* Secondary Glow */}
-          <div className="absolute -inset-4 bg-gradient-to-r from-blue-400/15 to-sky-400/15 rounded-xl blur-xl animate-pulse-secondary" />
+          <div className="absolute -inset-4 bg-gradient-to-r from-cyan-300/20 to-cyan-400/20 rounded-xl blur-xl animate-pulse-secondary" />
           
           {/* Logo Background Panel */}
-          <div className="relative bg-gradient-to-br from-slate-900/90 via-gray-900/80 to-slate-950/90 backdrop-blur-2xl border border-sky-400/30 rounded-2xl p-12 shadow-2xl overflow-hidden">
+          <div className="relative bg-gradient-to-br from-white/90 via-cyan-50/80 to-white/85 backdrop-blur-2xl border border-cyan-400/40 rounded-2xl p-12 shadow-2xl overflow-hidden">
             
             {/* Glass Morphism Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-2xl" />
-            <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/10 via-transparent to-blue-500/10 rounded-2xl" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20 rounded-2xl" />
+            <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/10 via-transparent to-cyan-300/8 rounded-2xl" />
             
             {/* Animated Border Shine */}
             <div className="absolute inset-0 rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-400/50 to-transparent animate-border-shine" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent animate-border-shine" />
             </div>
             
             {/* Logo with Multiple Shine Effects */}
@@ -112,17 +112,17 @@ const RedesignedPreloader = () => {
                 />
                 
                 {/* Primary Shine Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 animate-logo-shine skew-x-12" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 animate-logo-shine skew-x-12" />
                 
                 {/* Secondary Glare Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-300/30 to-transparent opacity-0 animate-logo-glare -skew-x-12" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent opacity-0 animate-logo-glare -skew-x-12" />
                 
                 {/* Prismatic Shine */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-300/25 via-cyan-300/25 to-transparent opacity-0 animate-prismatic-shine" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/30 via-cyan-300/30 to-transparent opacity-0 animate-prismatic-shine" />
               </div>
               
               {/* Logo Reflection */}
-              <div className="absolute top-full left-0 right-0 h-20 overflow-hidden opacity-20">
+              <div className="absolute top-full left-0 right-0 h-20 overflow-hidden opacity-15">
                 <Image
                   src="/logo.png"
                   alt=""
@@ -130,8 +130,8 @@ const RedesignedPreloader = () => {
                   height={140}
                   className="scale-y-[-1] filter blur-sm"
                   style={{ 
-                    maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%)',
-                    WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%)'
+                    maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 100%)'
                   }}
                 />
               </div>
@@ -153,7 +153,7 @@ const RedesignedPreloader = () => {
                 >
                   <div 
                     className={`w-2 h-2 rounded-full ${
-                      i % 3 === 0 ? 'bg-sky-400/80' : i % 3 === 1 ? 'bg-blue-400/70' : 'bg-cyan-400/60'
+                      i % 3 === 0 ? 'bg-cyan-500/80' : i % 3 === 1 ? 'bg-cyan-400/70' : 'bg-cyan-300/60'
                     } shadow-lg shadow-current`}
                     style={{
                       transform: `translateX(${60 + (i * 15)}px) translateY(-1px)`
@@ -165,32 +165,32 @@ const RedesignedPreloader = () => {
 
             {/* Corner Tech Accents */}
             <div className="absolute top-6 left-6">
-              <div className="w-4 h-4 border-l-2 border-t-2 border-sky-400/80 rounded-tl-lg animate-pulse-accent" />
-              <div className="absolute -top-1 -left-1 w-2 h-2 bg-sky-400/60 rounded-full animate-ping" />
+              <div className="w-4 h-4 border-l-2 border-t-2 border-cyan-500/80 rounded-tl-lg animate-pulse-accent" />
+              <div className="absolute -top-1 -left-1 w-2 h-2 bg-cyan-500/70 rounded-full animate-ping" />
             </div>
             <div className="absolute top-6 right-6">
-              <div className="w-4 h-4 border-r-2 border-t-2 border-blue-400/80 rounded-tr-lg animate-pulse-accent" />
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-400/60 rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
+              <div className="w-4 h-4 border-r-2 border-t-2 border-cyan-400/80 rounded-tr-lg animate-pulse-accent" />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-cyan-400/70 rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
             </div>
             <div className="absolute bottom-6 left-6">
-              <div className="w-4 h-4 border-l-2 border-b-2 border-cyan-400/80 rounded-bl-lg animate-pulse-accent" />
-              <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-cyan-400/60 rounded-full animate-ping" style={{ animationDelay: '1s' }} />
+              <div className="w-4 h-4 border-l-2 border-b-2 border-cyan-500/80 rounded-bl-lg animate-pulse-accent" />
+              <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-cyan-500/70 rounded-full animate-ping" style={{ animationDelay: '1s' }} />
             </div>
             <div className="absolute bottom-6 right-6">
-              <div className="w-4 h-4 border-r-2 border-b-2 border-sky-400/80 rounded-br-lg animate-pulse-accent" />
-              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-sky-400/60 rounded-full animate-ping" style={{ animationDelay: '1.5s' }} />
+              <div className="w-4 h-4 border-r-2 border-b-2 border-cyan-400/80 rounded-br-lg animate-pulse-accent" />
+              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-cyan-400/70 rounded-full animate-ping" style={{ animationDelay: '1.5s' }} />
             </div>
           </div>
         </div>
 
         {/* Loading Text with Typewriter Effect */}
         <div className="mt-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 animate-text-glow">
-            <span className="bg-gradient-to-r from-sky-400 via-blue-400 via-cyan-400 to-sky-300 bg-clip-text text-transparent animate-gradient-shift">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 animate-text-glow">
+            <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 via-cyan-400 to-cyan-700 bg-clip-text text-transparent animate-gradient-shift">
               Initializing Experience
             </span>
           </h2>
-          <p className="text-gray-400 text-lg animate-fade-in-delayed">
+          <p className="text-gray-600 text-lg animate-fade-in-delayed">
             <span className="animate-typewriter">Crafting your digital journey...</span>
           </p>
         </div>
@@ -200,7 +200,7 @@ const RedesignedPreloader = () => {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="w-3 h-3 bg-gradient-to-r from-sky-400 to-blue-500 rounded-full animate-bounce-sequence shadow-lg shadow-current"
+              className="w-3 h-3 bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-full animate-bounce-sequence shadow-lg shadow-current"
               style={{ 
                 animationDelay: `${i * 0.15}s`,
                 animationDuration: '1.2s'
@@ -219,11 +219,11 @@ const RedesignedPreloader = () => {
         @keyframes pulse-glow {
           0%, 100% { 
             transform: translate(-50%, -50%) scale(1);
-            opacity: 0.1;
+            opacity: 0.15;
           }
           50% { 
             transform: translate(-50%, -50%) scale(1.1);
-            opacity: 0.2;
+            opacity: 0.25;
           }
         }
 
@@ -245,7 +245,7 @@ const RedesignedPreloader = () => {
         @keyframes pulse-orb {
           0%, 100% { 
             transform: scale(1);
-            opacity: 0.6;
+            opacity: 0.7;
           }
           50% { 
             transform: scale(1.3);
@@ -260,11 +260,11 @@ const RedesignedPreloader = () => {
 
         @keyframes pulse-secondary {
           0%, 100% { 
-            opacity: 0.15;
+            opacity: 0.2;
             transform: scale(1);
           }
           50% { 
-            opacity: 0.25;
+            opacity: 0.35;
             transform: scale(1.05);
           }
         }
@@ -326,7 +326,7 @@ const RedesignedPreloader = () => {
             opacity: 0;
           }
           20% { 
-            opacity: 0.6;
+            opacity: 0.7;
           }
           100% { 
             transform: translateX(150%) rotate(45deg);
@@ -352,10 +352,10 @@ const RedesignedPreloader = () => {
 
         @keyframes text-glow {
           0%, 100% { 
-            text-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
           }
           50% { 
-            text-shadow: 0 0 30px rgba(14, 165, 233, 0.8), 0 0 40px rgba(59, 130, 246, 0.5);
+            text-shadow: 0 0 30px rgba(6, 182, 212, 0.9), 0 0 40px rgba(6, 182, 212, 0.6);
           }
         }
 
