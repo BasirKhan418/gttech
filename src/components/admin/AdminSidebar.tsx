@@ -24,7 +24,10 @@ import {
   Megaphone,
   Plus,
   Folder,
-  Code
+  Code,
+  Building2,
+  Factory,
+  Tag
 } from 'lucide-react'
 
 interface SubMenuItem {
@@ -61,10 +64,19 @@ const AdminSidebar = () => {
       ]
     },
     {
+      name: 'Industry Management',
+      icon: Building2,
+      badge: 'New',
+      subItems: [
+        { name: 'All Industries', href: '/admin/industries', icon: Factory },
+        { name: 'Categories', href: '/admin/industries?tab=categories', icon: Tag },
+      ]
+    },
+    {
       name: 'Product Management',
       icon: Folder,
       subItems: [
-        { name: 'All Product', href: '/admin/projects', icon: Eye },
+        { name: 'All Products', href: '/admin/projects', icon: Eye },
       ]
     },
     {
@@ -128,10 +140,16 @@ const AdminSidebar = () => {
     )
   }
 
-  const isActive = (href: string) => pathname === href
+  const isActive = (href: string) => {
+    if (href.includes('?tab=')) {
+      const [basePath, query] = href.split('?')
+      return pathname === basePath && window?.location?.search?.includes(query)
+    }
+    return pathname === href
+  }
 
   const isParentActive = (subItems?: SubMenuItem[]) => {
-    return subItems?.some(item => pathname === item.href) || false
+    return subItems?.some(item => isActive(item.href)) || false
   }
 
   return (
@@ -276,11 +294,11 @@ const AdminSidebar = () => {
           {/* Quick Actions */}
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Link
-              href="/admin/content/add"
+              href="/admin/industries"
               className="flex items-center justify-center px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 hover:border-cyan-500/50 rounded-lg transition-all duration-200 group shadow-sm"
             >
-              <Plus className="w-4 h-4 text-cyan-600 group-hover:text-cyan-700" />
-              <span className="ml-1 text-xs text-cyan-600 group-hover:text-cyan-700 font-medium">Add</span>
+              <Building2 className="w-4 h-4 text-cyan-600 group-hover:text-cyan-700" />
+              <span className="ml-1 text-xs text-cyan-600 group-hover:text-cyan-700 font-medium">Industries</span>
             </Link>
             <Link
               href="/admin/settings"
