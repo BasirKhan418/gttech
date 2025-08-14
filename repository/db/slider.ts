@@ -5,7 +5,8 @@ import ConnectDb from "../../middlewares/connectdb";
 const getSlider = async () => {
     try{
         await ConnectDb();
-        let data = await Slider.find();
+        let data = await Slider.find({}).populate("author lastEditedAuthor")
+            .sort({ createdAt: -1 });
         return { success: true, data };
     }
     catch(err) {

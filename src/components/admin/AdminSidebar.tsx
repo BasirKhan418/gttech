@@ -54,8 +54,8 @@ const AdminSidebar = () => {
       badge: 'New',
       subItems: [
         { name: 'All Content', href: '/admin/content', icon: Eye },
-        { name: 'Add Content', href: '/admin/content/add', icon: Plus },
-        { name: 'Edit Content', href: '/admin/content/edit', icon: Edit }
+        { name: 'Add Content', href: '/admin/content', icon: Plus },
+        { name: 'Edit Content', href: '/admin/content', icon: Edit }
       ]
     },
     {
@@ -63,8 +63,8 @@ const AdminSidebar = () => {
       icon: Megaphone,
       subItems: [
         { name: 'All Banners', href: '/admin/banners', icon: Eye },
-        { name: 'Add Banner', href: '/admin/banners/add', icon: Plus },
-        { name: 'Banner Settings', href: '/admin/banners/settings', icon: Settings }
+        { name: 'Add Banner', href: '/admin/banners', icon: Plus },
+        { name: 'Banner Settings', href: '/admin/banners', icon: Settings }
       ]
     },
     {
@@ -72,8 +72,8 @@ const AdminSidebar = () => {
       icon: Sliders,
       subItems: [
         { name: 'All Sliders', href: '/admin/sliders', icon: Eye },
-        { name: 'Add Slider', href: '/admin/sliders/add', icon: Plus },
-        { name: 'Categories', href: '/admin/sliders/categories', icon: Database }
+        { name: 'Add Slider', href: '/admin/sliders', icon: Plus },
+        { name: 'Categories', href: '/admin/sliders', icon: Database }
       ]
     },
     {
