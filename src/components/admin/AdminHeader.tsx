@@ -119,7 +119,7 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
   const breadcrumb = getBreadcrumb()
 
   return (
-    <header className={`glass-header fixed top-0 right-0 z-30 transition-all duration-300 backdrop-blur-xl border-b border-sky-500/20 bg-gradient-to-r from-slate-900/90 via-slate-800/90 to-gray-900/90 ${
+    <header className={`glass-header fixed top-0 right-0 z-30 transition-all duration-300 backdrop-blur-xl border-b border-cyan-300/40 bg-gradient-to-r from-white/80 via-cyan-50/70 to-white/80 ${
       isSidebarOpen ? 'left-72' : 'left-0'
     }`}>
       
@@ -127,16 +127,16 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)
+            linear-gradient(rgba(6,182,212,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6,182,212,0.1) 1px, transparent 1px)
           `,
           backgroundSize: '20px 20px'
         }}></div>
       </div>
 
       {/* Glass Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white/[0.05] via-white/[0.02] to-transparent"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-sky-500/[0.03] to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-white/[0.6] via-cyan-50/[0.4] to-white/[0.6]"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/[0.03] to-transparent"></div>
 
       <div className="relative z-10 h-16 px-4 lg:px-6 flex items-center justify-between">
         
@@ -145,7 +145,7 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
           {/* Mobile Sidebar Toggle */}
           <button
             onClick={onToggleSidebar}
-            className="glass-button lg:hidden p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-sky-500/20 hover:border-sky-400/40 transition-all duration-300 backdrop-blur-sm"
+            className="glass-button lg:hidden p-2 rounded-lg bg-white/70 border border-cyan-300/60 text-cyan-700 hover:bg-cyan-100/60 hover:border-cyan-400/70 transition-all duration-300 backdrop-blur-sm shadow-sm"
           >
             {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -157,20 +157,20 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
                 <nav className="flex items-center space-x-2 text-sm">
                   <Link 
                     href="/admin/dashboard" 
-                    className="text-gray-400 hover:text-sky-300 transition-colors duration-200 flex items-center"
+                    className="text-cyan-600 hover:text-cyan-700 transition-colors duration-200 flex items-center"
                   >
                     <Home className="w-4 h-4 mr-1" />
                     Dashboard
                   </Link>
                   {breadcrumb.map((item, index) => (
                     <React.Fragment key={index}>
-                      <ChevronDown className="w-3 h-3 text-gray-500 rotate-[-90deg]" />
+                      <ChevronDown className="w-3 h-3 text-cyan-500 rotate-[-90deg]" />
                       {item.isLast ? (
-                        <span className="text-white font-medium">{item.name}</span>
+                        <span className="text-gray-800 font-medium">{item.name}</span>
                       ) : (
                         <Link 
                           href={item.href}
-                          className="text-gray-400 hover:text-sky-300 transition-colors duration-200"
+                          className="text-cyan-600 hover:text-cyan-700 transition-colors duration-200"
                         >
                           {item.name}
                         </Link>
@@ -178,18 +178,18 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
                     </React.Fragment>
                   ))}
                 </nav>
-                <h1 className="text-xl font-bold text-white">{getPageTitle()}</h1>
+                <h1 className="text-xl font-bold text-gray-800">{getPageTitle()}</h1>
               </div>
             ) : (
-              <h1 className="text-xl font-bold text-white flex items-center">
-                <Home className="w-5 h-5 mr-2 text-sky-300" />
+              <h1 className="text-xl font-bold text-gray-800 flex items-center">
+                <Home className="w-5 h-5 mr-2 text-cyan-600" />
                 {getPageTitle()}
               </h1>
             )}
           </div>
 
           {/* Mobile Title */}
-          <h1 className="text-lg font-bold text-white sm:hidden">
+          <h1 className="text-lg font-bold text-gray-800 sm:hidden">
             {getPageTitle()}
           </h1>
         </div>
@@ -198,13 +198,13 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
         <div className="hidden md:flex flex-1 max-w-md mx-8">
           <form onSubmit={handleSearch} className="w-full relative">
             <div className="glass-search relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cyan-600" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search content, users, settings..."
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400/50 transition-all duration-300 backdrop-blur-sm"
+                className="w-full pl-10 pr-4 py-2 bg-white/70 border border-cyan-300/60 rounded-lg text-gray-700 placeholder-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/70 transition-all duration-300 backdrop-blur-sm shadow-sm"
               />
             </div>
           </form>
@@ -214,14 +214,14 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
         <div className="flex items-center space-x-3">
           
           {/* Mobile Search */}
-          <button className="glass-button md:hidden p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-sky-500/20 hover:border-sky-400/40 transition-all duration-300 backdrop-blur-sm">
+          <button className="glass-button md:hidden p-2 rounded-lg bg-white/70 border border-cyan-300/60 text-cyan-700 hover:bg-cyan-100/60 hover:border-cyan-400/70 transition-all duration-300 backdrop-blur-sm shadow-sm">
             <Search className="w-5 h-5" />
           </button>
 
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="glass-button relative p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-sky-500/20 hover:border-sky-400/40 transition-all duration-300 backdrop-blur-sm">
+              <button className="glass-button relative p-2 rounded-lg bg-white/70 border border-cyan-300/60 text-cyan-700 hover:bg-cyan-100/60 hover:border-cyan-400/70 transition-all duration-300 backdrop-blur-sm shadow-sm">
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center bg-gradient-to-r from-red-500 to-red-600 text-white text-xs border-none">
@@ -232,35 +232,35 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="glass-dropdown w-80 bg-slate-900/95 backdrop-blur-xl border border-sky-500/20"
+              className="glass-dropdown w-80 bg-white/95 backdrop-blur-xl border border-cyan-300/50 shadow-xl"
             >
-              <DropdownMenuLabel className="text-white font-semibold">
+              <DropdownMenuLabel className="text-gray-800 font-semibold">
                 Notifications
                 {unreadCount > 0 && (
-                  <Badge className="ml-2 bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                  <Badge className="ml-2 bg-cyan-500/20 text-cyan-700 border border-cyan-400/50">
                     {unreadCount} new
                   </Badge>
                 )}
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-sky-500/20" />
+              <DropdownMenuSeparator className="bg-cyan-300/30" />
               <div className="max-h-64 overflow-y-auto">
                 {notifications.map((notification) => (
                   <DropdownMenuItem 
                     key={notification.id}
-                    className="flex flex-col items-start p-3 text-gray-300 hover:bg-sky-500/10 hover:text-white focus:bg-sky-500/10 focus:text-white cursor-pointer"
+                    className="flex flex-col items-start p-3 text-gray-700 hover:bg-cyan-100/60 hover:text-gray-800 focus:bg-cyan-100/60 focus:text-gray-800 cursor-pointer"
                   >
                     <div className="flex items-center justify-between w-full">
                       <span className="text-sm font-medium">{notification.message}</span>
                       {notification.unread && (
-                        <div className="w-2 h-2 bg-sky-400 rounded-full"></div>
+                        <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
                       )}
                     </div>
-                    <span className="text-xs text-gray-400 mt-1">{notification.time}</span>
+                    <span className="text-xs text-gray-500 mt-1">{notification.time}</span>
                   </DropdownMenuItem>
                 ))}
               </div>
-              <DropdownMenuSeparator className="bg-sky-500/20" />
-              <DropdownMenuItem className="text-center text-sky-300 hover:text-sky-200 hover:bg-sky-500/10 focus:bg-sky-500/10 cursor-pointer">
+              <DropdownMenuSeparator className="bg-cyan-300/30" />
+              <DropdownMenuItem className="text-center text-cyan-600 hover:text-cyan-700 hover:bg-cyan-100/60 focus:bg-cyan-100/60 cursor-pointer">
                 View all notifications
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -270,7 +270,7 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
           <Link 
             href="/" 
             target="_blank"
-            className="glass-button hidden sm:flex p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-sky-500/20 hover:border-sky-400/40 transition-all duration-300 backdrop-blur-sm"
+            className="glass-button hidden sm:flex p-2 rounded-lg bg-white/70 border border-cyan-300/60 text-cyan-700 hover:bg-cyan-100/60 hover:border-cyan-400/70 transition-all duration-300 backdrop-blur-sm shadow-sm"
             title="View Website"
           >
             <Monitor className="w-5 h-5" />
@@ -279,7 +279,7 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
           {/* Settings */}
           <Link 
             href="/admin/settings"
-            className="glass-button hidden sm:flex p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-sky-500/20 hover:border-sky-400/40 transition-all duration-300 backdrop-blur-sm"
+            className="glass-button hidden sm:flex p-2 rounded-lg bg-white/70 border border-cyan-300/60 text-cyan-700 hover:bg-cyan-100/60 hover:border-cyan-400/70 transition-all duration-300 backdrop-blur-sm shadow-sm"
           >
             <Settings className="w-5 h-5" />
           </Link>
@@ -287,10 +287,10 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="glass-button flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-sky-500/20 hover:border-sky-400/40 transition-all duration-300 backdrop-blur-sm">
+              <button className="glass-button flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/70 border border-cyan-300/60 text-gray-800 hover:bg-cyan-100/60 hover:border-cyan-400/70 transition-all duration-300 backdrop-blur-sm shadow-sm">
                 <Avatar className="w-7 h-7">
                   <AvatarImage src="/admin-avatar.jpg" alt="Admin" />
-                  <AvatarFallback className="bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-sm font-semibold">
+                  <AvatarFallback className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white text-sm font-semibold">
                     {healthCheck && healthCheck.name ? healthCheck.name.charAt(0).toUpperCase() : 'A'}
                   </AvatarFallback>
                 </Avatar>
@@ -300,31 +300,31 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="glass-dropdown w-56 bg-slate-900/95 backdrop-blur-xl border border-sky-500/20"
+              className="glass-dropdown w-56 bg-white/95 backdrop-blur-xl border border-cyan-300/50 shadow-xl"
             >
-              <DropdownMenuLabel className="text-white">
+              <DropdownMenuLabel className="text-gray-800">
                 <div className="flex flex-col space-y-1">
                   <span className="font-semibold">Admin User</span>
-                  <span className="text-xs text-gray-400 font-normal">{healthCheck?.email}</span>
+                  <span className="text-xs text-gray-600 font-normal">{healthCheck?.email}</span>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-sky-500/20" />
+              <DropdownMenuSeparator className="bg-cyan-300/30" />
               
-              <DropdownMenuItem className="text-gray-300 hover:bg-sky-500/10 hover:text-white focus:bg-sky-500/10 focus:text-white cursor-pointer">
+              <DropdownMenuItem className="text-gray-700 hover:bg-cyan-100/60 hover:text-gray-800 focus:bg-cyan-100/60 focus:text-gray-800 cursor-pointer">
                 <User className="w-4 h-4 mr-2" />
                 Profile Settings
               </DropdownMenuItem>
               
-              <DropdownMenuItem className="text-gray-300 hover:bg-sky-500/10 hover:text-white focus:bg-sky-500/10 focus:text-white cursor-pointer">
+              <DropdownMenuItem className="text-gray-700 hover:bg-cyan-100/60 hover:text-gray-800 focus:bg-cyan-100/60 focus:text-gray-800 cursor-pointer">
                 <Settings className="w-4 h-4 mr-2" />
                 Account Settings
               </DropdownMenuItem>
 
-              <DropdownMenuSeparator className="bg-sky-500/20" />
+              <DropdownMenuSeparator className="bg-cyan-300/30" />
               
               <DropdownMenuItem 
               
-                className="text-red-400 hover:bg-red-500/10 hover:text-red-300 focus:bg-red-500/10 focus:text-red-300 cursor-pointer"
+                className="text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 cursor-pointer"
                 onClick={logout}  
               >
                 <LogOut className="w-4 h-4 mr-2" />
@@ -336,8 +336,8 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-2 right-20 w-2 h-2 bg-sky-400/40 rounded-full animate-pulse"></div>
-      <div className="absolute bottom-2 left-10 w-1 h-1 bg-cyan-400/30 rounded-full animate-ping"></div>
+      <div className="absolute top-2 right-20 w-2 h-2 bg-cyan-400/50 rounded-full animate-pulse"></div>
+      <div className="absolute bottom-2 left-10 w-1 h-1 bg-cyan-300/40 rounded-full animate-ping"></div>
     </header>
   )
 }
