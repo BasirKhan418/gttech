@@ -9,7 +9,7 @@ import { Trash2, Edit, Plus, Sparkles } from "lucide-react"
 import { ContentModal } from "../../../../utils/contents/content-modal"
 import { DeleteConfirmDialog } from "../../../../utils/contents/delete-confirm-dialog"
 import { AIGenerateModal } from "../../../../utils/contents/ai-generate-modal"
-import { toast,Toaster } from "sonner"
+import { toast, Toaster } from "sonner"
 
 interface Content {
   _id: string
@@ -95,7 +95,7 @@ export default function ContentManagementPage() {
       const data = await response.json()
 
       if (data.success) {
-      toast.success("Content deleted successfully")
+        toast.success("Content deleted successfully")
         fetchContents()
       } else {
         toast.error(data.message || "Failed to delete content")
@@ -119,7 +119,13 @@ export default function ContentManagementPage() {
   }
 
   const handleAISuccess = (generatedContent: Partial<Content>) => {
-    setSelectedContent(generatedContent as Content)
+    // Ensure AI-generated content is treated as new content by removing any _id
+    const newContent = { ...generatedContent }
+    delete newContent._id
+    
+    console.log("AI Generated Content (without _id):", newContent)
+    
+    setSelectedContent(newContent as Content)
     setIsAIModalOpen(false)
     setIsModalOpen(true)
   }
@@ -146,6 +152,8 @@ export default function ContentManagementPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-6">
+      <Toaster position="top-right" richColors />
+      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Content Management</h1>
@@ -249,7 +257,11 @@ export default function ContentManagementPage() {
         description="Are you sure you want to delete this content? This action cannot be undone."
       />
 
-      <AIGenerateModal isOpen={isAIModalOpen} onClose={() => setIsAIModalOpen(false)} onSuccess={handleAISuccess} />
+      <AIGenerateModal 
+        isOpen={isAIModalOpen} 
+        onClose={() => setIsAIModalOpen(false)} 
+        onSuccess={handleAISuccess} 
+      />
     </div>
   )
 }

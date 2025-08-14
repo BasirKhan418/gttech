@@ -170,9 +170,8 @@ export function ContentModal({ isOpen, onClose, content, onSuccess }: ContentMod
     try {
       setSaving(true)
       const url = "/api/content"
-      const method = content ? "PUT" : "POST"
+      const method = content?._id ? "PUT" : "POST"
       const body = content ? { ...formData, id: content._id } : formData
-
       const response = await fetch(url, {
         method,
         headers: {

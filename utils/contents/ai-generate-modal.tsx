@@ -45,9 +45,10 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess }: AIGenerateModalP
 
       const data = await response.json()
 
-    console.log("generated contemt is",data);
+      console.log("generated content is", data);
 
       // Parse the AI response and create the content structure
+      // IMPORTANT: Do NOT include _id to ensure it's treated as new content
       const generatedContent = {
         sectionName: data.sectionName || "AI Generated",
         title: data.title || `AI Generated: ${prompt.slice(0, 50)}...`,
@@ -59,6 +60,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess }: AIGenerateModalP
         ],
         lists: data.lists || ["Generated feature 1", "Generated feature 2", "Generated feature 3"],
         designType: data.designType || "feature",
+        // Explicitly exclude _id to ensure it's treated as new content
       }
 
       toast.success("Content generated successfully")
