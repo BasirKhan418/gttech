@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Sparkles } from "lucide-react"
-import { toast,Toaster } from "sonner"
+import { toast, Toaster } from "sonner"
+
 interface AIGenerateModalProps {
   isOpen: boolean
   onClose: () => void
@@ -26,25 +27,47 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess }: AIGenerateModalP
     try {
       setGenerating(true)
 
-      // Simulate AI generation with mock data
-      // In a real implementation, you would call your AI service here
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      // Call ChatGPT API through your Next.js API route
+      const response = await fetch('/api/generate-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: prompt.trim()
+        })
+      })
 
-      const generatedContent = {
-        sectionName: "AI Generated",
-        title: `AI Generated: ${prompt.slice(0, 50)}...`,
-        description: `This content was generated based on your prompt: "${prompt}". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.`,
-        poster: "/placeholder.svg?height=400&width=600",
-        images: ["/placeholder.svg?height=300&width=400", "/placeholder.svg?height=300&width=400"],
-        lists: ["AI-generated feature 1", "AI-generated feature 2", "AI-generated feature 3", "AI-generated feature 4"],
-        designType: "feature",
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to generate content')
       }
 
-      toast.success("Content generated successfully");
+      const data = await response.json()
 
+    console.log("generated contemt is",data);
+
+      // Parse the AI response and create the content structure
+      const generatedContent = {
+        sectionName: data.sectionName || "AI Generated",
+        title: data.title || `AI Generated: ${prompt.slice(0, 50)}...`,
+        description: data.description || `Generated content based on: "${prompt}"`,
+        poster: data.poster || "/placeholder.svg?height=400&width=600",
+        images: data.images || [
+          "/placeholder.svg?height=300&width=400", 
+          "/placeholder.svg?height=300&width=400"
+        ],
+        lists: data.lists || ["Generated feature 1", "Generated feature 2", "Generated feature 3"],
+        designType: data.designType || "feature",
+      }
+
+      toast.success("Content generated successfully")
       onSuccess(generatedContent)
+      handleClose()
+
     } catch (error) {
-     toast.error("Error generating content. Please try again later.");
+      console.error('Error generating content:', error)
+      toast.error(error instanceof Error ? error.message : "Error generating content. Please try again later.")
     } finally {
       setGenerating(false)
     }
@@ -57,7 +80,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess }: AIGenerateModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-        <Toaster position="top-right" richColors />
+      <Toaster position="top-right" richColors />
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

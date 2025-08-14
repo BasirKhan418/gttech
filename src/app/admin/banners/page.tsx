@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { Toaster,toast } from "sonner"
-import { Pencil, Trash2, Plus, Sparkles, Eye, EyeOff, Wand2, Upload, X } from "lucide-react"
+import { Toaster, toast } from "sonner"
+import { Pencil, Trash2, Plus, Sparkles, Eye, EyeOff, Wand2, Upload, X, Search, Brain } from "lucide-react"
 import { format } from "date-fns"
 
 interface Banner {
@@ -268,6 +268,7 @@ export default function BannersPage() {
   const [submitting, setSubmitting] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [searchingTrends, setSearchingTrends] = useState(false)
 
   useEffect(() => {
     fetchBanners()
@@ -395,7 +396,7 @@ export default function BannersPage() {
       const result = await response.json()
 
       if (result.success) {
-        toast.success("Banner saved successfully");
+        toast.success("Banner saved successfully")
         fetchBanners()
         setIsCreateOpen(false)
         setIsEditOpen(false)
@@ -405,7 +406,7 @@ export default function BannersPage() {
         throw new Error(result.message)
       }
     } catch (error) {
-      toast.error("Failed to save banner");
+      toast.error("Failed to save banner")
     } finally {
       setSubmitting(false)
     }
@@ -424,83 +425,13 @@ export default function BannersPage() {
       const result = await response.json()
 
       if (result.success) {
-       toast.success("Banner deleted successfully")
+        toast.success("Banner deleted successfully")
         fetchBanners()
       } else {
         throw new Error(result.message)
       }
     } catch (error) {
-      toast.error("Failed to delete banner");
-    }
-  }
-
-  const generateAiContent = (prompt: string): BannerFormData => {
-    const lowerPrompt = prompt.toLowerCase()
-
-    if (lowerPrompt.includes("sale") || lowerPrompt.includes("discount") || lowerPrompt.includes("offer")) {
-      return {
-        title: "🔥 Limited Time Sale - Up to 50% Off!",
-        tags: "sale, discount, limited-time, hot-deal",
-        description:
-          "Don't miss out on our biggest sale of the year! Get incredible discounts on all your favorite products. Limited time only - shop now before it's too late!",
-        buttonText: "Shop Sale Now",
-        buttonLink: "/sale",
-        image: "/placeholder.svg?height=200&width=400",
-        showImage: true,
-        isActive: true,
-      }
-    } else if (lowerPrompt.includes("product") || lowerPrompt.includes("launch") || lowerPrompt.includes("new")) {
-      return {
-        title: "🚀 Introducing Our Latest Innovation",
-        tags: "new-product, launch, innovation, featured",
-        description:
-          "Experience the future with our groundbreaking new product. Designed with cutting-edge technology and user-centric features that will transform your workflow.",
-        buttonText: "Discover Now",
-        buttonLink: "/products/new",
-        image: "/placeholder.svg?height=200&width=400",
-        showImage: true,
-        isActive: true,
-      }
-    } else if (
-      lowerPrompt.includes("service") ||
-      lowerPrompt.includes("business") ||
-      lowerPrompt.includes("professional")
-    ) {
-      return {
-        title: "💼 Professional Services That Deliver Results",
-        tags: "services, professional, business, solutions",
-        description:
-          "Partner with industry experts who understand your business needs. Our comprehensive services are designed to help you achieve your goals faster and more efficiently.",
-        buttonText: "Get Started",
-        buttonLink: "/services",
-        image: "/placeholder.svg?height=200&width=400",
-        showImage: true,
-        isActive: true,
-      }
-    } else if (lowerPrompt.includes("event") || lowerPrompt.includes("webinar") || lowerPrompt.includes("conference")) {
-      return {
-        title: "📅 Join Our Exclusive Event",
-        tags: "event, webinar, exclusive, registration",
-        description:
-          "Don't miss this opportunity to learn from industry leaders and network with like-minded professionals. Limited seats available - register today!",
-        buttonText: "Register Now",
-        buttonLink: "/events/register",
-        image: "/placeholder.svg?height=200&width=400",
-        showImage: true,
-        isActive: true,
-      }
-    } else {
-      return {
-        title: "✨ Transform Your Experience Today",
-        tags: "featured, premium, transformation, growth",
-        description:
-          "Discover a new way to achieve your goals with our innovative solutions. Join thousands of satisfied customers who have already transformed their experience.",
-        buttonText: "Learn More",
-        buttonLink: "/learn-more",
-        image: "/placeholder.svg?height=200&width=400",
-        showImage: true,
-        isActive: true,
-      }
+      toast.error("Failed to delete banner")
     }
   }
 
@@ -510,16 +441,89 @@ export default function BannersPage() {
 
     setGeneratingAi(true)
 
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      // Call the AI banner generation API
+      const response = await fetch('/api/generate-banner', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: aiPrompt.trim()
+        })
+      })
 
-    const aiGeneratedContent = generateAiContent(aiPrompt)
-    setFormData(aiGeneratedContent)
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to generate banner content')
+      }
 
-    setGeneratingAi(false)
-    setIsAiPromptOpen(false)
-    setIsCreateOpen(true)
+      const generatedData = await response.json()
 
-    toast.success("AI Content Generated!")
+      // Convert the generated data to BannerFormData format
+      const aiGeneratedContent: BannerFormData = {
+        title: generatedData.title || "AI Generated Banner",
+        tags: Array.isArray(generatedData.tags) 
+          ? generatedData.tags.join(", ") 
+          : generatedData.tags || "ai-generated",
+        description: generatedData.description || "AI generated description",
+        buttonText: generatedData.buttonText || "Learn More",
+        buttonLink: generatedData.buttonLink || "/learn-more",
+        image: generatedData.image || "/placeholder.svg?height=200&width=400",
+        showImage: true,
+        isActive: true,
+      }
+
+      setFormData(aiGeneratedContent)
+      setIsAiPromptOpen(false)
+      setIsCreateOpen(true)
+      toast.success("AI Content Generated Successfully!")
+
+    } catch (error) {
+      console.error('Error generating AI content:', error)
+      toast.error(error instanceof Error ? error.message : "Failed to generate AI content")
+    } finally {
+      setGeneratingAi(false)
+    }
+  }
+
+  const handleSearchTrends = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error("Please enter a prompt first")
+      return
+    }
+
+    setSearchingTrends(true)
+
+    try {
+      const response = await fetch('/api/search-trends', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: aiPrompt.trim()
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to search trends')
+      }
+
+      const trendsData = await response.json()
+      
+      // Update the prompt with trend insights
+      const enhancedPrompt = `${aiPrompt}\n\nBased on current trends: ${trendsData.insights}`
+      setAiPrompt(enhancedPrompt)
+      
+      toast.success("Trends analysis added to your prompt!")
+
+    } catch (error) {
+      console.error('Error searching trends:', error)
+      toast.error("Failed to analyze trends")
+    } finally {
+      setSearchingTrends(false)
+    }
   }
 
   const handleCancel = () => {
@@ -541,6 +545,7 @@ export default function BannersPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
+      <Toaster position="top-right" richColors />
       
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -655,14 +660,14 @@ export default function BannersPage() {
       </Card>
 
       <Dialog open={isAiPromptOpen} onOpenChange={setIsAiPromptOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Wand2 className="h-5 w-5 text-purple-500" />
+              <Brain className="h-5 w-5 text-purple-500" />
               Create Banner with AI
             </DialogTitle>
             <DialogDescription>
-              Describe what kind of banner you want to create and AI will generate the content for you.
+              Describe what kind of banner you want to create. Use the trend analysis to get insights from current market trends.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAiPromptSubmit} className="space-y-4">
@@ -672,11 +677,52 @@ export default function BannersPage() {
                 id="aiPrompt"
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
-                placeholder="e.g., A promotional banner for a summer sale with 30% discount, or a banner for launching a new product..."
-                rows={4}
+                placeholder="e.g., A promotional banner for a summer sale with 30% discount targeting millennials, or a banner for launching an AI-powered productivity app..."
+                rows={6}
                 required
               />
             </div>
+            
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <Search className="h-4 w-4" />
+                Market Research & Trends
+              </h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                Get current market insights and trending topics to make your banner more effective.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleSearchTrends}
+                disabled={searchingTrends || !aiPrompt.trim()}
+                className="gap-2"
+              >
+                {searchingTrends ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Analyzing Trends...
+                  </>
+                ) : (
+                  <>
+                    <Search className="h-4 w-4" />
+                    Analyze Current Trends
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
+              <h4 className="font-medium mb-2">Tips for better AI results:</h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Be specific about your target audience (age, interests, demographics)</li>
+                <li>• Mention your industry, product, or service type</li>
+                <li>• Include desired tone (professional, casual, urgent, friendly)</li>
+                <li>• Specify the banner's purpose (promotion, announcement, lead generation)</li>
+                <li>• Add any key features, benefits, or offers to highlight</li>
+              </ul>
+            </div>
+
             <div className="flex justify-end space-x-2">
               <Button
                 type="button"
