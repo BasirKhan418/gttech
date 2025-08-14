@@ -3,9 +3,31 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
+type Showcase = {
+  _id: string
+  id: number
+  title: string
+  category: string
+  image: string
+  description: string
+}
+
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [sliderData, setSliderData] = useState<Showcase[]>([])
+  const fetchSlider = async ()=>{
+    try{
+      const response = await fetch("/api/slider")
+      const data = await response.json()
+      setSliderData(data.data)
+    }
+    catch(err){
 
+    }
+  }
+  useEffect(() => {
+    fetchSlider()
+  }, [])
   const showcases = [
     {
       id: 1,
@@ -406,21 +428,21 @@ const HeroSection = () => {
               <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] rounded-2xl lg:rounded-3xl overflow-hidden bg-white/60 backdrop-blur-sm border border-cyan-200/50 shadow-xl">
                 
                 <div className="relative h-full overflow-hidden">
-                  {showcases.map((showcase, index) => (
+                  {sliderData && sliderData.map((showcase, index) => (
                     <div
-                      key={showcase.id}
+                      key={showcase._id}
                       className={`absolute inset-0 transition-all duration-700 ease-in-out ${
                         index === currentSlide 
                           ? 'opacity-100 scale-100' 
                           : 'opacity-0 scale-105'
                       }`}
                     >
-                      <Image
+                      <img
                         src={showcase.image}
                         alt={showcase.title}
-                        fill
+                        
                         className="object-cover"
-                        priority={index === 0}
+                        
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                       />
                       
