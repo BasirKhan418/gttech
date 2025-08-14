@@ -1,9 +1,8 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { 
-  Award, 
   Users, 
   Globe, 
   Target, 
@@ -11,14 +10,10 @@ import {
   Zap,
   CheckCircle,
   ArrowRight,
-  ExternalLink,
-  Linkedin,
   Building,
   Briefcase,
-  TrendingUp,
   Settings,
-  Layers,
-  Shield
+  LinkedinIcon
 } from 'lucide-react'
 
 // Team Member Interface
@@ -31,13 +26,12 @@ interface TeamMember {
   category: 'directors' | 'management' | 'technical' | 'operations'
 }
 
-// Sample team data - this would come from your API/database
 const teamMembers: TeamMember[] = [
   {
     id: 1,
     name: "Dr. Rajesh Kumar",
     title: "Chief Executive Officer & Founder",
-    image: "/team/ceo.jpg", // Add actual images to public/team/
+    image: "/team/ceo.jpg",
     linkedinUrl: "https://linkedin.com/in/rajesh-kumar",
     category: "directors"
   },
@@ -83,37 +77,211 @@ const teamMembers: TeamMember[] = [
   }
 ]
 
-type VisionMissionType = "vision" | "mission";
+// Memoized Team Cards Component
+const TeamCards = memo(({ filteredMembers, isLoading }: { 
+  filteredMembers: TeamMember[], 
+  isLoading: boolean 
+}) => {
+  if (isLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="inline-flex items-center space-x-2 text-cyan-600">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-500"></div>
+          <span className="text-sm font-medium">Loading team members...</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (filteredMembers.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl p-8 max-w-md mx-auto shadow-lg">
+          <Users className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No team members found</h3>
+          <p className="text-gray-500">Try selecting a different category filter.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+      {filteredMembers.map((member, index) => (
+        <div key={member.id} className="animate-on-scroll opacity-0 translate-y-10" style={{ animationDelay: `${index * 0.1}s` }}>
+          <div className="glass-card bg-white/80 backdrop-blur-xl border border-cyan-200/60 rounded-3xl p-4 md:p-6 hover:border-cyan-400/70 transition-all duration-300 hover:scale-105 group overflow-hidden shadow-lg hover:shadow-cyan-500/20">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
+            
+            {/* Hover Effects */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[300%] transition-transform duration-1000"></div>
+            </div>
+
+            <div className="relative z-10 text-center">
+              {/* Profile Image */}
+              <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 to-cyan-600/25 rounded-2xl animate-pulse"></div>
+                <div className="relative w-full h-full bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-2xl flex items-center justify-center border-2 border-cyan-400/40 group-hover:border-cyan-400/70 transition-all duration-300 overflow-hidden shadow-md">
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-100/30 to-cyan-200/30">
+                    <Users className="w-12 h-12 md:w-16 md:h-16 text-cyan-600 mb-2" />
+                    <div className="text-xs text-cyan-600/70 font-medium">Photo</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Member Info */}
+              <h3 className="text-base md:text-lg font-bold text-gray-800 mb-2 group-hover:text-cyan-700 transition-colors duration-300">
+                {member.name}
+              </h3>
+              <p className="text-cyan-600 text-sm font-medium mb-4 leading-tight">
+                {member.title}
+              </p>
+
+              {/* LinkedIn Link */}
+              <Link
+                href={member.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500/25 to-cyan-600/25 hover:from-cyan-500/50 hover:to-cyan-600/50 rounded-full transition-all duration-300 hover:scale-110 group/link border border-cyan-400/40 hover:border-cyan-400/70 shadow-md"
+              >
+                <LinkedinIcon className="w-5 h-5 text-cyan-600 group-hover/link:text-cyan-700 transition-colors duration-300" />
+              </Link>
+
+              {/* Category Badge */}
+              <div className="mt-3">
+                <span className={`px-2 md:px-3 py-1 rounded-full text-xs font-medium ${
+                  member.category === 'directors' ? 'bg-gradient-to-r from-cyan-500/25 to-cyan-600/25 text-cyan-700 border border-cyan-400/40' :
+                  member.category === 'management' ? 'bg-gradient-to-r from-cyan-400/25 to-cyan-500/25 text-cyan-700 border border-cyan-400/40' :
+                  member.category === 'technical' ? 'bg-gradient-to-r from-cyan-600/25 to-cyan-700/25 text-cyan-700 border border-cyan-500/40' :
+                  'bg-gradient-to-r from-cyan-300/25 to-cyan-400/25 text-cyan-700 border border-cyan-400/40'
+                }`}>
+                  {member.category.charAt(0).toUpperCase() + member.category.slice(1)}
+                </span>
+              </div>
+            </div>
+
+            {/* Decorative Elements */}
+            <div className="absolute top-3 right-3 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-ping-slow"></div>
+            <div className="absolute bottom-3 left-3 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+})
+
+TeamCards.displayName = 'TeamCards'
+
+// Memoized Filter Buttons Component
+const TeamFilters = memo(({ selectedCategory, onCategoryChange, isLoading }: {
+  selectedCategory: string,
+  onCategoryChange: (category: string) => void,
+  isLoading: boolean
+}) => {
+  const filters = [
+    { key: 'all', label: 'All Team' },
+    { key: 'directors', label: 'Leadership' },
+    { key: 'management', label: 'Management' },
+    { key: 'technical', label: 'Technical' },
+    { key: 'operations', label: 'Operations' }
+  ]
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-12">
+      {filters.map((filter) => (
+        <button
+          key={filter.key}
+          onClick={() => onCategoryChange(filter.key)}
+          disabled={isLoading}
+          className={`px-3 md:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 disabled:opacity-50 ${
+            selectedCategory === filter.key
+              ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+              : 'bg-white/80 text-gray-600 hover:bg-cyan-50/80 hover:text-cyan-700 border border-cyan-200/50 hover:border-cyan-300/70 shadow-md'
+          }`}
+        >
+          {filter.label}
+        </button>
+      ))}
+    </div>
+  )
+})
+
+TeamFilters.displayName = 'TeamFilters'
+
+// Memoized Team Section Header
+const TeamSectionHeader = memo(() => (
+  <div className="text-center mb-12 md:mb-16 animate-on-scroll opacity-0 translate-y-10">
+    <div className="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-md">
+      <Users className="w-4 h-4 mr-2" />
+      <span className="font-semibold">Our Team</span>
+    </div>
+    
+    <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-4 md:mb-6">
+      <span className="block">Meet the</span>
+      <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
+        Innovation Leaders
+      </span>
+    </h2>
+    
+    <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-6 md:mb-8">
+      Our diverse team of experts brings together decades of experience in technology, 
+      engineering, and business transformation.
+    </p>
+  </div>
+))
+
+TeamSectionHeader.displayName = 'TeamSectionHeader'
 
 const AboutPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [filteredMembers, setFilteredMembers] = useState<TeamMember[]>([])
-  const [visionMissionType, setVisionMissionType] = useState<VisionMissionType>("vision");
+  const [filteredMembers, setFilteredMembers] = useState<TeamMember[]>(teamMembers) // Initialize with all members
   const [isLoading, setIsLoading] = useState(false)
 
+  // Memoized category change handler
+  const handleCategoryChange = useCallback((category: string) => {
+    if (category === selectedCategory) return // Don't do anything if same category
+    setSelectedCategory(category)
+  }, [selectedCategory])
+
+  // IntersectionObserver setup
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-fade-in-up')
+            entry.target.classList.remove('opacity-0', 'translate-y-10')
           }
         })
       },
       { threshold: 0.1 }
     )
+    
+    const observeElements = () => {
+      observer.disconnect()
+      const elements = document.querySelectorAll('.animate-on-scroll')
+      elements.forEach((el) => {
+        el.classList.remove('animate-fade-in-up')
+        if (!el.classList.contains('opacity-0')) {
+          el.classList.add('opacity-0', 'translate-y-10')
+        }
+        observer.observe(el)
+      })
+    }
 
-    const elements = document.querySelectorAll('.animate-on-scroll')
-    elements.forEach((el) => observer.observe(el))
+    const timeoutId = setTimeout(observeElements, 100)
 
-    return () => observer.disconnect()
-  }, [])
+    return () => {
+      clearTimeout(timeoutId)
+      observer.disconnect()
+    }
+  }, [filteredMembers])
 
-  // Fixed team filtering with proper loading states
+  // Handle category filtering
   useEffect(() => {
     setIsLoading(true)
     
-    // Add a small delay to show loading state and prevent rapid switching
     const timer = setTimeout(() => {
       if (selectedCategory === 'all') {
         setFilteredMembers([...teamMembers])
@@ -126,10 +294,6 @@ const AboutPage = () => {
 
     return () => clearTimeout(timer)
   }, [selectedCategory])
-
-  const handleVisionMissionSwitch = () => {
-    setVisionMissionType((prev) => (prev === "vision" ? "mission" : "vision"));
-  };
 
   const partners = [
     { name: 'Dassault Systèmes', logo: '/images.png' },
@@ -311,33 +475,26 @@ const AboutPage = () => {
                 <div className="grid lg:grid-cols-1 gap-8 md:gap-12">
                   <div className="space-y-6">
                     <div className="group">
-                      <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative">
+                      <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-transparent group-hover:via-cyan-400/5 group-hover:to-transparent">
                         GramTarang Technologies Pvt. Ltd., incubated by Centurion University, is a future-ready technology 
                         company delivering Industry 4.0 solutions for heavy industries. Our expertise spans digital manufacturing, 
                         industrial automation, precision automotive component design, and the development of on-demand, 
                         customized digital products.
-                        
-                        {/* Subtle highlight effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg -m-2 p-2"></div>
                       </p>
                     </div>
                     
                     <div className="group">
-                      <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative">
+                      <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-transparent group-hover:via-cyan-300/5 group-hover:to-transparent">
                         We work in close partnership with leading global names such as Dassault Systèmes, Ashok Leyland, 
                         Hyundai, AWS, HCL, and many more—serving as trusted system integration partners who help implement 
                         complex projects from concept to completion.
-                        
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg -m-2 p-2"></div>
                       </p>
                     </div>
 
                     <div className="group">
-                      <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative">
+                      <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-transparent group-hover:via-cyan-400/5 group-hover:to-transparent">
                         Alongside technology deployment, we train and build a highly skilled workforce, aligned with current 
                         and future industry needs.
-                        
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg -m-2 p-2"></div>
                       </p>
                     </div>
                   </div>
@@ -528,147 +685,25 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Team Section - Fixed with Better Loading States */}
+      {/* Optimized Team Section */}
       <section className="relative z-10 py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-16 animate-on-scroll opacity-0 translate-y-10">
-            <div className="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-md">
-              <Users className="w-4 h-4 mr-2" />
-              <span className="font-semibold">Our Team</span>
-            </div>
-            
-            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-4 md:mb-6">
-              <span className="block">Meet the</span>
-              <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
-                Innovation Leaders
-              </span>
-            </h2>
-            
-            <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-6 md:mb-8">
-              Our diverse team of experts brings together decades of experience in technology, 
-              engineering, and business transformation.
-            </p>
+          
+          {/* Static Header - Won't Re-render */}
+          <TeamSectionHeader />
 
-            {/* Team Filter - Enhanced */}
-            <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-12">
-              {[
-                { key: 'all', label: 'All Team' },
-                { key: 'directors', label: 'Leadership' },
-                { key: 'management', label: 'Management' },
-                { key: 'technical', label: 'Technical' },
-                { key: 'operations', label: 'Operations' }
-              ].map((filter) => (
-                <button
-                  key={filter.key}
-                  onClick={() => setSelectedCategory(filter.key)}
-                  disabled={isLoading}
-                  className={`px-3 md:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 disabled:opacity-50 ${
-                    selectedCategory === filter.key
-                      ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                      : 'bg-white/80 text-gray-600 hover:bg-cyan-50/80 hover:text-cyan-700 border border-cyan-200/50 hover:border-cyan-300/70 shadow-md'
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Memoized Filter Buttons */}
+          <TeamFilters 
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            isLoading={isLoading}
+          />
 
-          {/* Loading State */}
-          {isLoading && (
-            <div className="text-center py-12">
-              <div className="inline-flex items-center space-x-2 text-cyan-600">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-500"></div>
-                <span className="text-sm font-medium">Loading team members...</span>
-              </div>
-            </div>
-          )}
-
-          {/* Team Grid */}
-          {!isLoading && (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {filteredMembers.map((member, index) => (
-                <div key={`${member.id}-${selectedCategory}`} className="animate-on-scroll opacity-0 translate-y-10" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div className="glass-card bg-white/80 backdrop-blur-xl border border-cyan-200/60 rounded-3xl p-4 md:p-6 hover:border-cyan-400/70 transition-all duration-300 hover:scale-105 group overflow-hidden shadow-lg hover:shadow-cyan-500/20">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-transparent"></div>
-                    <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
-                    
-                    {/* Hover Effects */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[300%] transition-transform duration-1000"></div>
-                    </div>
-
-                    <div className="relative z-10 text-center">
-                      {/* Profile Image */}
-                      <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 to-cyan-600/25 rounded-2xl animate-pulse"></div>
-                        <div className="relative w-full h-full bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-2xl flex items-center justify-center border-2 border-cyan-400/40 group-hover:border-cyan-400/70 transition-all duration-300 overflow-hidden shadow-md">
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-100/30 to-cyan-200/30">
-                            <Users className="w-12 h-12 md:w-16 md:h-16 text-cyan-600 mb-2" />
-                            <div className="text-xs text-cyan-600/70 font-medium">Photo</div>
-                         </div>
-                         {/** 
-                          <Image
-                            src={member.image}
-                            alt={member.name}
-                            fill
-                            className="object-cover rounded-full"
-                          />
-                          */}
-                          
-                        </div>
-                      </div>
-
-                      {/* Member Info */}
-                      <h3 className="text-base md:text-lg font-bold text-gray-800 mb-2 group-hover:text-cyan-700 transition-colors duration-300">
-                        {member.name}
-                      </h3>
-                      <p className="text-cyan-600 text-sm font-medium mb-4 leading-tight">
-                        {member.title}
-                      </p>
-
-                      {/* LinkedIn Link */}
-                      <Link
-                        href={member.linkedinUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500/25 to-cyan-600/25 hover:from-cyan-500/50 hover:to-cyan-600/50 rounded-full transition-all duration-300 hover:scale-110 group/link border border-cyan-400/40 hover:border-cyan-400/70 shadow-md"
-                      >
-                        <Linkedin className="w-5 h-5 text-cyan-600 group-hover/link:text-cyan-700 transition-colors duration-300" />
-                      </Link>
-
-                      {/* Category Badge */}
-                      <div className="mt-3">
-                        <span className={`px-2 md:px-3 py-1 rounded-full text-xs font-medium ${
-                          member.category === 'directors' ? 'bg-gradient-to-r from-cyan-500/25 to-cyan-600/25 text-cyan-700 border border-cyan-400/40' :
-                          member.category === 'management' ? 'bg-gradient-to-r from-cyan-400/25 to-cyan-500/25 text-cyan-700 border border-cyan-400/40' :
-                          member.category === 'technical' ? 'bg-gradient-to-r from-cyan-600/25 to-cyan-700/25 text-cyan-700 border border-cyan-500/40' :
-                          'bg-gradient-to-r from-cyan-300/25 to-cyan-400/25 text-cyan-700 border border-cyan-400/40'
-                        }`}>
-                          {member.category.charAt(0).toUpperCase() + member.category.slice(1)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Decorative Elements */}
-                    <div className="absolute top-3 right-3 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-ping-slow"></div>
-                    <div className="absolute bottom-3 left-3 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!isLoading && filteredMembers.length === 0 && (
-            <div className="text-center py-12">
-              <div className="bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl p-8 max-w-md mx-auto shadow-lg">
-                <Users className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">No team members found</h3>
-                <p className="text-gray-500">Try selecting a different category filter.</p>
-              </div>
-            </div>
-          )}
+          {/* Memoized Team Cards - Only this will re-render */}
+          <TeamCards 
+            filteredMembers={filteredMembers}
+            isLoading={isLoading}
+          />
         </div>
       </section>
 
@@ -944,8 +979,44 @@ const AboutPage = () => {
           50% { transform: translateY(-10px); }
         }
         
+        @keyframes animate-fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes data-flow {
+          0% { transform: translateY(-100%); opacity: 0; }
+          50% { opacity: 1; }
+          100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        @keyframes ping-slow {
+          75%, 100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+        
         .animate-float {
           animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-fade-in-up {
+          animation: animate-fade-in-up 0.6s ease-out forwards;
+        }
+
+        .animate-data-flow {
+          animation: data-flow 3s linear infinite;
+        }
+
+        .animate-ping-slow {
+          animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
 
         .glass-card {
