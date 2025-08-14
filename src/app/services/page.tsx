@@ -7,7 +7,6 @@ import {
   Users, 
   Cog, 
   Lightbulb,
-  ChevronDown,
   Star,
   CheckCircle,
   Globe,
@@ -18,7 +17,6 @@ import {
 
 const ServicesPage = () => {
   const [activeService, setActiveService] = useState<'solutions' | 'consulting' | null>(null)
-  const [expandedFeature, setExpandedFeature] = useState<number | null>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -95,60 +93,43 @@ const ServicesPage = () => {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
       
-      {/* Enhanced Background Gradient with Glass Effect */}
-      <div className="absolute inset-0">
-        {/* Primary gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-gray-900 to-slate-950"></div>
-        
-        {/* Secondary overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-tl from-sky-900/20 via-slate-800/40 to-cyan-900/20"></div>
-        
-        {/* Radial gradient overlays for depth */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-radial from-sky-500/15 via-sky-500/5 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-radial from-cyan-500/15 via-cyan-500/5 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-radial from-blue-500/10 via-blue-500/3 to-transparent rounded-full blur-3xl"></div>
-        
-        {/* Glass morphism overlay */}
-        <div className="absolute inset-0 backdrop-blur-[1px] bg-gradient-to-br from-white/[0.02] via-white/[0.01] to-transparent"></div>
-      </div>
-      
-      {/* Background Pattern with Enhanced Opacity */}
-      <div className="absolute inset-0 opacity-10">
+      {/* Enhanced Background Elements - Same as Consult Page */}
+      <div className="absolute inset-0 opacity-5 lg:opacity-10">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(14,165,233,0.15) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(14,165,233,0.15) 1px, transparent 1px)
+            linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)
           `,
-          backgroundSize: '40px 40px'
+          backgroundSize: '30px 30px'
         }}></div>
       </div>
 
-      {/* Enhanced Floating Particles */}
+      {/* Floating Particles - Same as Consult Page */}
       <div className="absolute inset-0 pointer-events-none">
-        {[...Array(15)].map((_, i) => (
+        {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className={`absolute w-1 h-1 rounded-full animate-float ${
-              i % 3 === 0 ? 'bg-sky-400/60' : i % 3 === 1 ? 'bg-cyan-400/50' : 'bg-white/30'
+            className={`absolute w-1 h-1 rounded-full animate-float hidden sm:block ${
+              i % 3 === 0 ? 'bg-sky-400/40' : i % 3 === 1 ? 'bg-cyan-400/30' : 'bg-white/20'
             }`}
             style={{
-              left: `${5 + (i * 6)}%`,
-              top: `${10 + (i * 5)}%`,
-              animationDelay: `${i * 0.3}s`,
+              left: `${5 + (i * 8)}%`,
+              top: `${10 + (i * 7)}%`,
+              animationDelay: `${i * 0.5}s`,
               animationDuration: `${3 + (i % 3)}s`
             }}
           ></div>
         ))}
       </div>
 
-      {/* Enhanced Data Flow Lines */}
-      <div className="absolute left-0 top-0 bottom-0 w-20 hidden xl:block overflow-hidden opacity-40">
+      {/* Data Flow Lines - Same as Consult Page */}
+      <div className="absolute left-0 top-0 bottom-0 w-20 hidden xl:block overflow-hidden opacity-30">
         <div className="relative h-full">
           <div className="absolute inset-0">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/30 to-transparent animate-data-flow"
+                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/20 to-transparent animate-data-flow"
                 style={{
                   left: `${i * 25}%`,
                   height: '100%',
@@ -161,13 +142,13 @@ const ServicesPage = () => {
         </div>
       </div>
 
-      <div className="absolute right-0 top-0 bottom-0 w-20 hidden xl:block overflow-hidden opacity-40">
+      <div className="absolute right-0 top-0 bottom-0 w-20 hidden xl:block overflow-hidden opacity-30">
         <div className="relative h-full">
           <div className="absolute inset-0">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="absolute right-0 w-px bg-gradient-to-b from-transparent via-cyan-400/30 to-transparent animate-data-flow"
+                className="absolute right-0 w-px bg-gradient-to-b from-transparent via-cyan-400/20 to-transparent animate-data-flow"
                 style={{
                   right: `${i * 25}%`,
                   height: '100%',
@@ -214,27 +195,22 @@ const ServicesPage = () => {
             {/* Solutions Card */}
             <div className="animate-on-scroll opacity-0 translate-y-10">
               <div 
-                className={`relative group cursor-pointer transition-all duration-700 ${
-                  activeService === 'solutions' ? 'scale-105' : 'hover:scale-102'
-                }`}
+                className="relative group transition-all duration-500"
                 onMouseEnter={() => setActiveService('solutions')}
                 onMouseLeave={() => setActiveService(null)}
               >
-                {/* Enhanced Glow Effect */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-sky-500/20 via-cyan-500/20 to-blue-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                <div className="absolute -inset-2 bg-gradient-to-r from-sky-400/10 to-cyan-400/10 rounded-2xl blur-xl opacity-50 group-hover:opacity-80 transition-opacity duration-700"></div>
-
-                <div className="glass-card relative backdrop-blur-xl overflow-hidden transition-all duration-500 border-2 border-sky-400/30 group-hover:border-sky-400/60 shadow-2xl shadow-sky-500/10 bg-gradient-to-br from-slate-900/40 via-slate-800/60 to-gray-900/40 rounded-3xl">
+                <div className="relative bg-gray-900/40 backdrop-blur-sm border border-sky-500/20 rounded-3xl overflow-hidden hover:border-sky-400/40 transition-all duration-500 hover:shadow-2xl hover:shadow-sky-500/10">
                   
-                  {/* Glass Layers */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent"></div>
                   <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/[0.08] via-transparent to-cyan-500/[0.05]"></div>
+                  
+                  <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   {/* Header Section */}
                   <div className="relative z-10 p-8 lg:p-10">
                     <div className="flex items-center justify-between mb-6">
-                      <div className="w-16 h-16 bg-gradient-to-r from-sky-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-sky-400/30 group-hover:scale-110 transition-transform duration-300">
-                        <Cog className="w-8 h-8 text-sky-400 group-hover:rotate-180 transition-transform duration-700" />
+                      <div className="w-16 h-16 bg-gradient-to-r from-sky-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-sky-400/30 group-hover:scale-105 transition-transform duration-300">
+                        <Cog className="w-8 h-8 text-sky-400 group-hover:rotate-45 transition-transform duration-500" />
                       </div>
                       <div className="text-right">
                         <div className="text-3xl font-bold text-white group-hover:text-sky-200 transition-colors duration-300">
@@ -275,7 +251,7 @@ const ServicesPage = () => {
                     {/* CTA Button */}
                     <Link
                       href="services/solution"
-                      className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-sky-500/80 to-sky-600/80 hover:from-sky-600/90 hover:to-sky-700/90 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-sky-500/25 backdrop-blur-sm border border-sky-400/50"
+                      className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-sky-500/80 to-sky-600/80 hover:from-sky-600/90 hover:to-sky-700/90 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-sky-500/25 backdrop-blur-sm border border-sky-400/50"
                     >
                       Explore Solutions
                       <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" />
@@ -294,8 +270,7 @@ const ServicesPage = () => {
                         {solutionsFeatures.slice(0, 4).map((feature, index) => (
                           <div 
                             key={index} 
-                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-sky-500/10 transition-colors duration-200 cursor-pointer"
-                            onClick={() => setExpandedFeature(expandedFeature === index ? null : index)}
+                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-sky-500/10 transition-colors duration-200"
                           >
                             <feature.icon className="w-4 h-4 text-sky-400 flex-shrink-0" />
                             <span className="text-gray-300 text-sm truncate">{feature.title}</span>
@@ -305,12 +280,9 @@ const ServicesPage = () => {
                     </div>
                   </div>
 
-                  {/* Decorative Elements */}
-                  <div className="absolute top-4 right-4 w-3 h-3 bg-sky-400/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
-                  <div className="absolute bottom-4 left-4 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
-                  
-                  {/* Shine Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
+                  {/* Decorative Elements - Same as Consult Page */}
+                  <div className="absolute top-3 left-3 w-2 h-2 bg-sky-400/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+                  <div className="absolute bottom-3 right-3 w-1 h-1 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -318,27 +290,23 @@ const ServicesPage = () => {
             {/* Consulting Card */}
             <div className="animate-on-scroll opacity-0 translate-y-10" style={{ animationDelay: '0.2s' }}>
               <div 
-                className={`relative group cursor-pointer transition-all duration-700 ${
-                  activeService === 'consulting' ? 'scale-105' : 'hover:scale-102'
-                }`}
+                className="relative group transition-all duration-500"
                 onMouseEnter={() => setActiveService('consulting')}
                 onMouseLeave={() => setActiveService(null)}
               >
-                {/* Enhanced Glow Effect */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-sky-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                <div className="absolute -inset-2 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 rounded-2xl blur-xl opacity-50 group-hover:opacity-80 transition-opacity duration-700"></div>
 
-                <div className="glass-card relative backdrop-blur-xl overflow-hidden transition-all duration-500 border-2 border-cyan-400/30 group-hover:border-cyan-400/60 shadow-2xl shadow-cyan-500/10 bg-gradient-to-br from-slate-900/40 via-slate-800/60 to-gray-900/40 rounded-3xl">
+                <div className="relative bg-gray-900/40 backdrop-blur-sm border border-cyan-500/20 rounded-3xl overflow-hidden hover:border-cyan-400/40 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/10">
                   
-                  {/* Glass Layers */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent"></div>
                   <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/[0.08] via-transparent to-blue-500/[0.05]"></div>
+                  
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   {/* Header Section */}
                   <div className="relative z-10 p-8 lg:p-10">
                     <div className="flex items-center justify-between mb-6">
-                      <div className="w-16 h-16 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-cyan-400/30 group-hover:scale-110 transition-transform duration-300">
-                        <Users className="w-8 h-8 text-cyan-400 group-hover:scale-110 transition-transform duration-300" />
+                      <div className="w-16 h-16 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-cyan-400/30 group-hover:scale-105 transition-transform duration-300">
+                        <Users className="w-8 h-8 text-cyan-400 group-hover:scale-105 transition-transform duration-300" />
                       </div>
                       <div className="text-right">
                         <div className="text-3xl font-bold text-white group-hover:text-cyan-200 transition-colors duration-300">
@@ -379,7 +347,7 @@ const ServicesPage = () => {
                     {/* CTA Button */}
                     <Link
                       href="/services/consult"
-                      className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-cyan-500/80 to-cyan-600/80 hover:from-cyan-600/90 hover:to-cyan-700/90 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-cyan-500/25 backdrop-blur-sm border border-cyan-400/50"
+                      className="group/btn inline-flex items-center px-6 py-4 bg-gradient-to-r from-cyan-500/80 to-cyan-600/80 hover:from-cyan-600/90 hover:to-cyan-700/90 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-cyan-500/25 backdrop-blur-sm border border-cyan-400/50"
                     >
                       Explore Consulting
                       <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" />
@@ -398,8 +366,7 @@ const ServicesPage = () => {
                         {consultingFeatures.slice(0, 4).map((feature, index) => (
                           <div 
                             key={index} 
-                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-cyan-500/10 transition-colors duration-200 cursor-pointer"
-                            onClick={() => setExpandedFeature(expandedFeature === (index + 10) ? null : index + 10)}
+                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-cyan-500/10 transition-colors duration-200"
                           >
                             <feature.icon className="w-4 h-4 text-cyan-400 flex-shrink-0" />
                             <span className="text-gray-300 text-sm truncate">{feature.title}</span>
@@ -409,12 +376,8 @@ const ServicesPage = () => {
                     </div>
                   </div>
 
-                  {/* Decorative Elements */}
-                  <div className="absolute top-4 right-4 w-3 h-3 bg-cyan-400/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
-                  <div className="absolute bottom-4 left-4 w-2 h-2 bg-blue-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
-                  
-                  {/* Shine Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
+                  <div className="absolute top-3 left-3 w-2 h-2 bg-cyan-400/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+                  <div className="absolute bottom-3 right-3 w-1 h-1 bg-blue-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -426,12 +389,10 @@ const ServicesPage = () => {
       <section className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
           <div className="animate-on-scroll opacity-0 translate-y-10">
-            <div className="glass-card bg-slate-900/40 backdrop-blur-xl border border-sky-500/20 rounded-3xl p-12 lg:p-16 overflow-hidden relative">
-              {/* Background Elements */}
+            <div className="relative bg-gray-900/40 backdrop-blur-sm border border-sky-500/20 rounded-3xl p-12 lg:p-16 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent"></div>
               <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/5 via-transparent to-cyan-500/5"></div>
               
-              {/* Floating Particles */}
               <div className="absolute inset-0 pointer-events-none">
                 {[...Array(8)].map((_, i) => (
                   <div
@@ -479,14 +440,53 @@ const ServicesPage = () => {
                 </div>
               </div>
 
-              {/* Decorative Elements */}
-              <div className="absolute top-6 right-6 w-16 h-16 border-2 border-sky-400/30 rounded-xl rotate-45 animate-pulse backdrop-blur-sm"></div>
-              <div className="absolute bottom-6 left-6 w-10 h-10 bg-gradient-to-br from-sky-400/30 to-cyan-400/30 rounded-full animate-bounce backdrop-blur-sm"></div>
-              <div className="absolute top-12 left-12 w-3 h-3 bg-white/60 rounded-full animate-ping"></div>
+              <div className="absolute top-6 right-6 w-12 h-12 border-2 border-sky-400/30 rounded-xl rotate-45 animate-pulse"></div>
+              <div className="absolute bottom-6 left-6 w-8 h-8 bg-gradient-to-br from-sky-400/30 to-cyan-400/30 rounded-full animate-bounce"></div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Custom Animations and Styles */}
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes data-flow {
+          0% { transform: translateY(-100%); opacity: 0; }
+          50% { opacity: 1; }
+          100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-data-flow {
+          animation: data-flow 3s linear infinite;
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 1s ease-out forwards;
+        }
+
+        .animate-on-scroll {
+          transition: all 1s ease-out;
+        }
+      `}</style>
     </main>
   )
 }
