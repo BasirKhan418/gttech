@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { 
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { toast } from 'sonner'
 
 interface AdminHeaderProps {
   onToggleSidebar: () => void
@@ -35,6 +36,7 @@ interface AdminHeaderProps {
 const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
   const router = useRouter()
   const pathname = usePathname()
+  const [healthCheck, setHealthCheck] = useState<{ name?: string; email?: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('')
   const [notifications] = useState([
     { id: 1, message: 'New content uploaded', time: '2 min ago', unread: true },
@@ -42,7 +44,29 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
     { id: 3, message: 'System backup completed', time: '3 hours ago', unread: false }
   ])
 
-  const unreadCount = notifications.filter(n => n.unread).length
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  const getHealthCheck = async ()=>{
+    try {
+      const response = await fetch('/api/admin/health', { method: 'GET' })
+      const data = await response.json()
+      if(!data.success) {
+        toast.error(data.message || 'Unknown error')
+        router.push('/login')
+        return
+      }
+      console.log('Health check data:', data)
+      setHealthCheck(data.data)
+    } catch (error) {
+      toast.error('Error fetching health check')
+      router.push('/login')
+      console.error('Error fetching health check:', error)
+    }
+  }
+
+  useEffect(() => {
+    getHealthCheck()
+  }, [])
 
   // Get current page title based on pathname
   const getPageTitle = () => {
@@ -260,10 +284,10 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
                 <Avatar className="w-7 h-7">
                   <AvatarImage src="/admin-avatar.jpg" alt="Admin" />
                   <AvatarFallback className="bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-sm font-semibold">
-                    AD
+                    {healthCheck && healthCheck.name ? healthCheck.name.charAt(0).toUpperCase() : 'A'}
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:block text-sm font-medium">Admin</span>
+                <span className="hidden sm:block text-sm font-medium">{healthCheck?.name}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
             </DropdownMenuTrigger>
@@ -274,7 +298,7 @@ const AdminHeader = ({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) => {
               <DropdownMenuLabel className="text-white">
                 <div className="flex flex-col space-y-1">
                   <span className="font-semibold">Admin User</span>
-                  <span className="text-xs text-gray-400 font-normal">admin@gttech.com</span>
+                  <span className="text-xs text-gray-400 font-normal">{healthCheck?.email}</span>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-sky-500/20" />
