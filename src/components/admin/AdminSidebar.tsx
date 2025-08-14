@@ -82,6 +82,13 @@ const AdminSidebar = () => {
       ]
     },
     {
+      name: 'Career Management',
+      icon: ImageIcon,
+      subItems: [
+        { name: 'All Careers', href: '/admin/career', icon: Eye },
+      ]
+    },
+    {
       name: 'User Management',
       icon: Users,
       subItems: [
