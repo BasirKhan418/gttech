@@ -93,12 +93,32 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         <div className="absolute inset-0 bg-gradient-to-tl from-sky-500/5 via-transparent to-cyan-500/5"></div>
         
         {/* Content Wrapper */}
-        <div>
-          <div >
+        <div className="relative z-10 p-4 lg:p-6 xl:p-8">
+          <div className="max-w-7xl mx-auto">
             {children}
           </div>
         </div>
 
+        {/* Footer */}
+        <footer className="relative z-10 mt-12 p-6 border-t border-sky-500/20 bg-gradient-to-r from-slate-900/50 to-slate-800/50 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div className="text-sm text-gray-400">
+                © 2025 GT Technologies. All rights reserved.
+              </div>
+              <div className="flex items-center space-x-6 text-sm text-gray-400">
+                <span>Admin Panel v2.0</span>
+                <span className="flex items-center space-x-2">
+                  <span>Status:</span>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-green-400">Online</span>
+                  </div>
+                </span>
+              </div>
+            </div>
+          </div>
+        </footer>
       </main>
 
       {/* Decorative Corner Elements */}
