@@ -260,13 +260,11 @@ const ConsultingDetailPage = () => {
                 <div className="animate-on-scroll opacity-0 translate-y-10">
                   <div className="relative rounded-3xl overflow-hidden bg-gray-900/40 backdrop-blur-sm border border-cyan-500/20 p-4">
                     <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden">
-                      <Image
+                      <img
                         src={consultingDetail.poster}
                         alt={consultingDetail.title}
-                        fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
-                        priority
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
                     </div>

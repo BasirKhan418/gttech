@@ -261,13 +261,11 @@ const SolutionDetailPage = () => {
                 <div className="animate-on-scroll opacity-0 translate-y-10">
                   <div className="relative rounded-3xl overflow-hidden bg-gray-900/40 backdrop-blur-sm border border-sky-500/20 p-4">
                     <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden">
-                      <Image
+                      <img
                         src={solutionDetail.poster}
                         alt={solutionDetail.title}
-                        fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
-                        priority
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
                     </div>
@@ -339,10 +337,9 @@ const SolutionDetailPage = () => {
                             className="relative h-48 rounded-xl overflow-hidden bg-gray-800/50 border border-sky-500/20 hover:border-sky-400/40 transition-colors duration-300 cursor-pointer group"
                             onClick={() => setCurrentImageIndex(index)}
                           >
-                            <Image
+                            <img
                               src={image}
                               alt={`${solutionDetail.title} - Image ${index + 1}`}
-                              fill
                               className="object-cover group-hover:scale-110 transition-transform duration-300"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />

@@ -268,10 +268,9 @@ const SolutionsPage = () => {
                       {/* Image Section */}
                       {solution.poster && (
                         <div className="relative h-48 overflow-hidden">
-                          <Image
+                          <img
                             src={solution.poster}
                             alt={solution.title}
-                            fill
                             className="object-cover group-hover:scale-110 transition-transform duration-700"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
