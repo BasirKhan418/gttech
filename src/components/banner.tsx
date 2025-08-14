@@ -4,7 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 interface Banner {
-  id: number
+  id?: number
+  _id?: string
   title: string
   description: string
   tags: string[]
@@ -20,45 +21,34 @@ interface BannerCardProps {
   isActive: boolean
 }
 
-const mockBanners = [
-  {
-    id: 1,
-    title: "Revolutionary AI Solutions Launch",
-    description: "Transform your business with cutting-edge artificial intelligence and machine learning technologies that drive innovation and efficiency across all sectors.",
-    tags: ["AI/ML", "Innovation", "Digital Transformation"],
-    buttonText: "Explore AI Solutions",
-    buttonLink: "/services/ai",
-    image: "/1.jpeg",
-    showImage: true,
-    isActive: true
-  },
-  {
-    id: 2,
-    title: "Industry 4.0 Manufacturing Summit",
-    description: "Join us for the biggest manufacturing revolution event. Discover smart factories, IoT integration, and predictive maintenance solutions.",
-    tags: ["Industry 4.0", "IoT", "Smart Manufacturing"],
-    buttonText: "Register for Summit",
-    buttonLink: "/services/industry40",
-    image: "/digital.jpg",
-    showImage: true,
-    isActive: true
-  },
-  {
-    id: 3,
-    title: "Digital Twin Technology Breakthrough",
-    description: "Create virtual replicas of your physical assets to optimize performance, predict failures, and drive operational excellence.",
-    tags: ["Digital Twin", "Simulation", "Optimization"],
-    buttonText: "Discover Digital Twins",
-    buttonLink: "/services/digital-twin",
-    showImage: false, 
-    isActive: true
-  }
-]
-
 const DynamicBannerSection = () => {
   const [currentBanner, setCurrentBanner] = useState(0)
-  const [banners, setBanners] = useState(mockBanners) 
+  const [banners, setBanners] = useState<Banner[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [isAnimating, setIsAnimating] = useState(false)
+
+  const fetchBanners = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch('/api/banner')
+      const data = await response.json()
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch banners")
+      }
+      // Filter only active banners
+      const activeBanners = data.data.filter((banner: Banner) => banner.isActive)
+      setBanners(activeBanners)
+    } catch (err) {
+      console.error("Error fetching banners:", err)
+      setBanners([]) // Set empty array on error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchBanners()
+  }, [])
 
   useEffect(() => {
     if (banners.length > 1) {
@@ -92,38 +82,20 @@ const DynamicBannerSection = () => {
     return () => observer.disconnect()
   }, [])
 
-  const FallbackBanner = () => (
-    <div className="relative glass-card rounded-3xl p-12 md:p-16 lg:p-20 overflow-hidden border border-cyan-300/40 shadow-2xl">
+  const NoContentBanner = () => (
+    <div className="relative glass-card rounded-3xl p-12 md:p-16 lg:p-20 overflow-hidden border border-gray-300/40 shadow-2xl">
       {/* Glass Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-cyan-50/40 to-cyan-100/50 backdrop-blur-xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-gray-50/40 to-gray-100/50 backdrop-blur-xl"></div>
       
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-8">
+      <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
+            linear-gradient(rgba(107,114,128,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(107,114,128,0.08) 1px, transparent 1px)
           `,
           backgroundSize: '30px 30px'
         }}></div>
-      </div>
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className={`absolute w-1 h-1 rounded-full animate-float ${
-              i % 2 === 0 ? 'bg-cyan-400/60' : 'bg-cyan-200/40'
-            }`}
-            style={{
-              left: `${10 + (i * 12)}%`,
-              top: `${15 + (i * 8)}%`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: `${3 + (i % 3)}s`
-            }}
-          ></div>
-        ))}
       </div>
 
       {/* Glass Shine Effect */}
@@ -132,34 +104,33 @@ const DynamicBannerSection = () => {
       {/* Content */}
       <div className="relative z-10 text-center max-w-4xl mx-auto">
         <div className="animate-on-scroll opacity-0 translate-y-10">
-          <div className="inline-flex items-center px-6 py-3 glass-badge border border-cyan-400/50 rounded-full text-sm text-cyan-700 mb-6 animate-pulse backdrop-blur-sm bg-cyan-100/60 shadow-lg">
-            <span className="mr-2">🚀</span>
-            <span className="font-semibold">Exciting News Coming Soon</span>
+          <div className="inline-flex items-center px-6 py-3 glass-badge border border-gray-400/50 rounded-full text-sm text-gray-700 mb-6 backdrop-blur-sm bg-gray-100/60 shadow-lg">
+            <span className="mr-2">📰</span>
+            <span className="font-semibold">No Content Available</span>
           </div>
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
-            <span className="block">Latest News &</span>
-            <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
-              Announcements
+            <span className="block">No Banners</span>
+            <span className="block bg-gradient-to-r from-gray-600 via-gray-500 to-gray-700 bg-clip-text text-transparent">
+              Currently Available
             </span>
           </h2>
           
           <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
-            Stay tuned for the latest updates, product launches, and industry insights. 
-            Our team is preparing exciting announcements that will shape the future.
+            There are currently no active banners to display. Please check back later for updates and announcements.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/contact"
-              className="group px-8 py-4 glass-button bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white rounded-full font-semibold text-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-cyan-500/30 backdrop-blur-sm border border-cyan-400/40"
+              className="group px-8 py-4 glass-button bg-gradient-to-r from-gray-500/90 to-gray-600/90 text-white rounded-full font-semibold text-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-300 hover:scale-105 shadow-xl backdrop-blur-sm border border-gray-400/40"
             >
-              Get Notified
+              Contact Us
               <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
             </Link>
             <Link
               href="/services"
-              className="px-8 py-4 glass-button bg-white/80 border-2 border-cyan-400/60 text-cyan-700 rounded-full font-semibold text-lg hover:bg-cyan-50/80 hover:border-cyan-500/70 backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg"
+              className="px-8 py-4 glass-button bg-white/80 border-2 border-gray-400/60 text-gray-700 rounded-full font-semibold text-lg hover:bg-gray-50/80 hover:border-gray-500/70 backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-lg"
             >
               Explore Services
             </Link>
@@ -168,9 +139,8 @@ const DynamicBannerSection = () => {
       </div>
 
       {/* Glass Corner Elements */}
-      <div className="absolute top-8 left-8 w-16 h-16 border-2 border-cyan-400/40 rounded-xl rotate-45 animate-pulse backdrop-blur-sm bg-cyan-100/30"></div>
-      <div className="absolute bottom-8 right-8 w-12 h-12 bg-gradient-to-br from-cyan-400/40 to-cyan-500/40 rounded-full animate-bounce backdrop-blur-sm"></div>
-      <div className="absolute top-12 right-12 w-3 h-3 bg-cyan-400/70 rounded-full animate-ping"></div>
+      <div className="absolute top-8 left-8 w-16 h-16 border-2 border-gray-400/40 rounded-xl rotate-45 backdrop-blur-sm bg-gray-100/30"></div>
+      <div className="absolute bottom-8 right-8 w-12 h-12 bg-gradient-to-br from-gray-400/40 to-gray-500/40 rounded-full backdrop-blur-sm"></div>
     </div>
   )
 
@@ -298,13 +268,13 @@ const DynamicBannerSection = () => {
                 <div className="relative glass-image-container rounded-2xl overflow-hidden border border-cyan-400/40 backdrop-blur-sm bg-white/30 p-4 shadow-xl">
                   {/* Image Glass Frame */}
                   <div className="relative rounded-xl overflow-hidden">
-                    <Image
+                    <img
                       src={banner.image}
                       alt={banner.title}
                       width={400}
                       height={300}
                       className="w-full h-64 lg:h-80 object-cover transition-all duration-700 hover:scale-105"
-                      priority={isActive}
+                      
                     />
                     
                     {/* Image Overlay Effects */}
@@ -368,18 +338,33 @@ const DynamicBannerSection = () => {
     </div>
   )
 
-  if (banners.length === 0) {
+  // Show loading state
+  if (isLoading) {
     return (
       <section className="py-16 lg:py-24 bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-cyan-500 mx-auto"></div>
+            <p className="text-gray-600 mt-4">Loading banners...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Show no content message if no banners
+  if (banners.length === 0) {
+    return (
+      <section className="py-16 lg:py-24 bg-gradient-to-br from-white via-gray-50 to-gray-100 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-6 py-3 glass-badge bg-cyan-500/25 backdrop-blur-sm border border-cyan-400/50 rounded-full text-sm text-cyan-700 mb-6 shadow-lg">
+            <div className="inline-flex items-center px-6 py-3 glass-badge bg-gray-500/25 backdrop-blur-sm border border-gray-400/50 rounded-full text-sm text-gray-700 mb-6 shadow-lg">
               <span className="mr-2">📰</span>
               <span className="font-semibold">Latest News & Updates</span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
-              <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-gray-600 via-gray-500 to-gray-700 bg-clip-text text-transparent">
                 Latest Tech Updates
               </span>
             </h2>
@@ -388,7 +373,7 @@ const DynamicBannerSection = () => {
             </p>
           </div>
           
-          <FallbackBanner />
+          <NoContentBanner />
         </div>
       </section>
     )
@@ -427,7 +412,7 @@ const DynamicBannerSection = () => {
         <div className={`relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] transition-all duration-300 ${isAnimating ? 'scale-98' : 'scale-100'}`}>
           {banners.map((banner, index) => (
             <BannerCard
-              key={banner.id}
+              key={banner._id || banner.id || index}
               banner={banner}
               isActive={index === currentBanner}
             />
