@@ -16,8 +16,194 @@ import {
   Zap,
   Settings,
   ArrowRight,
-  Rocket
+  Rocket,
+  ChevronLeft,
+  ChevronRight,
+  X
 } from 'lucide-react'
+
+interface ImageSliderProps {
+  images: string[]
+  isOpen: boolean
+  onClose: () => void
+  currentIndex: number
+  onIndexChange: (index: number) => void
+  title?: string
+}
+
+const ImageSlider: React.FC<ImageSliderProps> = ({
+  images,
+  isOpen,
+  onClose,
+  currentIndex,
+  onIndexChange,
+  title = 'Gallery'
+}) => {
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return
+      
+      switch (e.key) {
+        case 'Escape':
+          onClose()
+          break
+        case 'ArrowLeft':
+          handlePrevious()
+          break
+        case 'ArrowRight':
+          handleNext()
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, currentIndex])
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
+  const handleNext = () => {
+    const nextIndex = (currentIndex + 1) % images.length
+    onIndexChange(nextIndex)
+    setIsLoading(true)
+  }
+
+  const handlePrevious = () => {
+    const prevIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1
+    onIndexChange(prevIndex)
+    setIsLoading(true)
+  }
+
+  const handleThumbnailClick = (index: number) => {
+    onIndexChange(index)
+    setIsLoading(true)
+  }
+
+  if (!isOpen || images.length === 0) return null
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm">
+      {/* Header */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-6 bg-gradient-to-b from-black/50 to-transparent">
+        <div className="text-white">
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <p className="text-sm text-gray-400">
+            {currentIndex + 1} of {images.length}
+          </p>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-2 text-white hover:bg-white/10 rounded-full transition-colors duration-200"
+          aria-label="Close gallery"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Main Image Container */}
+      <div className="flex items-center justify-center h-full px-4 py-20">
+        <div className="relative w-full h-full max-w-6xl max-h-full">
+          {/* Loading Spinner */}
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+            </div>
+          )}
+
+          {/* Main Image */}
+          <div className="relative w-full h-full">
+            <Image
+              src={images[currentIndex]}
+              alt={`${title} - Image ${currentIndex + 1}`}
+              fill
+              className={`object-contain transition-opacity duration-300 ${
+                isLoading ? 'opacity-0' : 'opacity-100'
+              }`}
+              sizes="100vw"
+              priority
+              onLoadingComplete={() => setIsLoading(false)}
+            />
+          </div>
+
+          {/* Navigation Arrows */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={handlePrevious}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors duration-200 backdrop-blur-sm"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors duration-200 backdrop-blur-sm"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Thumbnail Strip */}
+      {images.length > 1 && (
+        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/50 to-transparent">
+          <div className="flex justify-center">
+            <div className="flex gap-2 max-w-full overflow-x-auto scrollbar-hide px-4">
+              {images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleThumbnailClick(index)}
+                  className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                    index === currentIndex
+                      ? 'border-white shadow-lg scale-110'
+                      : 'border-white/30 hover:border-white/60'
+                  }`}
+                >
+                  <Image
+                    src={image}
+                    alt={`Thumbnail ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Touch/Swipe indicators for mobile */}
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 md:hidden">
+        <div className="flex gap-2">
+          {images.map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                index === currentIndex ? 'bg-white' : 'bg-white/30'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 interface Content {
   _id: string
@@ -49,6 +235,7 @@ const SolutionDetailPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isSliderOpen, setIsSliderOpen] = useState(false)
 
   useEffect(() => {
     if (params.id) {
@@ -96,6 +283,15 @@ const SolutionDetailPage = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const openSlider = (index: number) => {
+    setCurrentImageIndex(index)
+    setIsSliderOpen(true)
+  }
+
+  const closeSlider = () => {
+    setIsSliderOpen(false)
   }
 
   const handleShare = async () => {
@@ -260,16 +456,24 @@ const SolutionDetailPage = () => {
               {solutionDetail.poster && (
                 <div className="animate-on-scroll opacity-0 translate-y-10">
                   <div className="relative rounded-3xl overflow-hidden bg-gray-900/40 backdrop-blur-sm border border-sky-500/20 p-4">
-                    <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden">
+                    <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden cursor-pointer group"
+                         onClick={() => openSlider(0)}>
                       <Image
                         src={solutionDetail.poster}
                         alt={solutionDetail.title}
                         fill
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
                         priority
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent group-hover:bg-gradient-to-t group-hover:from-gray-900/40 group-hover:to-transparent transition-all duration-300"></div>
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="bg-black/50 backdrop-blur-sm rounded-full p-3">
+                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                          </svg>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -330,14 +534,14 @@ const SolutionDetailPage = () => {
                     <div className="relative z-10">
                       <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                         <Zap className="w-6 h-6 text-sky-400 mr-3" />
-                        Implementation Gallery
+                        Implementation Gallery ({solutionDetail.images.length} images)
                       </h2>
                       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {solutionDetail.images.map((image, index) => (
                           <div
                             key={index}
                             className="relative h-48 rounded-xl overflow-hidden bg-gray-800/50 border border-sky-500/20 hover:border-sky-400/40 transition-colors duration-300 cursor-pointer group"
-                            onClick={() => setCurrentImageIndex(index)}
+                            onClick={() => openSlider(index + 1)}
                           >
                             <Image
                               src={image}
@@ -347,6 +551,16 @@ const SolutionDetailPage = () => {
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-white">
+                              {index + 1}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -420,6 +634,12 @@ const SolutionDetailPage = () => {
                           <span className="text-sky-300">{solutionDetail.lists.length} items</span>
                         </div>
                       )}
+                      {solutionDetail.images && solutionDetail.images.length > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Gallery:</span>
+                          <span className="text-sky-300">{solutionDetail.images.length} images</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span className="text-gray-400">Implementation:</span>
                         <span className="text-green-400">Available</span>
@@ -477,6 +697,17 @@ const SolutionDetailPage = () => {
           </div>
         </div>
       </section>
+
+      {solutionDetail && (
+        <ImageSlider
+          images={[solutionDetail.poster, ...(solutionDetail.images || [])]}
+          isOpen={isSliderOpen}
+          onClose={closeSlider}
+          currentIndex={currentImageIndex}
+          onIndexChange={setCurrentImageIndex}
+          title={solutionDetail.title}
+        />
+      )}
     </main>
   )
 }
