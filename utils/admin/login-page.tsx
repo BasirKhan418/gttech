@@ -17,7 +17,6 @@ export default function AdminLogin() {
   const [error, setError] = useState("")
   const [isClient, setIsClient] = useState(false)
 
-  // Fix hydration error by ensuring client-side rendering
   useEffect(() => {
     setIsClient(true)
   }, [])
