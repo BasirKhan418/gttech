@@ -14,7 +14,8 @@ import {
   Volume2,
   VolumeX,
   Paperclip,
-  Smile
+  Smile,
+  Globe
 } from 'lucide-react'
 
 interface Message {
@@ -23,6 +24,11 @@ interface Message {
   sender: 'user' | 'bot'
   timestamp: Date
   isTyping?: boolean
+}
+
+interface UserInfo {
+  name: string
+  email: string
 }
 
 interface ChatbotProps {
@@ -35,7 +41,7 @@ const Chatbot = ({ className }: ChatbotProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! 👋 Welcome to GT Technologies. I\'m your AI assistant. How can I help you with our digital transformation solutions today?',
+      text: 'Hello! 👋 Welcome to GT Technologies. I\'m your AI assistant. I can help you in multiple languages! How can I assist you with our digital transformation solutions today?',
       sender: 'bot',
       timestamp: new Date()
     }
@@ -44,8 +50,25 @@ const Chatbot = ({ className }: ChatbotProps) => {
   const [isTyping, setIsTyping] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
+  const [showUserForm, setShowUserForm] = useState(false)
+  const [tempUserInfo, setTempUserInfo] = useState({ name: '', email: '' })
+  const [currentLanguage, setCurrentLanguage] = useState('en')
+  const [messageCount, setMessageCount] = useState(1)
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
+    { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+    { code: 'ja', name: '日本語', flag: '🇯🇵' }
+  ]
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -61,38 +84,112 @@ const Chatbot = ({ className }: ChatbotProps) => {
     }
   }, [isOpen, isMinimized])
 
-  const getBotResponse = (userMessage: string): string => {
-    const message = userMessage.toLowerCase()
-    
-    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
-      return 'Hello! Great to meet you! 🚀 I\'m here to help you learn about our Industry 4.0 solutions, digital transformation services, and how GT Technologies can accelerate your business growth.'
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowLanguageDropdown(false)
+      }
     }
-    
-    if (message.includes('service') || message.includes('what do you do')) {
-      return 'We offer cutting-edge digital transformation solutions including:\n\n🔹 Industry 4.0 & Smart Manufacturing\n🔹 AR/VR Solutions & Digital Twins\n🔹 AI/ML Implementation\n🔹 Robotics & Automation\n🔹 IoT Integration\n🔹 3D Printing & Prototyping\n\nWhich area interests you most?'
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
     }
-    
-    if (message.includes('industry 4.0') || message.includes('manufacturing')) {
-      return 'Excellent choice! 🏭 Our Industry 4.0 solutions transform traditional manufacturing with:\n\n✨ Smart Factory Implementation\n✨ Predictive Maintenance\n✨ Real-time Analytics\n✨ Supply Chain Optimization\n✨ Quality Control Automation\n\nWould you like to schedule a consultation to discuss your specific needs?'
+  }, [])
+
+  // Check if user info should be collected after 3 messages
+  useEffect(() => {
+    if (messageCount >= 3 && !userInfo && !showUserForm) {
+      setShowUserForm(true)
+      const infoMessage: Message = {
+        id: Date.now().toString(),
+        text: 'To provide you with better assistance, could you please share your name and email address? This will help us serve you better.',
+        sender: 'bot',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, infoMessage])
     }
-    
-    if (message.includes('ar') || message.includes('vr') || message.includes('virtual')) {
-      return 'Amazing! 🥽 Our AR/VR solutions include:\n\n🌟 Immersive Training Programs\n🌟 Digital Twin Simulations\n🌟 Remote Assistance\n🌟 Product Visualization\n🌟 Maintenance Guidance\n\nThese technologies can revolutionize how your team works and learns!'
+  }, [messageCount, userInfo, showUserForm])
+
+  const callOpenAI = async (userMessage: string) => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          language: currentLanguage,
+          userInfo: userInfo
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to get response from AI')
+      }
+
+      const data = await response.json()
+      return data.message
+    } catch (error) {
+      console.error('Error calling OpenAI API:', error)
+      return getLanguageText('error')
     }
-    
-    if (message.includes('price') || message.includes('cost') || message.includes('quote')) {
-      return 'Great question! 💰 Our pricing is customized based on your specific requirements and project scope. Each solution is tailored to deliver maximum ROI.\n\nI\'d recommend scheduling a free consultation where we can:\n\n📋 Assess your current setup\n📋 Understand your goals\n📋 Provide detailed cost analysis\n📋 Create a custom proposal\n\nShall I help you book a discovery call?'
+  }
+
+  const subscribeUser = async (email: string, name: string) => {
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          name: name,
+          status: 'enabled',
+          lists: [1], // Default list ID
+          preconfirm_subscriptions: true
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to subscribe user')
+      }
+
+      return true
+    } catch (error) {
+      console.error('Error subscribing user:', error)
+      return false
     }
-    
-    if (message.includes('contact') || message.includes('meeting') || message.includes('consultation')) {
-      return 'Perfect! 📅 I\'d love to connect you with our expert team. You can:\n\n🔗 Schedule a free consultation directly\n🔗 Speak with our solution architects\n🔗 Request a custom demo\n\nWould you prefer a 30-min discovery call or a detailed technical session?'
+  }
+
+  const getLanguageText = (key: string) => {
+    const texts: Record<string, Record<string, string>> = {
+      en: {
+        error: "I apologize, but I'm having trouble connecting right now. Please try again or contact us through our contact page for immediate assistance.",
+        userInfoSaved: "Thank you! Your information has been saved. How else can I help you?",
+        subscribed: "Great! You've been subscribed to our updates. How else can I assist you today?",
+        contactUs: "I don't have specific information about that. Please contact us through our contact page for detailed assistance.",
+        thankYou: "Thank you for contacting GT Technologies! Feel free to ask if you have more questions."
+      },
+      hi: {
+        error: "क्षमा करें, मुझे अभी कनेक्शन में समस्या हो रही है। कृपया फिर से कोशिश करें या तुरंत सहायता के लिए हमारे संपर्क पेज से संपर्क करें।",
+        userInfoSaved: "धन्यवाद! आपकी जानकारी सेव हो गई है। मैं आपकी और कैसे सहायता कर सकता हूं?",
+        subscribed: "बहुत बढ़िया! आप हमारे अपडेट्स के लिए सब्स्क्राइब हो गए हैं। मैं आज आपकी और कैसे सहायता कर सकता हूं?",
+        contactUs: "मेरे पास इसके बारे में विशिष्ट जानकारी नहीं है। विस्तृत सहायता के लिए कृपया हमारे संपर्क पेज से संपर्क करें।",
+        thankYou: "GT Technologies से संपर्क करने के लिए धन्यवाद! यदि आपके कोई और प्रश्न हैं तो बेझिझक पूछें।"
+      },
+      te: {
+        error: "క్షమించండి, నాకు ఇప్పుడు కనెక్షన్‌లో సమస్య ఉంది. దయచేసి మళ్లీ ప్రయత్నించండి లేదా తక్షణ సహాయం కోసం మా సంప్రదింపు పేజీ ద్వారా సంప్రదించండి.",
+        userInfoSaved: "ధన్యవాదాలు! మీ సమాచారం సేవ్ చేయబడింది. నేను మీకు ఇంకా ఎలా సహాయం చేయగలను?",
+        subscribed: "గొప్పది! మీరు మా అప్‌డేట్‌ల కోసం సబ్‌స్క్రైబ్ అయ్యారు. నేను ఈ రోజు మీకు ఇంకా ఎలా సహాయం చేయగలను?",
+        contactUs: "దీని గురించి నా దగ్గర నిర్దిష్ట సమాచారం లేదు. వివరణాత్మక సహాయం కోసం దయచేసి మా సంప్రదింపు పేజీ ద్వారా సంప్రదించండి.",
+        thankYou: "GT Technologies ను సంప్రదించినందుకు ధన్యవాదాలు! మీకు మరిన్ని ప్రశ్నలు ఉంటే వెనుకాడకండి."
+      }
     }
-    
-    if (message.includes('thank') || message.includes('thanks')) {
-      return 'You\'re very welcome! 😊 I\'m thrilled I could help. Remember, we\'re here to transform your business with cutting-edge technology.\n\nFeel free to reach out anytime if you have more questions!'
-    }
-    
-    return 'That\'s a great question! 🤔 I\'d love to learn more about your specific needs. Our team specializes in custom digital transformation solutions.\n\nCould you tell me more about your industry or the challenges you\'re facing? This will help me provide more targeted assistance!'
+    return texts[currentLanguage]?.[key] || texts.en[key]
   }
 
   const handleSendMessage = async () => {
@@ -108,23 +205,60 @@ const Chatbot = ({ className }: ChatbotProps) => {
     setMessages(prev => [...prev, userMessage])
     setInputValue('')
     setIsTyping(true)
+    setMessageCount(prev => prev + 1)
 
+    // Get AI response
+    const aiResponse = await callOpenAI(inputValue)
+    
     setTimeout(() => {
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: getBotResponse(inputValue),
+        text: aiResponse,
         sender: 'bot',
         timestamp: new Date()
       }
       setMessages(prev => [...prev, botResponse])
       setIsTyping(false)
-    }, 1000 + Math.random() * 2000)
+    }, 500)
+  }
+
+  const handleUserInfoSubmit = async () => {
+    if (!tempUserInfo.name.trim() || !tempUserInfo.email.trim()) {
+      return
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(tempUserInfo.email)) {
+      alert('Please enter a valid email address')
+      return
+    }
+
+    setUserInfo(tempUserInfo)
+    setShowUserForm(false)
+
+    // Subscribe user
+    const subscribed = await subscribeUser(tempUserInfo.email, tempUserInfo.name)
+    
+    const responseText = subscribed ? getLanguageText('subscribed') : getLanguageText('userInfoSaved')
+    
+    const botResponse: Message = {
+      id: Date.now().toString(),
+      text: responseText,
+      sender: 'bot',
+      timestamp: new Date()
+    }
+    setMessages(prev => [...prev, botResponse])
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSendMessage()
+      if (showUserForm) {
+        handleUserInfoSubmit()
+      } else {
+        handleSendMessage()
+      }
     }
   }
 
@@ -132,16 +266,29 @@ const Chatbot = ({ className }: ChatbotProps) => {
     setMessages([
       {
         id: '1',
-        text: 'Hello! 👋 Welcome to GT Technologies. I\'m your AI assistant. How can I help you with our digital transformation solutions today?',
+        text: 'Hello! 👋 Welcome to GT Technologies. I\'m your AI assistant. I can help you in multiple languages! How can I assist you with our digital transformation solutions today?',
         sender: 'bot',
         timestamp: new Date()
       }
     ])
+    setUserInfo(null)
+    setShowUserForm(false)
+    setMessageCount(1)
+    setTempUserInfo({ name: '', email: '' })
   }
 
   const toggleVoice = () => {
     setIsListening(!isListening)
-    // Add voice recognition logic here
+    // Voice recognition will be handled by the voice agent API
+    if (!isListening) {
+      // Start voice recognition
+      window.open('/voice-chat', '_blank', 'width=400,height=600')
+    }
+  }
+
+  const handleLanguageSelect = (langCode: string) => {
+    setCurrentLanguage(langCode)
+    setShowLanguageDropdown(false)
   }
 
   if (!isOpen) {
@@ -302,6 +449,31 @@ const Chatbot = ({ className }: ChatbotProps) => {
               </div>
               
               <div className="flex items-center space-x-2">
+                {/* Language Selector */}
+                <div className="relative" ref={dropdownRef}>
+                  <button 
+                    onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                    className="p-2 hover:bg-sky-500/20 rounded-lg transition-colors duration-200 group"
+                  >
+                    <Globe className="w-4 h-4 text-slate-400 group-hover:text-sky-300" />
+                  </button>
+                  {showLanguageDropdown && (
+                    <div className="absolute top-full right-0 mt-1 bg-slate-800/95 backdrop-blur-xl border border-sky-500/30 rounded-lg shadow-xl z-[9999] min-w-[120px]">
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => handleLanguageSelect(lang.code)}
+                          className={`w-full text-left px-3 py-2 text-xs hover:bg-sky-500/20 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
+                            currentLanguage === lang.code ? 'text-sky-300 bg-sky-500/10' : 'text-slate-300'
+                          }`}
+                        >
+                          {lang.flag} {lang.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <button
                   onClick={resetChat}
                   className="p-2 hover:bg-sky-500/20 rounded-lg transition-colors duration-200 group"
@@ -387,6 +559,36 @@ const Chatbot = ({ className }: ChatbotProps) => {
                 </div>
               ))}
 
+              {/* User Info Collection Form */}
+              {showUserForm && (
+                <div className="bg-slate-800/80 backdrop-blur-sm border border-sky-500/30 rounded-2xl p-4 space-y-3">
+                  <h4 className="text-white font-medium text-sm">Please provide your details:</h4>
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      placeholder="Your Name"
+                      value={tempUserInfo.name}
+                      onChange={(e) => setTempUserInfo(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Your Email"
+                      value={tempUserInfo.email}
+                      onChange={(e) => setTempUserInfo(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50"
+                    />
+                    <button
+                      onClick={handleUserInfoSubmit}
+                      disabled={!tempUserInfo.name.trim() || !tempUserInfo.email.trim()}
+                      className="w-full bg-gradient-to-r from-sky-500/80 to-cyan-500/80 hover:from-sky-600/80 hover:to-cyan-600/80 text-white py-2 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Typing Indicator */}
               {isTyping && (
                 <div className="flex justify-start">
@@ -414,65 +616,78 @@ const Chatbot = ({ className }: ChatbotProps) => {
 
             {/* Input Area */}
             <div className="relative z-10 p-4 border-t border-sky-500/20 bg-slate-900/50 backdrop-blur-sm">
-              <div className="flex items-center space-x-2">
-                {/* Attachment Button */}
-                <button
-                  className="p-2 hover:bg-sky-500/20 rounded-lg transition-colors duration-200 group"
-                  title="Attach File"
-                >
-                  <Paperclip className="w-4 h-4 text-slate-400 group-hover:text-sky-300" />
-                </button>
-
-                {/* Input Field */}
-                <div className="flex-1 relative">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Type your message..."
-                    className="w-full px-4 py-3 bg-slate-800/50 backdrop-blur-sm border border-slate-600/30 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400/50 transition-all duration-300"
-                  />
-                  
-                  {/* Emoji Button */}
+              {!showUserForm && (
+                <div className="flex items-center space-x-2">
+                  {/* Attachment Button */}
                   <button
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-sky-500/20 rounded-lg transition-colors duration-200 group"
-                    title="Add Emoji"
+                    className="p-2 hover:bg-sky-500/20 rounded-lg transition-colors duration-200 group"
+                    title="Attach File"
                   >
-                    <Smile className="w-4 h-4 text-slate-400 group-hover:text-sky-300" />
+                    <Paperclip className="w-4 h-4 text-slate-400 group-hover:text-sky-300" />
+                  </button>
+
+                  {/* Input Field */}
+                  <div className="flex-1 relative">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Type your message..."
+                      className="w-full px-4 py-3 bg-slate-800/50 backdrop-blur-sm border border-slate-600/30 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400/50 transition-all duration-300"
+                    />
+                    
+                    {/* Emoji Button */}
+                    <button
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-sky-500/20 rounded-lg transition-colors duration-200 group"
+                      title="Add Emoji"
+                    >
+                      <Smile className="w-4 h-4 text-slate-400 group-hover:text-sky-300" />
+                    </button>
+                  </div>
+
+                  {/* Voice Button */}
+                  <button
+                    onClick={toggleVoice}
+                    className={`p-2 rounded-lg transition-colors duration-200 group ${
+                      isListening ? 'bg-red-500/20 hover:bg-red-500/30' : 'hover:bg-sky-500/20'
+                    }`}
+                    title={isListening ? 'Stop Recording' : 'Voice Chat'}
+                  >
+                    {isListening ? (
+                      <MicOff className="w-4 h-4 text-red-400" />
+                    ) : (
+                      <Mic className="w-4 h-4 text-slate-400 group-hover:text-sky-300" />
+                    )}
+                  </button>
+
+                  {/* Send Button */}
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={!inputValue.trim()}
+                    className="p-2 bg-gradient-to-r from-sky-500/80 to-cyan-500/80 hover:from-sky-600/80 hover:to-cyan-600/80 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-sky-400/50 group"
+                    title="Send Message"
+                  >
+                    <Send className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-200" />
                   </button>
                 </div>
-
-                {/* Voice Button */}
-                <button
-                  onClick={toggleVoice}
-                  className={`p-2 rounded-lg transition-colors duration-200 group ${
-                    isListening ? 'bg-red-500/20 hover:bg-red-500/30' : 'hover:bg-sky-500/20'
-                  }`}
-                  title={isListening ? 'Stop Recording' : 'Voice Message'}
-                >
-                  {isListening ? (
-                    <MicOff className="w-4 h-4 text-red-400" />
-                  ) : (
-                    <Mic className="w-4 h-4 text-slate-400 group-hover:text-sky-300" />
-                  )}
-                </button>
-
-                {/* Send Button */}
-                <button
-                  onClick={handleSendMessage}
-                  disabled={!inputValue.trim()}
-                  className="p-2 bg-gradient-to-r from-sky-500/80 to-cyan-500/80 hover:from-sky-600/80 hover:to-cyan-600/80 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-sky-400/50 group"
-                  title="Send Message"
-                >
-                  <Send className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-200" />
-                </button>
-              </div>
+              )}
             </div>
           </>
         )}
       </div>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   )
 }
