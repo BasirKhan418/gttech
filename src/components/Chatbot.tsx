@@ -55,8 +55,10 @@ const Chatbot = ({ className }: ChatbotProps) => {
   const [tempUserInfo, setTempUserInfo] = useState({ name: '', email: '' })
   const [currentLanguage, setCurrentLanguage] = useState('en')
   const [messageCount, setMessageCount] = useState(1)
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -81,6 +83,20 @@ const Chatbot = ({ className }: ChatbotProps) => {
       inputRef.current.focus()
     }
   }, [isOpen, isMinimized])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowLanguageDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   // Check if user info should be collected after 3 messages
   useEffect(() => {
@@ -270,6 +286,11 @@ const Chatbot = ({ className }: ChatbotProps) => {
     }
   }
 
+  const handleLanguageSelect = (langCode: string) => {
+    setCurrentLanguage(langCode)
+    setShowLanguageDropdown(false)
+  }
+
   if (!isOpen) {
     return (
       <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
@@ -429,23 +450,28 @@ const Chatbot = ({ className }: ChatbotProps) => {
               
               <div className="flex items-center space-x-2">
                 {/* Language Selector */}
-                <div className="relative group">
-                  <button className="p-2 hover:bg-sky-500/20 rounded-lg transition-colors duration-200 group">
+                <div className="relative" ref={dropdownRef}>
+                  <button 
+                    onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                    className="p-2 hover:bg-sky-500/20 rounded-lg transition-colors duration-200 group"
+                  >
                     <Globe className="w-4 h-4 text-slate-400 group-hover:text-sky-300" />
                   </button>
-                  <div className="absolute top-full right-0 mt-1 bg-slate-800/95 backdrop-blur-xl border border-sky-500/30 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 min-w-[120px]">
-                    {languages.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => setCurrentLanguage(lang.code)}
-                        className={`w-full text-left px-3 py-2 text-xs hover:bg-sky-500/20 transition-colors duration-200 ${
-                          currentLanguage === lang.code ? 'text-sky-300' : 'text-slate-300'
-                        }`}
-                      >
-                        {lang.flag} {lang.name}
-                      </button>
-                    ))}
-                  </div>
+                  {showLanguageDropdown && (
+                    <div className="absolute top-full right-0 mt-1 bg-slate-800/95 backdrop-blur-xl border border-sky-500/30 rounded-lg shadow-xl z-[9999] min-w-[120px]">
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => handleLanguageSelect(lang.code)}
+                          className={`w-full text-left px-3 py-2 text-xs hover:bg-sky-500/20 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
+                            currentLanguage === lang.code ? 'text-sky-300 bg-sky-500/10' : 'text-slate-300'
+                          }`}
+                        >
+                          {lang.flag} {lang.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <button
