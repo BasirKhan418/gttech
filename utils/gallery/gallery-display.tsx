@@ -107,7 +107,7 @@ export function GalleryDisplay({ onEdit, onDelete }: GalleryDisplayProps) {
                       "/placeholder.svg"
                     }
                     alt={item.title}
-                    fill
+                    
                     className="object-cover"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">

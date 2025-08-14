@@ -330,10 +330,9 @@ const GalleryPage = () => {
                         {/* Album Cover */}
                         <div className="relative h-64 overflow-hidden">
                           {album.images && album.images.length > 0 && (
-                            <Image
+                            <img
                               src={album.images[0]}
                               alt={album.title}
-                              fill
                               className="object-cover group-hover:scale-110 transition-transform duration-700"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
@@ -416,10 +415,10 @@ const GalleryPage = () => {
                         <div className="relative h-64 overflow-hidden">
                           {video.videoUrl && (
                             <div className="relative w-full h-full">
-                              <Image
+                              <img
                                 src={video.thumbnail || `https://img.youtube.com/vi/${getYouTubeVideoId(video.videoUrl)}/maxresdefault.jpg`}
                                 alt={video.title}
-                                fill
+                                
                                 className="object-cover group-hover:scale-110 transition-transform duration-700"
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               />
@@ -511,10 +510,10 @@ const GalleryPage = () => {
 
             {/* Image */}
             <div className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center p-4">
-              <Image
+              <img
                 src={selectedAlbum.images[selectedImageIndex]}
                 alt={`${selectedAlbum.title} - Image ${selectedImageIndex + 1}`}
-                fill
+              
                 className="object-contain"
                 sizes="100vw"
               />
@@ -544,7 +543,7 @@ const GalleryPage = () => {
                           : 'border-white/20 hover:border-white/40'
                       }`}
                     >
-                      <Image
+                      <img
                         src={image}
                         alt={`Thumbnail ${index + 1}`}
                         width={64}
