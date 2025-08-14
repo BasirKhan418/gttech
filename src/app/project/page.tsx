@@ -245,7 +245,7 @@ const ProjectsPage = () => {
                     className="animate-on-scroll opacity-0 translate-y-10"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <Link href={`/projects/${project._id}`}>
+                    <Link href={`/project/${project._id}`}>
                       <div className="group relative bg-white/70 backdrop-blur-sm border border-yellow-300/50 rounded-3xl overflow-hidden hover:border-yellow-400/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/15 group-hover:bg-white/80">
                         
                         {/* Glass Effects */}
@@ -412,7 +412,7 @@ const ProjectsPage = () => {
                     className="animate-on-scroll opacity-0 translate-y-10"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <Link href={`/projects/${project._id}`}>
+                    <Link href={`/project/${project._id}`}>
                       <div className="group relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/15 group-hover:bg-white/80">
                         
                         {/* Glass Effects */}
