@@ -80,11 +80,11 @@ const AdminProjectsPage = () => {
       if (data.success) {
         setProjects(data.data)
       } else {
-        toast.error(data.message || 'Failed to fetch projects')
+        toast.error(data.message || 'Failed to fetch products')
       }
     } catch (error) {
-      toast.error('Failed to fetch projects')
-      console.error('Error fetching projects:', error)
+      toast.error('Failed to fetch products')
+      console.error('Error fetching products:', error)
     } finally {
       setLoading(false)
     }
@@ -115,13 +115,13 @@ const AdminProjectsPage = () => {
       const data = await response.json()
 
       if (data.success) {
-        toast.success('Project deleted successfully')
+        toast.success('Product deleted successfully')
         fetchProjects()
       } else {
-        toast.error(data.message || 'Failed to delete project')
+        toast.error(data.message || 'Failed to delete product')
       }
     } catch (error) {
-      toast.error('Failed to delete project')
+      toast.error('Failed to delete product')
     } finally {
       setDeleteProject(null)
     }
@@ -158,8 +158,8 @@ const AdminProjectsPage = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Projects</h1>
-            <p className="text-gray-600 mt-1">Manage your project portfolio</p>
+            <h1 className="text-3xl font-bold text-gray-800">Products</h1>
+            <p className="text-gray-600 mt-1">Manage your product portfolio</p>
           </div>
         </div>
 
@@ -202,12 +202,12 @@ const AdminProjectsPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Projects</h1>
-          <p className="text-gray-600 mt-1">Manage your project portfolio</p>
+          <h1 className="text-3xl font-bold text-gray-800">Products</h1>
+          <p className="text-gray-600 mt-1">Manage your product portfolio</p>
         </div>
         <Button onClick={handleCreateProject} className="gap-2">
           <Plus className="w-4 h-4" />
-          Add Project
+          Add Product
         </Button>
       </div>
 
@@ -215,7 +215,7 @@ const AdminProjectsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Projects</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Products</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
@@ -224,7 +224,7 @@ const AdminProjectsPage = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Projects</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Active Products</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{stats.active}</div>
@@ -233,7 +233,7 @@ const AdminProjectsPage = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Featured Projects</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Featured Products</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">{stats.featured}</div>
@@ -242,7 +242,7 @@ const AdminProjectsPage = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Inactive Projects</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Inactive Products</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
@@ -255,7 +255,7 @@ const AdminProjectsPage = () => {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Search projects..."
+            placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -274,18 +274,18 @@ const AdminProjectsPage = () => {
             <Layers className="w-8 h-8 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-semibold mb-2">
-            {searchTerm ? 'No projects found' : 'No projects yet'}
+            {searchTerm ? 'No products found' : 'No products yet'}
           </h3>
           <p className="text-muted-foreground mb-4">
             {searchTerm 
               ? 'Try adjusting your search terms' 
-              : 'Get started by creating your first project'
+              : 'Get started by creating your first product'
             }
           </p>
           {!searchTerm && (
             <Button onClick={handleCreateProject} className="gap-2">
               <Plus className="w-4 h-4" />
-              Create Project
+              Create Product
             </Button>
           )}
         </Card>
@@ -414,7 +414,7 @@ const AdminProjectsPage = () => {
       <AlertDialog open={!!deleteProject} onOpenChange={() => setDeleteProject(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Project</AlertDialogTitle>
+            <AlertDialogTitle>Delete Product</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete "{deleteProject?.title}"? This action cannot be undone.
             </AlertDialogDescription>

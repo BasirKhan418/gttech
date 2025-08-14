@@ -61,10 +61,10 @@ const AdminSidebar = () => {
       ]
     },
     {
-      name: 'Project Management',
+      name: 'Product Management',
       icon: Folder,
       subItems: [
-        { name: 'All Projects', href: '/admin/projects', icon: Eye },
+        { name: 'All Product', href: '/admin/projects', icon: Eye },
       ]
     },
     {

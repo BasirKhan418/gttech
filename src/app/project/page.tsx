@@ -104,7 +104,7 @@ const ProjectsPage = () => {
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-500 mx-auto mb-4"></div>
-            <p className="text-gray-700 text-lg">Loading projects...</p>
+            <p className="text-gray-700 text-lg">Loading Products...</p>
           </div>
         </div>
       </main>
@@ -117,7 +117,7 @@ const ProjectsPage = () => {
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">Error Loading Projects</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Error Loading Products</h1>
             <p className="text-gray-600 mb-4">{error}</p>
             <button 
               onClick={fetchProjects}
@@ -215,12 +215,12 @@ const ProjectsPage = () => {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
                 <span className="block">Featured</span>
                 <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
-                  Projects
+                  Products
                 </span>
               </h1>
               
               <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-                Explore our diverse portfolio of innovative projects spanning across various technologies 
+                Explore our diverse portfolio of innovative products spanning across various technologies 
                 and industries, showcasing our expertise in digital transformation.
               </p>
             </div>
@@ -235,7 +235,7 @@ const ProjectsPage = () => {
             <div className="animate-on-scroll opacity-0 translate-y-10">
               <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center">
                 <Star className="w-6 h-6 text-yellow-500 mr-3" />
-                Featured Projects
+                Featured Products
               </h2>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
@@ -316,7 +316,7 @@ const ProjectsPage = () => {
                           {/* CTA */}
                           <div className="flex items-center justify-between">
                             <span className="text-cyan-600 font-semibold text-sm group-hover:text-cyan-700 transition-colors duration-300">
-                              View Project
+                              View Product
                             </span>
                             <ArrowRight className="w-4 h-4 text-cyan-600 group-hover:translate-x-1 group-hover:text-cyan-700 transition-all duration-300" />
                           </div>
@@ -375,12 +375,12 @@ const ProjectsPage = () => {
                       <Layers className="w-8 h-8 text-cyan-600" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                      {selectedCategory === 'all' ? 'No Projects Found' : `No ${selectedCategory} Projects`}
+                      {selectedCategory === 'all' ? 'No Products Found' : `No ${selectedCategory} Products`}
                     </h3>
                     <p className="text-gray-600 mb-8">
                       {selectedCategory === 'all' 
-                        ? 'We\'re working on exciting projects. Check back soon!' 
-                        : `No projects found in the ${selectedCategory} category. Try selecting a different category.`
+                        ? 'We\'re working on exciting products. Check back soon!' 
+                        : `No products found in the ${selectedCategory} category. Try selecting a different category.`
                       }
                     </p>
                     <Link
@@ -398,10 +398,10 @@ const ProjectsPage = () => {
             <>
               <div className="animate-on-scroll opacity-0 translate-y-10 mb-8">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">
-                  {selectedCategory === 'all' ? 'All Projects' : `${selectedCategory} Projects`}
+                  {selectedCategory === 'all' ? 'All Products' : `${selectedCategory} Products`}
                 </h2>
                 <p className="text-gray-600">
-                  {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'} found
+                  {filteredProjects.length} {filteredProjects.length === 1 ? 'product' : 'products'} found
                 </p>
               </div>
 
@@ -478,7 +478,7 @@ const ProjectsPage = () => {
                           {/* CTA */}
                           <div className="flex items-center justify-between">
                             <span className="text-cyan-600 font-semibold text-sm group-hover:text-cyan-700 transition-colors duration-300">
-                              View Project
+                              View Product
                             </span>
                             <ArrowRight className="w-4 h-4 text-cyan-600 group-hover:translate-x-1 group-hover:text-cyan-700 transition-all duration-300" />
                           </div>
@@ -526,7 +526,7 @@ const ProjectsPage = () => {
 
               <div className="relative z-10">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
-                  <span className="block">Have a Project</span>
+                  <span className="block">Have a Product</span>
                   <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
                     in Mind?
                   </span>
@@ -542,7 +542,7 @@ const ProjectsPage = () => {
                     href="/contact"
                     className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-full font-semibold text-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-cyan-500/25"
                   >
-                    Start Your Project
+                    Start Your Product
                     <Target className="w-5 h-5 ml-2 inline-block group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                   <Link

@@ -221,13 +221,13 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
       const data = await response.json()
 
       if (data.success) {
-        toast.success(`Project ${project ? "updated" : "created"} successfully`)
+        toast.success(`Product ${project ? "updated" : "created"} successfully`)
         onSuccess()
       } else {
         toast.error(data.message || `Failed to ${project ? "update" : "create"} project`)
       }
     } catch (error) {
-      toast.error("Failed to save project")
+      toast.error("Failed to save product")
     } finally {
       setSaving(false)
     }
@@ -242,7 +242,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{project ? "Edit Project" : "Create New Project"}</DialogTitle>
+          <DialogTitle>{project ? "Edit Product" : "Create New Product"}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -250,12 +250,12 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Project Title *</Label>
+              <Label htmlFor="title">Product Title *</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                placeholder="Enter project title"
+                placeholder="Enter product title"
                 required
               />
             </div>
@@ -279,7 +279,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Describe the project..."
+              placeholder="Describe the product..."
               rows={4}
               required
             />
@@ -287,7 +287,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
 
           {/* Icon Selection */}
           <div className="space-y-2">
-            <Label>Project Icon</Label>
+            <Label>Product Icon</Label>
             <div className="grid grid-cols-6 md:grid-cols-11 gap-2">
               {AVAILABLE_ICONS.map((iconData) => {
                 const IconComponent = iconData.icon
@@ -482,7 +482,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
                 checked={formData.isActive}
                 onCheckedChange={(checked) => handleInputChange("isActive", checked)}
               />
-              <Label htmlFor="isActive">Active Project</Label>
+              <Label htmlFor="isActive">Active Product</Label>
             </div>
 
             <div className="flex items-center space-x-2">
@@ -491,7 +491,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
                 checked={formData.isFeatured}
                 onCheckedChange={(checked) => handleInputChange("isFeatured", checked)}
               />
-              <Label htmlFor="isFeatured">Featured Project</Label>
+              <Label htmlFor="isFeatured">Featured Products</Label>
             </div>
           </div>
 
@@ -501,7 +501,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
               Cancel
             </Button>
             <Button type="submit" disabled={saving || uploading}>
-              {saving ? "Saving..." : project ? "Update Project" : "Create Project"}
+              {saving ? "Saving..." : project ? "Update Product" : "Create Product"}
             </Button>
           </div>
         </form>

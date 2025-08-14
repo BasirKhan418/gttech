@@ -89,11 +89,11 @@ const ProjectDetailPage = () => {
           setError('Project not found')
         }
       } else {
-        setError(data.message || 'Failed to fetch project')
+        setError(data.message || 'Failed to fetch product')
       }
     } catch (error) {
-      setError('Failed to fetch project')
-      console.error('Error fetching project:', error)
+      setError('Failed to fetch product')
+      console.error('Error fetching product:', error)
     } finally {
       setLoading(false)
     }
@@ -132,7 +132,7 @@ const ProjectDetailPage = () => {
         <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-cyan-500 mx-auto mb-4"></div>
-            <p className="text-gray-700 text-base sm:text-lg">Loading project...</p>
+            <p className="text-gray-700 text-base sm:text-lg">Loading product...</p>
           </div>
         </div>
       </main>
@@ -151,7 +151,7 @@ const ProjectDetailPage = () => {
               href="/project"
               className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors text-sm sm:text-base"
             >
-              Back to Projects
+              Back to Products
             </Link>
           </div>
         </div>
@@ -200,7 +200,7 @@ const ProjectDetailPage = () => {
               className="inline-flex items-center text-cyan-600 hover:text-cyan-700 transition-colors duration-300 mb-4 sm:mb-6 text-sm sm:text-base"
             >
               <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-              Back to Projects
+              Back to Products
             </Link>
           </div>
         </div>
@@ -284,7 +284,7 @@ const ProjectDetailPage = () => {
                   <div className="relative z-10">
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
                       <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-600 mr-2 sm:mr-3" />
-                      Project Overview
+                      Product Overview
                     </h2>
                     <div className="prose prose-gray max-w-none">
                       <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
@@ -355,7 +355,7 @@ const ProjectDetailPage = () => {
                     <div className="relative z-10">
                       <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
                         <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-600 mr-2 sm:mr-3" />
-                        Project Gallery
+                        Product Gallery
                       </h2>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4">
                         {projectDetail.images.map((image, index) => (
@@ -396,7 +396,7 @@ const ProjectDetailPage = () => {
                       href="/contact"
                       className="block w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg sm:rounded-xl font-semibold text-center hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-lg text-sm sm:text-base"
                     >
-                      Discuss Similar Project
+                      Discuss Similar Product
                     </Link>
                     
                     <button
@@ -404,14 +404,14 @@ const ProjectDetailPage = () => {
                       className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-white/80 border border-cyan-400/60 text-cyan-700 rounded-lg sm:rounded-xl font-semibold hover:bg-cyan-50/80 hover:border-cyan-500/70 transition-all duration-300 flex items-center justify-center gap-2 backdrop-blur-sm text-sm sm:text-base"
                     >
                       <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                      Share Project
+                      Share Product
                     </button>
                     
                     <Link
-                      href="/projects"
+                      href="/project"
                       className="block w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100/80 border border-gray-300/60 text-gray-700 rounded-lg sm:rounded-xl font-semibold text-center hover:bg-gray-200/80 hover:text-gray-800 transition-all duration-300 backdrop-blur-sm text-sm sm:text-base"
                     >
-                      View All Projects
+                      View All Products
                     </Link>
                   </div>
                 </div>
@@ -424,7 +424,7 @@ const ProjectDetailPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
                   
                   <div className="relative z-10">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Project Details</h3>
+                    <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Product Details</h3>
                     <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                       <div className="flex justify-between items-start">
                         <span className="text-gray-600 flex-shrink-0">Category:</span>
@@ -471,7 +471,7 @@ const ProjectDetailPage = () => {
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4 sm:mb-6">
                   <span className="block">Inspired by This</span>
                   <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
-                    Project?
+                    Product?
                   </span>
                 </h2>
                 
@@ -485,14 +485,14 @@ const ProjectDetailPage = () => {
                     href="/contact"
                     className="group px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-full font-semibold text-base sm:text-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-cyan-500/25"
                   >
-                    Start Your Project
+                    Start Your Product
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 inline-block group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                   <Link
-                    href="/projects"
+                    href="/project"
                     className="px-6 sm:px-8 py-3 sm:py-4 bg-white/80 border-2 border-cyan-400/60 text-cyan-700 rounded-full font-semibold text-base sm:text-lg hover:bg-cyan-50/80 hover:border-cyan-500/70 backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    Explore More Projects
+                    Explore More Products
                   </Link>
                 </div>
               </div>
