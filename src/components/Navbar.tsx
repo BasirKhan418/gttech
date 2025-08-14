@@ -40,7 +40,7 @@ const Navbar = () => {
               <div className="relative">
                 <Image
                   src="/logo.png"
-                  alt="GT Technologies Logo"
+                  alt="logo"
                   width={150}
                   height={50}
                   className="transition-transform duration-300 group-hover:scale-105"
