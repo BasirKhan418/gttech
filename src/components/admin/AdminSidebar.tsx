@@ -13,6 +13,7 @@ import {
   Sliders,
   ChevronDown,
   ChevronRight,
+  DollarSign,
   Upload,
   Eye,
   Edit,
@@ -56,7 +57,13 @@ const AdminSidebar = () => {
         { name: 'All Content', href: '/admin/content', icon: Eye },
        
       ]
-    },
+    },{
+  name: 'GAQ Management',
+  icon: DollarSign, // Import from lucide-react
+  subItems: [
+    { name: 'All Requests', href: '/admin/gaq', icon: Eye },
+  ]
+},
     {
       name: 'Banner Management',
       icon: Megaphone,
