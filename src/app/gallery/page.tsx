@@ -508,13 +508,13 @@ const GalleryPage = () => {
 
       {/* Lightbox Modal */}
       {showLightbox && selectedAlbum && selectedAlbum.images && (
-        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center">
+        <div className="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm flex items-center justify-center">
           <div className="relative w-full h-full flex items-center justify-center">
             
             {/* Close Button */}
             <button
               onClick={closeLightbox}
-              className="absolute top-4 right-4 w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300 z-10"
+              className="absolute top-4 right-4 w-12 h-12 bg-gray-800/20 backdrop-blur-sm border border-gray-400/40 rounded-full flex items-center justify-center text-gray-800 hover:bg-gray-800/30 transition-all duration-300 z-10"
             >
               <X className="w-6 h-6" />
             </button>
@@ -524,13 +524,13 @@ const GalleryPage = () => {
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300 z-10"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-800/20 backdrop-blur-sm border border-gray-400/40 rounded-full flex items-center justify-center text-gray-800 hover:bg-gray-800/30 transition-all duration-300 z-10"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300 z-10"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-800/20 backdrop-blur-sm border border-gray-400/40 rounded-full flex items-center justify-center text-gray-800 hover:bg-gray-800/30 transition-all duration-300 z-10"
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
@@ -549,12 +549,12 @@ const GalleryPage = () => {
 
             {/* Image Info */}
             <div className="absolute bottom-4 left-4 right-4">
-              <div className="bg-black/60 backdrop-blur-sm border border-white/20 rounded-2xl p-4 max-w-md mx-auto">
+              <div className="bg-gray-800/80 backdrop-blur-sm border border-gray-400/40 rounded-2xl p-4 max-w-md mx-auto">
                 <h3 className="text-white font-bold text-lg mb-1">{selectedAlbum.title}</h3>
-                <p className="text-gray-300 text-sm">
+                <p className="text-gray-200 text-sm">
                   Image {selectedImageIndex + 1} of {selectedAlbum.images.length}
                 </p>
-              </div>
+              </div>              
             </div>
 
             {/* Thumbnails */}
