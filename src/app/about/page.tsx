@@ -183,7 +183,7 @@ const AboutPage = () => {
                   animationDuration: '3s'
                 }}
               ></div>
-            ))}
+            ))}                     
           </div>
         </div>
       </div>
@@ -238,9 +238,7 @@ const AboutPage = () => {
                 <p className="text-lg sm:text-xl lg:text-2xl text-gray-400 max-w-4xl mx-auto leading-relaxed mb-6 md:mb-8 group-hover:text-gray-300 transition-colors duration-300">
                   Future-ready technology company delivering Industry 4.0 solutions for heavy industries
                 </p>
-                
-                {/* Animated underline effect */}
-                <div className="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 w-0 h-px bg-gradient-to-r from-sky-400 to-cyan-400 group-hover:w-32 transition-all duration-500"></div>
+                <div className="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 w-0 h-px bg-gradient-to-r from-sky-400 to-cyan-400 group-hover:w-32 transition-all duration-500"> </div>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 relative group px-4">
