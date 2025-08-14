@@ -10,7 +10,7 @@ import { EditCareerModal } from "../../../../utils/careers/edit-career-modal"
 import { AIPromptModal } from "../../../../utils/careers/ai-prompt-modal"
 import { DeleteConfirmModal } from "../../../../utils/careers/delete-confirm-modal"
 import { toast } from "sonner"
-import type { Career } from "../../../../utils/careers/career"
+import type { Career, CreateCareerData } from "../../../../utils/careers/career"
 
 export default function CareersPage() {
   const [careers, setCareers] = useState<Career[]>([])

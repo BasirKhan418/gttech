@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import VerifyJwt from "../../../../utils/VerifyJwt";
 import { finduser } from "../../../../repository/db/auth";
 
-export const GET = async (req: NextRequest) => {
+export const GET = async () => {
     try {
         let response = await getGallery();
         return NextResponse.json({ success: true, data: response.data });

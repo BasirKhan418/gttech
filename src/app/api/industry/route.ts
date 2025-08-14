@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import VerifyJwt from "../../../../utils/VerifyJwt";
 import { finduser } from "../../../../repository/db/auth";
 
-export const GET = async (req: NextRequest) => {
+export const GET = async () => {
     try {
         console.log('Industry GET API called');
         let response = await getIndustries();

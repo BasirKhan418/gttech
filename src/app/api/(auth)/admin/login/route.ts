@@ -3,7 +3,7 @@ import { finduser } from "../../../../../../repository/db/auth";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import CryptoJS from "crypto-js";
-export const POST = async (req: NextRequest, res: NextResponse) => {
+export const POST = async (req: NextRequest) => {
     try {
         //intializing cookies
         const cookieObj = await cookies();

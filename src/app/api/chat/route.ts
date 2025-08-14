@@ -1,4 +1,3 @@
-// app/api/chat/route.ts
 import OpenAI from 'openai';
 import { NextRequest } from 'next/server';
 

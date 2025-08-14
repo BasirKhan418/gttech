@@ -4,7 +4,7 @@ import { finduser,CreateUser,DeleteUser } from "../../../../../../repository/db/
 import SendSignupEmail from "../../../../../../email/auth/SendSignupEmail";
 
 
-export const POST = async(req: NextRequest, res: NextResponse)=>{
+export const POST = async(req: NextRequest)=>{
 try{
   const data = await req.json();
   const {email,name,username,password,img,phone}=data;
@@ -32,7 +32,7 @@ return NextResponse.json({success:false,message:"Error signing up user.Please tr
 
 
 
-export const DELETE = async(req: NextRequest, res: NextResponse)=>{
+export const DELETE = async(req: NextRequest)=>{
     try{
      const data = await req.json();
      const result = await DeleteUser(data.id);

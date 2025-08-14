@@ -6,7 +6,7 @@ import VerifyJwt from "../../../../utils/VerifyJwt";
 import { finduser } from "../../../../repository/db/auth";
 //fetch all content
 
-export const GET = async (req: NextRequest, res: NextResponse) => {
+export const GET = async () => {
     try {
         const content = await getContent();
         if (content.success) {
@@ -19,7 +19,7 @@ export const GET = async (req: NextRequest, res: NextResponse) => {
     }
 }
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
+export const POST = async (req: NextRequest) => {
     try {
         let getobj = await cookies();
         let token = getobj.get("token");
@@ -41,7 +41,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 }
 
 
-export const PUT = async (req: NextRequest, res: NextResponse) => {
+export const PUT = async (req: NextRequest) => {
     try{
         const data = await req.json();
          let getobj = await cookies();
@@ -61,7 +61,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
 }
 
 
-export const DELETE = async (req: NextRequest, res: NextResponse) => {
+export const DELETE = async (req: NextRequest) => {
     try{
         const data = await req.json();
         //@ts-ignore

@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getIndustriesByCategory } from "../../../../../repository/db/industry";
 
-export const GET = async (req: NextRequest, { params }: { params: { category: string } }) => {
+export const GET = async (_req: NextRequest, { params }: { params: Promise<{ category: string }> }) => {
     try {
-        const category = params.category;
+        const { category } = await params;
         let response = await getIndustriesByCategory(category);
         return NextResponse.json(response);
     } catch (error) {

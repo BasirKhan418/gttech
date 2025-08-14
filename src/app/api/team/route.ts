@@ -3,7 +3,7 @@ import { getTeams,addTeam,updateTeam,deleteTeam } from "../../../../repository/d
 import { finduser } from "../../../../repository/db/auth";
 import VerifyJwt from "../../../../utils/VerifyJwt";
 import { cookies } from "next/headers";
-export const GET = async (req: NextRequest, res: NextResponse) => {
+export const GET = async () => {
     try{
         let response = await getTeams();
        return NextResponse.json({success:true,data:response});
@@ -14,7 +14,7 @@ export const GET = async (req: NextRequest, res: NextResponse) => {
 }
 
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
+export const POST = async (req: NextRequest) => {
     try {
         let getobj = await cookies();
         let token = getobj.get("token");
@@ -36,7 +36,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 }
 
 
-export const PUT = async (req: NextRequest, res: NextResponse) => {
+export const PUT = async (req: NextRequest) => {
     try{
         const data = await req.json();
          let getobj = await cookies();
@@ -56,7 +56,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
 }
 
 
-export const DELETE = async (req: NextRequest, res: NextResponse) => {
+export const DELETE = async (req: NextRequest) => {
     try{
         const data = await req.json();
         //@ts-ignore
