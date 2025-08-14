@@ -358,7 +358,7 @@ const SolutionDetailPage = () => {
               
               {/* Action Buttons */}
               <div className="animate-on-scroll opacity-0 translate-y-10">
-                <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-600/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 sticky top-4 sm:top-8 shadow-xl">
+                <div className="bg-white/70 backdrop-blur-sm border border-cyan-600/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 sticky top-4 sm:top-8 shadow-xl">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
                   <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
                   

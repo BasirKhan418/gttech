@@ -280,15 +280,10 @@ const CareerPage = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 pt-20 pb-2 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <div className="animate-on-scroll opacity-0 translate-y-10">
-              <div className="inline-flex items-center px-6 py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6">
-                <Briefcase className="w-4 h-4 mr-2" />
-                <span className="font-medium">Join Our Team</span>
-              </div>
-              
+            <div className="animate-on-scroll opacity-0 translate-y-10">              
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
                 <span className="block">Shape the Future of</span>
                 <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
@@ -306,7 +301,7 @@ const CareerPage = () => {
       </section>
 
       {/* Search and Filter Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 mb-16">
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 mb-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="bg-white/80 backdrop-blur-sm border border-cyan-600/50 rounded-3xl p-6 lg:p-8 shadow-xl">
@@ -367,7 +362,7 @@ const CareerPage = () => {
       </section>
 
       {/* Job Listings */}
-      <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           
           {filteredJobs.length === 0 ? (
@@ -613,7 +608,7 @@ const CareerPage = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="relative bg-white/80 backdrop-blur-sm border border-cyan-600/50 rounded-3xl p-12 overflow-hidden shadow-xl">

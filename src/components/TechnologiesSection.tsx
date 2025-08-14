@@ -28,7 +28,7 @@ const TechnologiesSection = () => {
   ]
 
   return (
-    <section className="py-24 bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
+    <section className="py-8 bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10 lg:opacity-15">
         <div className="absolute inset-0" style={{
@@ -115,7 +115,7 @@ const TechnologiesSection = () => {
               Serve
             </span>
           </h3>
-          <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto mb-16 leading-relaxed">
+          <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed">
             Delivering specialized solutions across diverse industry verticals with deep domain expertise 
             and cutting-edge technology implementations.
           </p>
@@ -212,7 +212,7 @@ const TechnologiesSection = () => {
         </div>
 
         {/* Industry Partners Section */}
-        <div className="mt-24 text-center">
+        <div className="mt-12 text-center">
           <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-12 max-w-5xl mx-auto overflow-hidden shadow-2xl">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-8">

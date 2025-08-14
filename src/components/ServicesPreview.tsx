@@ -68,7 +68,7 @@ const ServicesPreview = () => {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
+    <section className="py-8 bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-8">
         <div className="absolute inset-0" style={{
@@ -101,9 +101,9 @@ const ServicesPreview = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Consultation Section */}
-        <div className="mb-20">
+        <div className="mb-12">
           {/* Consultation Header */}
-          <div className="text-center mb-16 max-w-4xl mx-auto">
+          <div className="text-center mb-8 max-w-4xl mx-auto">
             <div className="inline-flex items-center px-6 py-3 glass-badge bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-lg">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -135,7 +135,6 @@ const ServicesPreview = () => {
                 Discovery Call
               </span>
 
-              {/* Enhanced toggle */}
               <button
                 onClick={handleSwitch}
                 className="relative w-16 h-8 flex items-center rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 transition-all duration-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-300/50"

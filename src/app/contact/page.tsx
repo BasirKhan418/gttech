@@ -199,20 +199,11 @@ const ContactPage = () => {
         </div>
       </div>
 
-      <section className="relative z-10 flex items-center min-h-screen pt-16 lg:pt-20 mt-16 lg:mt-24">
+      <section className="relative z-10 flex items-center min-h-screen pt-12 lg:pt-12 mt-16 lg:mt-18">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             
-            <div className="animate-on-scroll opacity-0 translate-y-10">
-              <div className="relative bottom-4">
-                <Image
-                  src="/logo.png"
-                  alt="GT Technologies Logo"
-                  width={300}
-                  height={100}
-                />
-              </div>
-              
+            <div className="animate-on-scroll opacity-0 translate-y-10">              
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
                 <span className="block">Ready to</span>
                 <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">

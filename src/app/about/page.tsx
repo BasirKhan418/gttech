@@ -392,20 +392,11 @@ const AboutPage = () => {
       </div>
 
       {/* Hero Section with Enhanced Visual Effects */}
-      <section className="relative z-10 pt-24 lg:pt-32 pb-16">
+      <section className="relative z-10 pt-24 lg:pt-20 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center animate-on-scroll opacity-0 translate-y-10 relative">
             
             <div className="relative z-10">
-              <div className="mb-6 md:mb-8 relative group">
-                <Image
-                  src="/logo.png"
-                  alt="GramTarang Technologies Logo"
-                  width={200}
-                  height={80}
-                  className="mx-auto mb-4 md:mb-6 relative z-10 transition-transform duration-500 group-hover:scale-105 w-32 h-auto sm:w-40 md:w-48 lg:w-52"
-                />
-              </div>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4 md:mb-6 leading-tight relative px-4">
                 <span className="block hover:scale-105 transition-transform duration-300">About</span>
@@ -426,11 +417,11 @@ const AboutPage = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 relative group px-4">
-                <span className="group-hover:text-gray-600 transition-colors duration-300">Incubated by</span>
+                <span className="group-hover:text-gray-600 transition-colors duration-300">Incubated with</span>
                 <div className="w-4 h-px sm:w-px sm:h-4 bg-cyan-500/60 group-hover:bg-cyan-500/90 transition-colors duration-300"></div>
                 <span className="text-cyan-600 font-semibold group-hover:text-cyan-700 transition-colors duration-300">Centurion University</span>
                 <div className="w-4 h-px sm:w-px sm:h-4 bg-cyan-500/60 group-hover:bg-cyan-500/90 transition-colors duration-300"></div>
-                <span className="group-hover:text-gray-600 transition-colors duration-300">Est. 2020</span>
+                <span className="group-hover:text-gray-600 transition-colors duration-300">Est. 2018</span>
                 
                 {/* Subtle glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
@@ -441,7 +432,7 @@ const AboutPage = () => {
       </section>
 
       {/* Our Story Section - Updated to Cyan Theme */}
-      <section className="relative z-10 py-12 md:py-16 lg:py-24">
+      <section className="relative z-10 py-2 md:py-2 lg:py-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-6 md:p-8 lg:p-12 overflow-hidden group hover:border-cyan-400/60 transition-all duration-500 shadow-lg shadow-cyan-500/10">
@@ -516,7 +507,7 @@ const AboutPage = () => {
       </section>
 
       {/* Our Foundation Section - Enhanced Design with Cyan Theme */}
-      <section className="relative z-10 py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-6 md:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
             
@@ -629,7 +620,7 @@ const AboutPage = () => {
       </section>
 
       {/* Enhanced Partners Section - Cyan Theme */}
-      <section className="relative z-10 py-12 md:py-16 lg:py-24">
+      <section className="relative z-10 py-6 md:py-6 lg:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-6 md:p-8 lg:p-12 overflow-hidden group hover:border-cyan-400/60 transition-all duration-500 shadow-lg shadow-cyan-500/10">
@@ -696,7 +687,7 @@ const AboutPage = () => {
       </section>
 
       {/* Optimized Team Section */}
-      <section className="relative z-10 py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-6 md:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           
           {/* Static Header - Won't Re-render */}
@@ -743,7 +734,7 @@ const AboutPage = () => {
       </section>
 
       {/* Vision & Mission Section - Cyan Theme */}
-      <section className="relative z-10 py-12 md:py-16 lg:py-24">
+      <section className="relative z-10 py-12 md:py-6 lg:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Vision & Mission Header */}
@@ -936,7 +927,7 @@ const AboutPage = () => {
       </section>
 
       {/* Call to Action - Cyan Theme */}
-      <section className="relative z-10 py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 py-12 md:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-8 md:p-12 lg:p-16 overflow-hidden group hover:border-cyan-400/60 transition-all duration-500 shadow-lg shadow-cyan-500/10">
