@@ -79,19 +79,19 @@ const HeroSection = () => {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-gray-950 via-slate-950 to-black pt-16 lg:pt-20">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-white via-cyan-50 to-cyan-100 pt-16 lg:pt-20">
       {/* Background Elements */}
-      <div className="absolute inset-0 opacity-5 lg:opacity-10">
+      <div className="absolute inset-0 opacity-10 lg:opacity-20">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)
+            linear-gradient(rgba(6,182,212,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6,182,212,0.1) 1px, transparent 1px)
           `,
           backgroundSize: '30px 30px'
         }}></div>
       </div>
 
-      {/* Floating Particles with Blue Accent */}
+      {/* Floating Particles with Cyan Accent */}
       <div className="absolute inset-0 pointer-events-none">
         {[
           { left: 10, top: 20, delay: 0, duration: 4 },
@@ -102,7 +102,7 @@ const HeroSection = () => {
           <div
             key={i}
             className={`absolute w-1 h-1 rounded-full animate-float hidden sm:block ${
-              i % 2 === 0 ? 'bg-sky-400/40' : 'bg-white/15'
+              i % 2 === 0 ? 'bg-cyan-900/60' : 'bg-cyan-500/40'
             }`}
             style={{
               left: `${particle.left}%`,
@@ -122,7 +122,7 @@ const HeroSection = () => {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-sky-400/25 to-transparent animate-data-flow"
+                className="absolute left-0 w-px bg-gradient-to-b from-transparent via-cyan-900/30 to-transparent animate-data-flow"
                 style={{
                   left: `${i * 15}%`,
                   height: '100%',
@@ -145,8 +145,8 @@ const HeroSection = () => {
                   animationDelay: `${i * 0.4}s`
                 }}
               >
-                <div className={`rounded-full border ${i % 2 === 0 ? 'border-sky-400/35' : 'border-white/25'} ${i % 3 === 0 ? 'w-3 h-3' : i % 3 === 1 ? 'w-2 h-2' : 'w-1 h-1'}`}>
-                  <div className={`rounded-full w-full h-full animate-ping ${i % 2 === 0 ? 'bg-sky-400/15' : 'bg-white/8'}`}
+                <div className={`rounded-full border ${i % 2 === 0 ? 'border-cyan-800/40' : 'border-cyan-900/30'} ${i % 3 === 0 ? 'w-3 h-3' : i % 3 === 1 ? 'w-2 h-2' : 'w-1 h-1'}`}>
+                  <div className={`rounded-full w-full h-full animate-ping ${i % 2 === 0 ? 'bg-cyan-400/20' : 'bg-cyan-200/15'}`}
                        style={{ animationDelay: `${i * 0.6}s` }}></div>
                 </div>
               </div>
@@ -154,13 +154,13 @@ const HeroSection = () => {
           </div>
 
           {/* Matrix Pattern */}
-          <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 opacity-15">
             <div className="grid grid-cols-4 h-full gap-1 p-2">
               {[...Array(40)].map((_, i) => (
                 <div
                   key={i}
                   className={`animate-matrix-blink ${i % 7 === 0 ? 'h-2' : i % 5 === 0 ? 'h-1' : 'h-0.5'} ${
-                    i % 3 === 0 ? 'bg-sky-400/15' : 'bg-white/8'
+                    i % 3 === 0 ? 'bg-cyan-800/20' : 'bg-cyan-200/15'
                   }`}
                   style={{ 
                     animationDelay: `${i * 0.1}s`,
@@ -174,10 +174,10 @@ const HeroSection = () => {
           {/* Orbital Rings */}
           <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
             <div className="relative w-16 h-16">
-              <div className="absolute inset-0 rounded-full border border-sky-400/25 animate-spin-slow"></div>
-              <div className="absolute inset-2 rounded-full border border-white/15 animate-spin-reverse"></div>
-              <div className="absolute inset-4 rounded-full border border-sky-400/40"></div>
-              <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-sky-400/50 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+              <div className="absolute inset-0 rounded-full border border-cyan-800/30 animate-spin-slow"></div>
+              <div className="absolute inset-2 rounded-full border border-white/40 animate-spin-reverse"></div>
+              <div className="absolute inset-4 rounded-full border border-cyan-800/50"></div>
+              <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-cyan-800/60 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
             </div>
           </div>
 
@@ -201,14 +201,14 @@ const HeroSection = () => {
               />
               <defs>
                 <linearGradient id="gradientLeft1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(14,165,233,0.15)" />
-                  <stop offset="50%" stopColor="rgba(14,165,233,0.35)" />
-                  <stop offset="100%" stopColor="rgba(14,165,233,0.15)" />
+                  <stop offset="0%" stopColor="rgba(6,182,212,0.2)" />
+                  <stop offset="50%" stopColor="rgba(6,182,212,0.4)" />
+                  <stop offset="100%" stopColor="rgba(6,182,212,0.2)" />
                 </linearGradient>
                 <linearGradient id="gradientLeft2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(255,255,255,0.05)" />
-                  <stop offset="50%" stopColor="rgba(255,255,255,0.2)" />
-                  <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
+                  <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
+                  <stop offset="50%" stopColor="rgba(255,255,255,0.6)" />
+                  <stop offset="100%" stopColor="rgba(255,255,255,0.3)" />
                 </linearGradient>
               </defs>
             </svg>
@@ -224,7 +224,7 @@ const HeroSection = () => {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="absolute right-0 w-px bg-gradient-to-b from-transparent via-blue-400/30 to-transparent animate-data-flow"
+                className="absolute right-0 w-px bg-gradient-to-b from-transparent via-cyan-800/35 to-transparent animate-data-flow"
                 style={{
                   right: `${i * 15}%`,
                   height: '100%',
@@ -247,8 +247,8 @@ const HeroSection = () => {
                   animationDelay: `${i * 0.4}s`
                 }}
               >
-                <div className={`rounded-full border ${i % 2 === 0 ? 'border-blue-400/40' : 'border-white/30'} ${i % 3 === 0 ? 'w-3 h-3' : i % 3 === 1 ? 'w-2 h-2' : 'w-1 h-1'}`}>
-                  <div className={`rounded-full w-full h-full animate-ping ${i % 2 === 0 ? 'bg-blue-400/20' : 'bg-white/10'}`}
+                <div className={`rounded-full border ${i % 2 === 0 ? 'border-cyan-800/45' : 'border-white/50'} ${i % 3 === 0 ? 'w-3 h-3' : i % 3 === 1 ? 'w-2 h-2' : 'w-1 h-1'}`}>
+                  <div className={`rounded-full w-full h-full animate-ping ${i % 2 === 0 ? 'bg-cyan-500/25' : 'bg-white/20'}`}
                        style={{ animationDelay: `${i * 0.6}s` }}></div>
                 </div>
               </div>
@@ -256,13 +256,13 @@ const HeroSection = () => {
           </div>
 
           {/* Matrix Pattern */}
-          <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 opacity-15">
             <div className="grid grid-cols-4 h-full gap-1 p-2">
               {[...Array(40)].map((_, i) => (
                 <div
                   key={i}
                   className={`animate-matrix-blink ${i % 7 === 0 ? 'h-2' : i % 5 === 0 ? 'h-1' : 'h-0.5'} ${
-                    i % 3 === 0 ? 'bg-blue-400/20' : 'bg-white/10'
+                    i % 3 === 0 ? 'bg-cyan-900/25' : 'bg-white/20'
                   }`}
                   style={{ 
                     animationDelay: `${i * 0.1}s`,
@@ -276,10 +276,10 @@ const HeroSection = () => {
           {/* Orbital Rings */}
           <div className="absolute top-1/2 right-8 transform -translate-y-1/2">
             <div className="relative w-16 h-16">
-              <div className="absolute inset-0 rounded-full border border-blue-400/30 animate-spin-slow"></div>
-              <div className="absolute inset-2 rounded-full border border-white/20 animate-spin-reverse"></div>
-              <div className="absolute inset-4 rounded-full border border-blue-400/50"></div>
-              <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-blue-400/60 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+              <div className="absolute inset-0 rounded-full border border-cyan-800 animate-spin-slow"></div>
+              <div className="absolute inset-2 rounded-full border border-white/50 animate-spin-reverse"></div>
+              <div className="absolute inset-4 rounded-full border border-cyan-800"></div>
+              <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-cyan-800 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
             </div>
           </div>
 
@@ -303,14 +303,14 @@ const HeroSection = () => {
               />
               <defs>
                 <linearGradient id="gradientRight1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(59,130,246,0.2)" />
-                  <stop offset="50%" stopColor="rgba(59,130,246,0.5)" />
-                  <stop offset="100%" stopColor="rgba(59,130,246,0.2)" />
+                  <stop offset="0%" stopColor="rgba(8,145,178,0.25)" />
+                  <stop offset="50%" stopColor="rgba(8,145,178,0.55)" />
+                  <stop offset="100%" stopColor="rgba(8,145,178,0.25)" />
                 </linearGradient>
                 <linearGradient id="gradientRight2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(255,255,255,0.1)" />
-                  <stop offset="50%" stopColor="rgba(255,255,255,0.3)" />
-                  <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+                  <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
+                  <stop offset="50%" stopColor="rgba(255,255,255,0.7)" />
+                  <stop offset="100%" stopColor="rgba(255,255,255,0.4)" />
                 </linearGradient>
               </defs>
             </svg>
@@ -334,7 +334,7 @@ const HeroSection = () => {
               <div className="animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-100">
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-blue-400/5 rounded-xl blur-sm"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-cyan-400/10 rounded-xl blur-sm"></div>
                     <div className="relative">
                       <Image
                         src="/logo.png"
@@ -350,16 +350,16 @@ const HeroSection = () => {
               </div>
 
               <div className="space-y-3 lg:space-y-4">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-200">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-800 leading-tight animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-200">
                  <span className="block">Empowering</span>
-                  <span className="block bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
                     Industry
                   </span>
-                  <span className="block text-gray-300">Transformation</span>
+                  <span className="block text-gray-700">Transformation</span>
                 </h1>
               </div>
 
-              <p className="text-base sm:text-lg lg:text-xl text-gray-400 leading-relaxed animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-400">
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-400">
                 Leading the 4th industrial revolution with cutting-edge solutions in AR/VR, robotics, 
                 3D printing, automation, and AI. We digitize organizations with premium technology 
                 partnerships including Dassault Systemes and industry leaders.
@@ -367,17 +367,17 @@ const HeroSection = () => {
 
               <div className="animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-500">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                  <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-500/20 rounded-lg p-3 text-center hover:border-blue-400/40 transition-colors">
-                    <div className="text-white font-semibold">Design & Development</div>
-                    <div className="text-gray-400 text-xs mt-1">Product Innovation</div>
+                  <div className="bg-white/80 backdrop-blur-sm border border-cyan-800/60 rounded-lg p-3 text-center hover:border-cyan-300/80 transition-colors shadow-sm">
+                    <div className="text-gray-800 font-semibold">Design & Development</div>
+                    <div className="text-gray-600 text-xs mt-1">Product Innovation</div>
                   </div>
-                  <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-500/20 rounded-lg p-3 text-center hover:border-blue-400/40 transition-colors">
-                    <div className="text-white font-semibold">Centre of Excellence</div>
-                    <div className="text-gray-400 text-xs mt-1">Skill Development</div>
+                  <div className="bg-white/80 backdrop-blur-sm border border-cyan-800/60 rounded-lg p-3 text-center hover:border-cyan-300/80 transition-colors shadow-sm">
+                    <div className="text-gray-800 font-semibold">Centre of Excellence</div>
+                    <div className="text-gray-600 text-xs mt-1">Skill Development</div>
                   </div>
-                  <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-500/20 rounded-lg p-3 text-center hover:border-blue-400/40 transition-colors">
-                    <div className="text-white font-semibold">Solution Implementation</div>
-                    <div className="text-gray-400 text-xs mt-1">Engineering Support</div>
+                  <div className="bg-white/80 backdrop-blur-sm border border-cyan-800/60 rounded-lg p-3 text-center hover:border-cyan-300/80 transition-colors shadow-sm">
+                    <div className="text-gray-800 font-semibold">Solution Implementation</div>
+                    <div className="text-gray-600 text-xs mt-1">Engineering Support</div>
                   </div>
                 </div>
               </div>
@@ -386,14 +386,14 @@ const HeroSection = () => {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-on-scroll opacity-0 translate-y-10 transition-all duration-1000 delay-600">
                 <Link
                   href="/services"
-                  className="group px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full font-semibold text-base lg:text-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-blue-500/25 text-center"
+                  className="group px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-full font-semibold text-base lg:text-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-cyan-500/30 text-center"
                 >
                   Explore Solutions
                   <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
                 </Link>
                 <Link
                   href="/gta"
-                  className="px-6 py-3 lg:px-8 lg:py-4 bg-transparent border-2 border-blue-400/50 text-white rounded-full font-semibold text-base lg:text-lg hover:bg-blue-500/10 hover:border-blue-400 backdrop-blur-sm transition-all duration-300 hover:scale-105 text-center"
+                  className="px-6 py-3 lg:px-8 lg:py-4 bg-white/60 border-2 border-cyan-400/60 text-gray-800 rounded-full font-semibold text-base lg:text-lg hover:bg-cyan-50/80 hover:border-cyan-500/80 backdrop-blur-sm transition-all duration-300 hover:scale-105 text-center"
                 >
                   Start Project
                 </Link>
@@ -403,7 +403,7 @@ const HeroSection = () => {
 
             <div className="order-2 lg:order-2 py-8 lg:py-0 animate-on-scroll opacity-0 translate-y-10 lg:translate-x-10 lg:translate-y-0 transition-all duration-1000 delay-400">
               
-              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] rounded-2xl lg:rounded-3xl overflow-hidden bg-slate-800/30 backdrop-blur-sm border border-blue-500/20">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] rounded-2xl lg:rounded-3xl overflow-hidden bg-white/60 backdrop-blur-sm border border-cyan-200/50 shadow-xl">
                 
                 <div className="relative h-full overflow-hidden">
                   {showcases.map((showcase, index) => (
@@ -425,18 +425,18 @@ const HeroSection = () => {
                       />
                       
                       {/* Overlay Gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent"></div>
                       
                       {/* Content Overlay - Responsive Padding */}
                       <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8">
                         <div className="space-y-2 lg:space-y-3">
-                          <div className="inline-block px-2 py-1 lg:px-3 lg:py-1 bg-blue-500/30 backdrop-blur-sm rounded-full text-xs text-white border border-blue-400/30">
+                          <div className="inline-block px-2 py-1 lg:px-3 lg:py-1 bg-cyan-800/40 backdrop-blur-sm rounded-full text-xs text-white border border-cyan-800/40">
                             {showcase.category}
                           </div>
                           <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white leading-tight">
                             {showcase.title}
                           </h3>
-                          <p className="text-gray-300 text-sm lg:text-base leading-relaxed">
+                          <p className="text-gray-200 text-sm lg:text-base leading-relaxed">
                             {showcase.description}
                           </p>
                         </div>
@@ -447,13 +447,13 @@ const HeroSection = () => {
 
                 <button
                   onClick={prevSlide}
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-slate-800/50 backdrop-blur-sm border border-blue-500/30 rounded-full flex items-center justify-center text-white hover:bg-slate-700/70 hover:border-blue-400/50 transition-all duration-300 hover:scale-110 text-sm sm:text-base"
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/70 backdrop-blur-sm border border-cyan-300/60 rounded-full flex items-center justify-center text-gray-700 hover:bg-white/90 hover:border-cyan-400/80 transition-all duration-300 hover:scale-110 text-sm sm:text-base shadow-md"
                 >
                   ←
                 </button>
                 <button
                   onClick={nextSlide}
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-slate-800/50 backdrop-blur-sm border border-blue-500/30 rounded-full flex items-center justify-center text-white hover:bg-slate-700/70 hover:border-blue-400/50 transition-all duration-300 hover:scale-110 text-sm sm:text-base"
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/70 backdrop-blur-sm border border-cyan-300/60 rounded-full flex items-center justify-center text-gray-700 hover:bg-white/90 hover:border-cyan-400/80 transition-all duration-300 hover:scale-110 text-sm sm:text-base shadow-md"
                 >
                   →
                 </button>
@@ -465,15 +465,15 @@ const HeroSection = () => {
                       onClick={() => setCurrentSlide(index)}
                       className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
                         index === currentSlide 
-                          ? 'bg-blue-400 w-6 sm:w-8' 
-                          : 'bg-white/40 hover:bg-blue-400/60 w-1.5 sm:w-2'
+                          ? 'bg-cyan-800 w-6 sm:w-8' 
+                          : 'bg-white/60 hover:bg-cyan-800/70 w-1.5 sm:w-2'
                       }`}
                     ></button>
                   ))}
                 </div>
 
-                <div className="absolute -top-3 -right-3 lg:-top-6 lg:-right-6 w-8 h-8 lg:w-12 lg:h-12 bg-blue-500/20 backdrop-blur-sm rounded-full animate-float hidden sm:block"></div>
-                <div className="absolute -bottom-2 -left-2 lg:-bottom-4 lg:-left-4 w-6 h-6 lg:w-8 lg:h-8 bg-slate-800/30 backdrop-blur-sm rounded-full animate-float hidden sm:block" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute -top-3 -right-3 lg:-top-6 lg:-right-6 w-8 h-8 lg:w-12 lg:h-12 bg-cyan-400/30 backdrop-blur-sm rounded-full animate-float hidden sm:block"></div>
+                <div className="absolute -bottom-2 -left-2 lg:-bottom-4 lg:-left-4 w-6 h-6 lg:w-8 lg:h-8 bg-white/50 backdrop-blur-sm rounded-full animate-float hidden sm:block" style={{ animationDelay: '2s' }}></div>
               </div>
 
               <div className="hidden sm:flex justify-center mt-4 lg:mt-6 space-x-2 lg:space-x-4  pb-2">
@@ -481,10 +481,10 @@ const HeroSection = () => {
                   <button
                     key={showcase.id}
                     onClick={() => setCurrentSlide(index)}
-                    className={`relative flex-shrink-0 w-16 h-12 lg:w-20 lg:h-16 rounded-lg overflow-hidden transition-all duration-300 ${
+                    className={`relative flex-shrink-0 w-16 h-12 lg:w-20 lg:h-16 rounded-lg overflow-hidden transition-all duration-300 border ${
                       index === currentSlide 
-                        ? 'ring-2 ring-blue-400 scale-105' 
-                        : 'opacity-60 hover:opacity-80'
+                        ? 'ring-2 ring-cyan-800 scale-105 border-cyan-800' 
+                        : 'opacity-60 hover:opacity-80 border-cyan-800'
                     }`}
                   >
                     <Image
@@ -504,8 +504,8 @@ const HeroSection = () => {
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-4 lg:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce hidden sm:block">
-        <div className="w-5 h-8 lg:w-6 lg:h-10 border-2 border-blue-400/50 rounded-full flex justify-center">
-          <div className="w-0.5 h-2 lg:w-1 lg:h-3 bg-blue-400 rounded-full mt-1.5 lg:mt-2 animate-pulse"></div>
+        <div className="w-5 h-8 lg:w-6 lg:h-10 border-2 border-cyan-900/60 rounded-full flex justify-center">
+          <div className="w-0.5 h-2 lg:w-1 lg:h-3 bg-cyan-900 rounded-full mt-1.5 lg:mt-2 animate-pulse"></div>
         </div>
       </div>
     </section>

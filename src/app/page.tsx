@@ -6,7 +6,7 @@ import DynamicBannerSection from '@/components/banner'
 
 const HomePage = () => {
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-white">
       <HeroSection />
       <TechnologiesSection />
       <DynamicBannerSection/>
