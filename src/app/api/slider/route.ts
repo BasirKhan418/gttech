@@ -2,7 +2,7 @@ import { NextResponse,NextRequest } from "next/server";
 import { getSlider,addSlider,updateSlider,deleteSlider } from "../../../../repository/db/slider";
 import { cookies } from "next/headers";
 import VerifyJwt from "../../../../utils/VerifyJwt";
-
+import { finduser } from "../../../../repository/db/auth";
 export const GET = async (req: NextRequest, res: NextResponse) => {
     try{
         let response  = await getSlider();
@@ -23,6 +23,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
         const data  =await req.json();
         const content = await addSlider({...data,lastEditedAuthor: userdata.data._id,author: userdata.data._id});
+        console.log(content)
         console.log("Content created:", content);
         if (content.success) {
             return NextResponse.json({ success: true }, { status: 201 });

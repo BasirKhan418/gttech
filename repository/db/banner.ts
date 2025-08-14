@@ -3,7 +3,8 @@ import Banner from "../../models/Banner";
 const getBanners = async()=>{
 try{
 await ConnectDb();
-let data = await Banner.find();
+let data = await Banner.find().find({}).populate("author lastEditedAuthor")
+            .sort({ createdAt: -1 });;
 return {success:true,message:"Banners fetched successfully",data}
 }
 catch(error){
