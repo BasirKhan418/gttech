@@ -1,6 +1,16 @@
 import { asyncWrapProviders } from "async_hooks";
 import Admin from "../../models/Admin";
 import ConnectDb from "../../middlewares/connectdb";
+
+const fetchAdminsFromDB = async()=>{
+try{
+let admins = await Admin.find();
+return {success:true,message:"Admins fetched successfully",data:admins};
+}
+catch(err){
+  return {success:false,message:"Error fetching admins from database",data:null};
+}
+}
 const finduser = async (email:string) => {
   try {
     await ConnectDb();
@@ -45,4 +55,4 @@ catch(err){
 }
 
 
-export { finduser, CreateUser, DeleteUser };
+export { finduser, CreateUser, DeleteUser, fetchAdminsFromDB };
