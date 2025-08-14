@@ -529,7 +529,7 @@ const HeroSection = () => {
                   <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
                 </Link>
                 <Link
-                  href="/gta"
+                  href="/gaq"
                   className="px-6 py-3 lg:px-8 lg:py-4 bg-white/60 border-2 border-cyan-400/60 text-gray-800 rounded-full font-semibold text-base lg:text-lg hover:bg-cyan-50/80 hover:border-cyan-500/80 backdrop-blur-sm transition-all duration-300 hover:scale-105 text-center"
                 >
                   Start Project

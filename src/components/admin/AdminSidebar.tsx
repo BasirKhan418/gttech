@@ -22,7 +22,9 @@ import {
   Database,
   Globe,
   Megaphone,
-  Plus
+  Plus,
+  Folder,
+  Code
 } from 'lucide-react'
 
 interface SubMenuItem {
@@ -57,13 +59,21 @@ const AdminSidebar = () => {
         { name: 'All Content', href: '/admin/content', icon: Eye },
        
       ]
-    },{
-  name: 'GAQ Management',
-  icon: DollarSign, // Import from lucide-react
-  subItems: [
-    { name: 'All Requests', href: '/admin/gaq', icon: Eye },
-  ]
-},
+    },
+    {
+      name: 'Project Management',
+      icon: Folder,
+      subItems: [
+        { name: 'All Projects', href: '/admin/projects', icon: Eye },
+      ]
+    },
+    {
+      name: 'GAQ Management',
+      icon: DollarSign,
+      subItems: [
+        { name: 'All Requests', href: '/admin/gaq', icon: Eye },
+      ]
+    },
     {
       name: 'Banner Management',
       icon: Megaphone,
