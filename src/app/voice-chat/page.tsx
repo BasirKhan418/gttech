@@ -12,34 +12,38 @@ interface VoiceChatResponse {
   details?: string;
 }
 
-const VoiceAssistant = () => {
+const AutoVoiceAssistant = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [status, setStatus] = useState('Press and hold to start conversation');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [status, setStatus] = useState('Initializing...');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [selectedVoice, setSelectedVoice] = useState<'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer'>('alloy');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<Array<{transcription: string, response: string}>>([]);
+  const [audioLevel, setAudioLevel] = useState(0);
+  const [silenceTimer, setSilenceTimer] = useState(0);
   const [debugInfo, setDebugInfo] = useState('');
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const microphoneRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // Initialize floating particles on mount
+  const SILENCE_THRESHOLD = 3000; // 3 seconds of silence
+  const AUDIO_THRESHOLD = 0.01; // Minimum audio level to detect speech
+
   useEffect(() => {
+    initializeAudioSystem();
     createFloatingParticles();
     
     return () => {
-      // Cleanup
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-      }
+      cleanup();
     };
   }, []);
 
@@ -47,10 +51,9 @@ const VoiceAssistant = () => {
     const particlesContainer = document.querySelector('.floating-particles');
     if (!particlesContainer) return;
     
-    // Clear existing particles
     particlesContainer.innerHTML = '';
     
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 20; i++) {
       const particle = document.createElement('div');
       particle.className = 'particle';
       particle.style.left = Math.random() * 100 + '%';
@@ -60,46 +63,69 @@ const VoiceAssistant = () => {
     }
   };
 
-  const initializeAudio = async () => {
+  const cleanup = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.src = '';
+    }
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+    }
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+    }
+  };
+
+  const initializeAudioSystem = async () => {
     try {
-      setDebugInfo('Requesting microphone access...');
+      setStatus('Requesting microphone access...');
+      setDebugInfo('Initializing audio system...');
+      
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Media devices not supported');
+      }
       
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
-          sampleRate: 44100
+          sampleRate: 16000
         }
       });
+      
       streamRef.current = stream;
       
-      setDebugInfo('Microphone access granted, setting up recorder...');
+      // Setup audio context for real-time audio analysis
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      analyserRef.current.fftSize = 256;
       
-      // Setup MediaRecorder for audio capture
+      microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
+      microphoneRef.current.connect(analyserRef.current);
+      
+      // Setup MediaRecorder
       let options: MediaRecorderOptions = {
-        audioBitsPerSecond: 128000
+        audioBitsPerSecond: 32000
       };
       
-      // Try different MIME types in order of preference
-      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-        options.mimeType = 'audio/webm;codecs=opus';
+      if (MediaRecorder.isTypeSupported('audio/wav')) {
+        options.mimeType = 'audio/wav';
       } else if (MediaRecorder.isTypeSupported('audio/webm')) {
         options.mimeType = 'audio/webm';
-      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-        options.mimeType = 'audio/mp4';
-      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
-        options.mimeType = 'audio/wav';
       }
-      
-      setDebugInfo(`Using MIME type: ${options.mimeType}`);
       
       mediaRecorderRef.current = new MediaRecorder(stream, options);
       
       mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
+        if (event.data && event.data.size > 0) {
           audioChunksRef.current.push(event.data);
-          setDebugInfo(`Audio chunk received: ${event.data.size} bytes`);
         }
       };
 
@@ -109,131 +135,164 @@ const VoiceAssistant = () => {
         }
       };
 
-      mediaRecorderRef.current.onerror = (event) => {
-        console.error('MediaRecorder error:', event);
-        setErrorMessage('Recording failed. Please try again.');
-        setDebugInfo(`MediaRecorder error: ${event}`);
-      };
-
-      setDebugInfo('Audio recorder initialized successfully');
-      return true;
+      setDebugInfo('Audio system initialized successfully');
+      startContinuousRecording();
+      
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      setErrorMessage(`Microphone access denied: ${errorMsg}`);
-      setDebugInfo(`Audio initialization failed: ${errorMsg}`);
-      console.error('Audio initialization error:', error);
-      return false;
+      setErrorMessage(`Microphone access failed: ${errorMsg}`);
+      setDebugInfo(`Initialization failed: ${errorMsg}`);
+      setStatus('Microphone access required');
+    }
+  };
+
+  const startContinuousRecording = () => {
+    setIsRecording(true);
+    setStatus('Listening... Start speaking');
+    setDebugInfo('Continuous recording started');
+    
+    // Start MediaRecorder
+    audioChunksRef.current = [];
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'inactive') {
+      mediaRecorderRef.current.start(250);
+    }
+    
+    // Start audio level monitoring
+    monitorAudioLevel();
+  };
+
+  const monitorAudioLevel = () => {
+    if (!analyserRef.current) return;
+    
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    
+    const updateAudioLevel = () => {
+      if (!analyserRef.current) return;
+      
+      analyserRef.current.getByteFrequencyData(dataArray);
+      
+      // Calculate average audio level
+      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+      const normalizedLevel = average / 255;
+      
+      setAudioLevel(normalizedLevel);
+      
+      // Detect speech/silence
+      if (normalizedLevel > AUDIO_THRESHOLD) {
+        // Speech detected - reset silence timer
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+        }
+        setSilenceTimer(0);
+      } else if (isRecording && !silenceTimerRef.current) {
+        // Silence detected - start countdown
+        const startTime = Date.now();
+        
+        silenceTimerRef.current = setTimeout(() => {
+          stopRecordingAndProcess();
+        }, SILENCE_THRESHOLD);
+        
+        // Update silence timer display
+        const updateTimer = () => {
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.max(0, SILENCE_THRESHOLD - elapsed);
+          setSilenceTimer(Math.ceil(remaining / 1000));
+          
+          if (remaining > 0 && silenceTimerRef.current) {
+            setTimeout(updateTimer, 100);
+          }
+        };
+        updateTimer();
+      }
+      
+      if (isRecording || isSpeaking) {
+        animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
+      }
+    };
+    
+    updateAudioLevel();
+  };
+
+  const stopRecordingAndProcess = () => {
+    if (!isRecording) return;
+    
+    setIsRecording(false);
+    setStatus('Processing your voice...');
+    setDebugInfo('Stopping recording and processing...');
+    
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    
+    setSilenceTimer(0);
+    
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
     }
   };
 
   const processAudioRecording = async () => {
     try {
       setIsProcessing(true);
-      setStatus('Processing your voice...');
-      setDebugInfo(`Processing ${audioChunksRef.current.length} audio chunks...`);
+      setDebugInfo('Processing audio chunks...');
 
-      // Create audio blob from recorded chunks
       const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
       const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
       
-      setDebugInfo(`Created audio blob: ${audioBlob.size} bytes, type: ${audioBlob.type}`);
-      
-      // Clear chunks for next recording
       audioChunksRef.current = [];
 
-      // Validate blob size
-      if (audioBlob.size === 0) {
-        throw new Error('No audio data recorded');
+      if (audioBlob.size < 500) {
+        setDebugInfo('Recording too short, restarting...');
+        restartRecording();
+        return;
       }
 
-      if (audioBlob.size < 1000) {
-        throw new Error('Audio recording too short');
-      }
-
-      // Create FormData to send to API
       const formData = new FormData();
-      
-      // Create a file with proper extension based on MIME type
-      const extension = mimeType.includes('webm') ? '.webm' : 
-                      mimeType.includes('mp4') ? '.mp4' : 
-                      mimeType.includes('wav') ? '.wav' : '.webm';
-      
-      const audioFile = new File([audioBlob], `recording${extension}`, { type: mimeType });
+      const extension = mimeType.includes('wav') ? '.wav' : '.webm';
+      const audioFile = new File([audioBlob], `recording-${Date.now()}${extension}`, { type: mimeType });
       
       formData.append('audio', audioFile);
       formData.append('language', selectedLanguage);
       formData.append('voice', selectedVoice);
 
-      setDebugInfo(`Sending request to API: ${audioFile.size} bytes`);
+      setDebugInfo(`Sending ${audioFile.size} bytes to API...`);
 
-      // Send to API with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
-
-      const response = await fetch('/api/voice-chat-c', {
+      const response = await fetch('/api/voice-chat', {
         method: 'POST',
         body: formData,
-        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
-
-      setDebugInfo(`API response received: ${response.status} ${response.statusText}`);
-
-      let data: VoiceChatResponse;
-      
-      // Check if response is JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const textResponse = await response.text();
-        console.error('Non-JSON response:', textResponse);
-        throw new Error(`Server returned non-JSON response. Status: ${response.status}. Content: ${textResponse.substring(0, 200)}`);
-      }
-
-      try {
-        data = await response.json();
-      } catch (jsonError) {
-        const textResponse = await response.text();
-        console.error('JSON parse error:', jsonError, 'Response:', textResponse);
-        throw new Error(`Invalid JSON response from server: ${textResponse.substring(0, 200)}`);
-      }
+      const data: VoiceChatResponse = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(data.error || `HTTP ${response.status}`);
       }
 
       if (data.success && data.transcription && data.response && data.audio) {
-        setDebugInfo('API request successful');
+        setConversationHistory(prev => [...prev, {
+          transcription: data.transcription!,
+          response: data.response!
+        }]);
         
-        // Display transcription briefly
         setStatus(`You said: "${data.transcription}"`);
+        setDebugInfo('Processing successful, playing response...');
         
-        // Play the AI response audio
         setTimeout(() => {
           playAudioResponse(data.audio!, data.response!);
-        }, 1500);
+        }, 1000);
       } else {
-        throw new Error(data.error || 'Processing failed - incomplete response');
+        throw new Error('Invalid response from server');
       }
 
     } catch (error) {
-      console.error('Voice processing error:', error);
-      
-      let errorMessage = 'Failed to process voice. Please try again.';
-      
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = 'Request timed out. Please try again.';
-        } else if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'Network error. Please check your connection and try again.';
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      
-      setErrorMessage(errorMessage);
-      setDebugInfo(`Error: ${errorMessage}`);
-      setStatus('Press and hold to start conversation');
+      console.error('Processing error:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Processing failed');
+      setDebugInfo(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      restartRecording();
+    } finally {
       setIsProcessing(false);
     }
   };
@@ -242,154 +301,83 @@ const VoiceAssistant = () => {
     try {
       setIsSpeaking(true);
       setStatus('GT Assistant is speaking...');
-      setDebugInfo('Playing audio response...');
       
-      // Convert base64 to audio blob
-      const audioData = atob(audioBase64);
-      const audioArray = new Uint8Array(audioData.length);
-      for (let i = 0; i < audioData.length; i++) {
-        audioArray[i] = audioData.charCodeAt(i);
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.src = '';
+      }
+      
+      const binaryString = atob(audioBase64);
+      const audioArray = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        audioArray[i] = binaryString.charCodeAt(i);
       }
       
       const audioBlob = new Blob([audioArray], { type: 'audio/mp3' });
       const audioUrl = URL.createObjectURL(audioBlob);
       
-      setDebugInfo(`Audio blob created: ${audioBlob.size} bytes`);
-      
-      // Stop any currently playing audio
-      if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-        currentAudioRef.current = null;
-      }
-      
       const audio = new Audio(audioUrl);
       currentAudioRef.current = audio;
       
-      audio.onloadstart = () => setDebugInfo('Audio loading...');
-      audio.oncanplay = () => setDebugInfo('Audio ready to play');
-      
       audio.onended = () => {
         setIsSpeaking(false);
-        setIsProcessing(false);
-        setStatus('Press and hold to speak');
-        setDebugInfo('Audio playback completed');
+        setDebugInfo('Response completed, restarting recording...');
         URL.revokeObjectURL(audioUrl);
         currentAudioRef.current = null;
+        
+        setTimeout(() => {
+          restartRecording();
+        }, 500);
       };
       
-      audio.onerror = (error) => {
-        console.error('Audio playback error:', error);
+      audio.onerror = () => {
         setIsSpeaking(false);
-        setIsProcessing(false);
-        setStatus('Press and hold to speak');
-        setErrorMessage('Audio playback failed');
-        setDebugInfo(`Audio error: ${error}`);
+        setDebugInfo('Audio playback failed, restarting...');
         URL.revokeObjectURL(audioUrl);
         currentAudioRef.current = null;
+        restartRecording();
       };
       
       await audio.play();
-      setDebugInfo('Audio playing...');
       
     } catch (error) {
-      console.error('Audio playback error:', error);
       setIsSpeaking(false);
-      setIsProcessing(false);
-      setStatus('Press and hold to speak');
       setErrorMessage('Audio playback failed');
-      setDebugInfo(`Playback error: ${error instanceof Error ? error.message : error}`);
+      restartRecording();
     }
   };
 
-  const handleMouseDown = async () => {
-    if (isProcessing || isSpeaking) return;
+  const restartRecording = () => {
+    if (isSpeaking || isProcessing) return;
+    
+    setTimeout(() => {
+      startContinuousRecording();
+    }, 1000);
+  };
 
-    setDebugInfo('Recording started...');
-
-    // Stop any currently playing audio
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current = null;
-      setIsSpeaking(false);
-    }
-
+  const resetConversation = () => {
+    cleanup();
+    setConversationHistory([]);
     setErrorMessage('');
-    const audioInitialized = await initializeAudio();
-    if (!audioInitialized) return;
-
-    setIsRecording(true);
-    setIsListening(true);
-    setStatus('Listening... speak now');
-    
-    // Start recording
-    audioChunksRef.current = [];
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'inactive') {
-      mediaRecorderRef.current.start(100); // Collect data every 100ms
-      setDebugInfo('MediaRecorder started');
-    }
+    setDebugInfo('');
+    setSilenceTimer(0);
+    initializeAudioSystem();
   };
 
-  const handleMouseUp = () => {
-    if (!isRecording) return;
-
-    setDebugInfo('Recording stopped');
-    setIsRecording(false);
-    setIsListening(false);
-    setStatus('Processing...');
-    
-    // Stop recording
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
-      setDebugInfo('MediaRecorder stopped');
-    }
-
-    // Stop the stream
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
+  const getStatusColor = () => {
+    if (isProcessing) return 'text-amber-400';
+    if (isSpeaking) return 'text-blue-400';
+    if (isRecording) return 'text-green-400';
+    return 'text-cyan-400';
   };
 
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedLanguage(e.target.value);
-    setDebugInfo(`Language changed to: ${e.target.value}`);
-  };
-
-  const handleVoiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedVoice(e.target.value as typeof selectedVoice);
-    setDebugInfo(`Voice changed to: ${e.target.value}`);
-  };
-
-  const getStatusClassName = () => {
-    if (isListening) return 'status listening';
-    if (isSpeaking) return 'status speaking';
-    if (isProcessing) return 'status processing';
-    return 'status';
-  };
-
-  const getButtonText = () => {
-    if (isProcessing) return '⏳';
-    if (isSpeaking) return '🔊';
-    return '🎤';
+  const getVisualizerIntensity = () => {
+    return Math.max(0.3, audioLevel * 3);
   };
 
   return (
-    <div className="voice-assistant-container">
+    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
       <style jsx>{`
-        .voice-assistant-container {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background: linear-gradient(135deg, #1e293b, #0f172a);
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          color: white;
-          overflow: hidden;
-          position: relative;
-          padding: 1rem;
-        }
-
         .floating-particles {
           position: fixed;
           top: 0;
@@ -397,327 +385,249 @@ const VoiceAssistant = () => {
           width: 100%;
           height: 100%;
           pointer-events: none;
-          z-index: -1;
+          z-index: 1;
         }
 
         .particle {
           position: absolute;
           width: 2px;
           height: 2px;
-          background: rgba(14, 165, 233, 0.3);
+          background: rgba(6, 182, 212, 0.3);
           border-radius: 50%;
           animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-          50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
-        }
-
-        .container {
-          text-align: center;
-          padding: 2rem;
-          max-width: 500px;
-          width: 90%;
-        }
-
-        .logo {
-          font-size: 2rem;
-          font-weight: bold;
-          margin-bottom: 1rem;
-          background: linear-gradient(45deg, #0ea5e9, #06b6d4);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .controls {
-          display: flex;
-          gap: 1rem;
-          margin-bottom: 2rem;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-
-        .control-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .control-group label {
-          font-size: 0.9rem;
-          color: #94a3b8;
-        }
-
-        .control-group select {
-          background: rgba(30, 41, 59, 0.8);
-          border: 1px solid #475569;
-          color: white;
-          padding: 0.5rem 1rem;
-          border-radius: 0.5rem;
-          font-size: 0.9rem;
-          min-width: 120px;
-        }
-
-        .control-group select:focus {
-          outline: none;
-          border-color: #0ea5e9;
-        }
-
-        .status {
-          font-size: 1.2rem;
-          margin-bottom: 2rem;
-          color: #94a3b8;
-          transition: all 0.3s ease;
-          min-height: 1.5rem;
-        }
-
-        .status.listening {
-          color: #22c55e;
-          animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .status.speaking {
-          color: #3b82f6;
-          animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .status.processing {
-          color: #f59e0b;
-          animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .voice-button {
-          width: 120px;
-          height: 120px;
-          border-radius: 50%;
-          border: 4px solid #0ea5e9;
-          background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 2rem;
-          position: relative;
-          overflow: hidden;
-          user-select: none;
-        }
-
-        .voice-button:hover:not(.disabled) {
-          transform: scale(1.1);
-          box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
-        }
-
-        .voice-button:active:not(.disabled) {
-          transform: scale(0.95);
-        }
-
-        .voice-button.active {
-          background: linear-gradient(135deg, #dc2626, #ef4444);
-          border-color: #dc2626;
-          animation: recording 2s ease-in-out infinite;
-        }
-
-        .voice-button.disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          background: linear-gradient(135deg, #64748b, #475569);
-          border-color: #64748b;
-        }
-
-        .voice-button.processing {
-          background: linear-gradient(135deg, #f59e0b, #d97706);
-          border-color: #f59e0b;
-          animation: processing 2s ease-in-out infinite;
-        }
-
-        .voice-button.speaking {
-          background: linear-gradient(135deg, #3b82f6, #2563eb);
-          border-color: #3b82f6;
-          animation: speaking 1.5s ease-in-out infinite;
-        }
-
-        .voice-icon {
-          font-size: 3rem;
-        }
-
-        .wave-visualization {
-          position: absolute;
-          bottom: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: 3px;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-
-        .wave-visualization.active {
-          opacity: 1;
-        }
-
-        .wave-bar {
-          width: 4px;
-          height: 20px;
-          background: linear-gradient(to top, #0ea5e9, #06b6d4);
-          border-radius: 2px;
-          animation: wave 1.2s ease-in-out infinite;
-        }
-
-        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
-        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
-        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
-
-        .error-message {
-          color: #ef4444;
-          margin-bottom: 1rem;
-          font-size: 0.9rem;
-          min-height: 1.2rem;
-          padding: 0.5rem;
-          background: rgba(239, 68, 68, 0.1);
-          border-radius: 0.5rem;
-          border: 1px solid rgba(239, 68, 68, 0.3);
-          display: ${errorMessage ? 'block' : 'none'};
-        }
-
-        .debug-info {
-          color: #64748b;
-          font-size: 0.8rem;
-          margin-bottom: 1rem;
-          min-height: 1rem;
-          font-family: monospace;
-          background: rgba(100, 116, 139, 0.1);
-          padding: 0.5rem;
-          border-radius: 0.25rem;
-          text-align: left;
-          max-width: 100%;
-          overflow-wrap: break-word;
-        }
-
-        .instructions {
-          font-size: 0.9rem;
-          color: #64748b;
-          margin-top: 1rem;
-          line-height: 1.4;
+          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+          50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
         }
 
         @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; }
-        }
-
-        @keyframes recording {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
-          50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
-        }
-
-        @keyframes processing {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-          50% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-        }
-
-        @keyframes speaking {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-          50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.7; transform: scale(1.05); }
         }
 
         @keyframes wave {
           0%, 100% { height: 20px; }
-          50% { height: 40px; }
+          50% { height: 60px; }
+        }
+
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-pulse-slow {
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        .animate-wave {
+          animation: wave 1.5s ease-in-out infinite;
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 0.8s ease-out forwards;
+        }
+
+        .glassmorphism {
+          background: rgba(15, 23, 42, 0.7);
+          backdrop-filter: blur(16px);
+          border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .glassmorphism-strong {
+          background: rgba(15, 23, 42, 0.9);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(6, 182, 212, 0.3);
         }
 
         @media (max-width: 768px) {
-          .controls {
-            flex-direction: column;
-            align-items: center;
-          }
-          
-          .control-group select {
-            min-width: 200px;
+          .container {
+            padding: 1rem;
           }
         }
       `}</style>
 
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(6,182,212,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6,182,212,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '20px 20px'
+        }}></div>
+      </div>
+
       <div className="floating-particles"></div>
 
-      <div className="container">
-        <div className="logo">GT Voice Assistant</div>
-        
-        <div className="controls">
-          <div className="control-group">
-            <label>Language</label>
-            <select value={selectedLanguage} onChange={handleLanguageChange} disabled={isRecording || isProcessing}>
-              <option value="en">🇺🇸 English</option>
-              <option value="hi">🇮🇳 हिंदी</option>
-              <option value="te">🇮🇳 తెలుగు</option>
-              <option value="es">🇪🇸 Español</option>
-              <option value="fr">🇫🇷 Français</option>
-              <option value="de">🇩🇪 Deutsch</option>
-              <option value="ja">🇯🇵 日本語</option>
-              <option value="zh">🇨🇳 中文</option>
-              <option value="ko">🇰🇷 한국어</option>
-              <option value="ar">🇸🇦 العربية</option>
-              <option value="pt">🇧🇷 Português</option>
-              <option value="ru">🇷🇺 Русский</option>
-              <option value="it">🇮🇹 Italiano</option>
-            </select>
-          </div>
+      {/* Main Content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl">
           
-          <div className="control-group">
-            <label>Voice</label>
-            <select value={selectedVoice} onChange={handleVoiceChange} disabled={isRecording || isProcessing}>
-              <option value="alloy">Alloy</option>
-              <option value="echo">Echo</option>
-              <option value="fable">Fable</option>
-              <option value="onyx">Onyx</option>
-              <option value="nova">Nova</option>
-              <option value="shimmer">Shimmer</option>
-            </select>
+          {/* Header */}
+          <div className="text-center mb-8 animate-fade-in-up">
+            <div className="inline-flex items-center px-6 py-3 glassmorphism rounded-full mb-6">
+              <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3 animate-pulse-slow"></div>
+              <span className="text-cyan-300 font-medium">GT Voice Assistant</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+              <span className="block">Smart Voice</span>
+              <span className="block bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-500 bg-clip-text text-transparent">
+                Assistant
+              </span>
+            </h1>
+            
+            <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              Just start speaking naturally. I'll listen and respond automatically when you pause.
+            </p>
           </div>
-        </div>
 
-        <div className={getStatusClassName()}>
-          {status}
-        </div>
+          {/* Main Control Panel */}
+          <div className="glassmorphism-strong rounded-3xl p-8 mb-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            
+            {/* Controls */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+              <div className="flex flex-col items-center">
+                <label className="text-slate-400 text-sm mb-2">Language</label>
+                <select 
+                  value={selectedLanguage} 
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  className="bg-slate-800/80 border border-slate-600/50 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                >
+                  <option value="en">🇺🇸 English</option>
+                  <option value="hi">🇮🇳 हिंदी</option>
+                  <option value="te">🇮🇳 తెలుగు</option>
+                  <option value="es">🇪🇸 Español</option>
+                  <option value="fr">🇫🇷 Français</option>
+                  <option value="de">🇩🇪 Deutsch</option>
+                  <option value="ja">🇯🇵 日本語</option>
+                </select>
+              </div>
+              
+              <div className="flex flex-col items-center">
+                <label className="text-slate-400 text-sm mb-2">Voice</label>
+                <select 
+                  value={selectedVoice} 
+                  onChange={(e) => setSelectedVoice(e.target.value as typeof selectedVoice)}
+                  className="bg-slate-800/80 border border-slate-600/50 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                >
+                  <option value="alloy">Alloy (Neutral)</option>
+                  <option value="echo">Echo (Male)</option>
+                  <option value="fable">Fable (British)</option>
+                  <option value="onyx">Onyx (Deep)</option>
+                  <option value="nova">Nova (Female)</option>
+                  <option value="shimmer">Shimmer (Soft)</option>
+                </select>
+              </div>
+            </div>
 
-        <div 
-          className={`voice-button ${isRecording ? 'active' : ''} ${isProcessing ? 'processing' : ''} ${isSpeaking ? 'speaking' : ''} ${(isProcessing || isSpeaking) ? 'disabled' : ''}`}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onTouchStart={handleMouseDown}
-          onTouchEnd={handleMouseUp}
-        >
-          <div className="voice-icon">{getButtonText()}</div>
-        </div>
+            {/* Status Display */}
+            <div className="text-center mb-8">
+              <div className={`text-2xl font-semibold mb-2 ${getStatusColor()} transition-colors duration-300`}>
+                {status}
+              </div>
+              
+              {silenceTimer > 0 && (
+                <div className="text-amber-400 text-lg">
+                  Processing in {silenceTimer}s...
+                </div>
+              )}
+            </div>
 
-        <div className={`wave-visualization ${isListening ? 'active' : ''}`}>
-          <div className="wave-bar"></div>
-          <div className="wave-bar"></div>
-          <div className="wave-bar"></div>
-          <div className="wave-bar"></div>
-          <div className="wave-bar"></div>
-        </div>
+            {/* Voice Visualizer */}
+            <div className="flex justify-center items-end space-x-2 mb-8 h-20">
+              {[...Array(12)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-3 bg-gradient-to-t from-cyan-500 to-cyan-300 rounded-full transition-all duration-150 ${
+                    isRecording ? 'animate-wave' : ''
+                  }`}
+                  style={{
+                    height: isRecording 
+                      ? `${20 + (Math.sin((Date.now() / 100) + i) * 20 * getVisualizerIntensity())}px`
+                      : '20px',
+                    animationDelay: `${i * 0.1}s`,
+                    opacity: isRecording ? getVisualizerIntensity() : 0.3
+                  }}
+                ></div>
+              ))}
+            </div>
 
-        <div className="error-message">
-          {errorMessage}
-        </div>
+            {/* Action Buttons */}
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={resetConversation}
+                className="px-6 py-3 bg-slate-700/80 hover:bg-slate-600/80 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 border border-slate-600/50 backdrop-blur-sm"
+              >
+                Reset Chat
+              </button>
+              
+              <button
+                onClick={() => window.close()}
+                className="px-6 py-3 bg-red-600/80 hover:bg-red-500/80 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 border border-red-500/50 backdrop-blur-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
 
-        <div className="debug-info">
-          {debugInfo || 'Ready to start...'}
-        </div>
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="glassmorphism border-red-400/30 rounded-xl p-4 mb-6 animate-fade-in-up">
+              <div className="text-red-400 text-center">
+                <div className="font-semibold mb-1">Error</div>
+                <div className="text-sm">{errorMessage}</div>
+              </div>
+            </div>
+          )}
 
-        <div className="instructions">
-          Hold the microphone button and speak your question about GT Technologies. Release to get an AI response.
-          <br />
-          <small>Make sure to allow microphone permissions when prompted.</small>
+          {/* Conversation History */}
+          {conversationHistory.length > 0 && (
+            <div className="glassmorphism rounded-2xl p-6 mb-6 animate-fade-in-up">
+              <h3 className="text-cyan-300 font-semibold mb-4 flex items-center">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>
+                Recent Conversation
+              </h3>
+              
+              <div className="space-y-4 max-h-60 overflow-y-auto">
+                {conversationHistory.slice(-3).map((item, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="glassmorphism rounded-lg p-3 border-green-400/20">
+                      <div className="text-green-300 text-sm font-medium mb-1">You said:</div>
+                      <div className="text-slate-200 text-sm">"{item.transcription}"</div>
+                    </div>
+                    <div className="glassmorphism rounded-lg p-3 border-blue-400/20">
+                      <div className="text-blue-300 text-sm font-medium mb-1">Assistant:</div>
+                      <div className="text-slate-200 text-sm">{item.response}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Debug Info */}
+          <div className="glassmorphism rounded-xl p-4 animate-fade-in-up">
+            <div className="text-slate-400 text-sm text-center font-mono">
+              {debugInfo || 'System ready...'}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
-export default VoiceAssistant;
+export default AutoVoiceAssistant;

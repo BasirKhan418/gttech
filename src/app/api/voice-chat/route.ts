@@ -1,13 +1,10 @@
-// app/api/voice-chat/route.ts
 import OpenAI from 'openai';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-// GT Technologies Voice Assistant System Prompt
 const VOICE_SYSTEM_PROMPT = `You are a helpful voice assistant for GT Technologies, a leading company in digital transformation solutions. 
 
 IMPORTANT INSTRUCTIONS:
@@ -50,26 +47,6 @@ interface VoiceChatResponse {
   details?: string;
 }
 
-interface LanguageInstructions {
-  [key: string]: string;
-}
-
-// Language instructions mapping
-const languageInstructions: LanguageInstructions = {
-  'hi': 'Respond in Hindi (हिंदी) with clear pronunciation.',
-  'te': 'Respond in Telugu (తెలుగు) with clear pronunciation.',
-  'es': 'Respond in Spanish (Español) with clear pronunciation.',
-  'fr': 'Respond in French (Français) with clear pronunciation.',
-  'de': 'Respond in German (Deutsch) with clear pronunciation.',
-  'ja': 'Respond in Japanese (日本語) with clear pronunciation.',
-  'zh': 'Respond in Chinese (中文) with clear pronunciation.',
-  'ko': 'Respond in Korean (한국어) with clear pronunciation.',
-  'ar': 'Respond in Arabic (العربية) with clear pronunciation.',
-  'pt': 'Respond in Portuguese (Português) with clear pronunciation.',
-  'ru': 'Respond in Russian (Русский) with clear pronunciation.',
-  'it': 'Respond in Italian (Italiano) with clear pronunciation.'
-};
-
 // Available TTS voices
 type TTSVoice = 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer';
 
@@ -86,21 +63,25 @@ function createErrorResponse(message: string, status: number, details?: string):
   );
 }
 
-// Validate audio file
 function validateAudioFile(file: File): { isValid: boolean; error?: string } {
-  // Check file size (25MB limit for Whisper)
   const maxSize = 25 * 1024 * 1024;
   if (file.size > maxSize) {
     return { isValid: false, error: 'Audio file too large. Maximum size is 25MB.' };
   }
 
-  // Check file type - Whisper supports these formats
+  // Check file type - Whisper supports these formats and codecs
   const allowedTypes = [
     'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/webm', 
-    'audio/ogg', 'audio/flac', 'audio/m4a', 'audio/mp3'
+    'audio/ogg', 'audio/flac', 'audio/m4a', 'audio/mp3',
+    'audio/webm;codecs=opus', 'audio/ogg;codecs=opus'
   ];
   
-  if (!allowedTypes.includes(file.type)) {
+  // Also check base type without codecs
+  const baseType = file.type.split(';')[0];
+  const isValidType = allowedTypes.includes(file.type) || 
+                     ['audio/webm', 'audio/ogg', 'audio/wav', 'audio/mp4', 'audio/mpeg', 'audio/flac', 'audio/m4a'].includes(baseType);
+  
+  if (!isValidType) {
     return { isValid: false, error: `Unsupported audio format: ${file.type}. Supported formats: MP3, MP4, WAV, WebM, OGG, FLAC, M4A.` };
   }
 
@@ -160,7 +141,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<VoiceChat
 
     console.log(`Processing voice chat - Language: ${language}, File: ${audioFile.size} bytes (${audioFile.type})`);
 
-    // Step 1: Transcribe the audio using Whisper
     let transcription: string;
     try {
       console.log('Starting transcription...');
@@ -170,7 +150,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<VoiceChat
         model: 'whisper-1',
         language: language === 'en' ? undefined : language,
         response_format: 'text',
-        temperature: 0.2, // Lower temperature for more accurate transcription
+        temperature: 0.2,
       });
 
       transcription = typeof transcriptionResponse === 'string' 
@@ -210,23 +190,16 @@ export async function POST(request: NextRequest): Promise<NextResponse<VoiceChat
     }
 
     // Step 2: Generate AI response using GPT
-    let systemPrompt = VOICE_SYSTEM_PROMPT;
-    
-    // Add language-specific instructions
-    if (languageInstructions[language]) {
-      systemPrompt += `\n\nLANGUAGE: ${languageInstructions[language]}`;
-    }
-
     let responseText: string;
     try {
       console.log('Generating AI response...');
       
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o", // Using latest GPT-4 model
+        model: "gpt-4o-mini", // Using reliable model
         messages: [
           {
             role: "system",
-            content: systemPrompt
+            content: VOICE_SYSTEM_PROMPT
           },
           {
             role: "user",
@@ -267,7 +240,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<VoiceChat
       console.log('Generating speech audio...');
       
       const speechResponse = await openai.audio.speech.create({
-        model: "tts-1-hd", // Using HD model for better quality
+        model: "tts-1", // Using standard model for reliability
         voice: voice,
         input: responseText,
         response_format: "mp3",
@@ -349,9 +322,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<VoiceChat
   }
 }
 
-// Handle unsupported methods with proper JSON responses
 export async function GET(): Promise<NextResponse> {
-  console.log('GET request received on voice-chat endpoint');
   return NextResponse.json(
     { 
       success: false,
@@ -360,51 +331,11 @@ export async function GET(): Promise<NextResponse> {
     }, 
     { 
       status: 405,
-      headers: {
-        'Allow': 'POST',
-        'Content-Type': 'application/json',
-      }
+      headers: { 'Allow': 'POST' }
     }
   );
 }
 
-export async function PUT(): Promise<NextResponse> {
-  console.log('PUT request received on voice-chat endpoint');
-  return NextResponse.json(
-    { 
-      success: false,
-      error: 'Method not allowed. Use POST to upload audio.',
-      supportedMethods: ['POST']
-    }, 
-    { 
-      status: 405,
-      headers: {
-        'Allow': 'POST',
-        'Content-Type': 'application/json',
-      }
-    }
-  );
-}
-
-export async function DELETE(): Promise<NextResponse> {
-  console.log('DELETE request received on voice-chat endpoint');
-  return NextResponse.json(
-    { 
-      success: false,
-      error: 'Method not allowed. Use POST to upload audio.',
-      supportedMethods: ['POST']
-    }, 
-    { 
-      status: 405,
-      headers: {
-        'Allow': 'POST',
-        'Content-Type': 'application/json',
-      }
-    }
-  );
-}
-
-// Export route configuration for Next.js App Router
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 60; // Increased to 60 seconds for audio processing
+export const maxDuration = 60;
