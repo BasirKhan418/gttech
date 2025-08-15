@@ -366,7 +366,7 @@ const SolutionDetailPage = () => {
                     <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Get This Solution</h3>
                     
                     <Link
-                      href="/contact"
+                      href="/gaq"
                       className="block w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg sm:rounded-xl font-semibold text-center hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-lg text-sm sm:text-base"
                     >
                       Request Implementation

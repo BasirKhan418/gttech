@@ -348,7 +348,7 @@ const IndustryDetailPage = () => {
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Get This Solution</h3>
                   
                   <Link
-                    href="/contact"
+                    href="/gaq"
                     className="block w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-xl font-semibold text-center hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-lg"
                   >
                     Request Implementation
