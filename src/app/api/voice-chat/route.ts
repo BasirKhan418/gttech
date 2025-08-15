@@ -8,7 +8,7 @@ const openai = new OpenAI({
 const VOICE_SYSTEM_PROMPT = `You are a helpful voice assistant for GT Technologies, a leading company in digital transformation solutions. 
 
 IMPORTANT INSTRUCTIONS:
-1. Keep responses concise and conversational (30-60 seconds of speech)
+1. Keep responses concise and conversational (20-40 seconds of speech)
 2. Be enthusiastic and friendly
 3. Focus ONLY on GT Technologies services and solutions
 4. For questions outside GT Tech scope, politely redirect to contact page
@@ -36,7 +36,6 @@ VOICE RESPONSE GUIDELINES:
 
 MULTILINGUAL SUPPORT: Respond in the user's preferred language with natural pronunciation.`;
 
-// Type definitions
 interface VoiceChatResponse {
   success: boolean;
   transcription?: string;
@@ -45,14 +44,13 @@ interface VoiceChatResponse {
   language?: string;
   error?: string;
   details?: string;
+  processingTime?: number;
 }
 
-// Available TTS voices
 type TTSVoice = 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer';
 
-// Error handler utility
 function createErrorResponse(message: string, status: number, details?: string): NextResponse<VoiceChatResponse> {
-  console.error(`API Error [${status}]:`, message, details ? `Details: ${details}` : '');
+  console.error(`[${new Date().toISOString()}] API Error [${status}]:`, message, details || '');
   return NextResponse.json(
     { 
       success: false,
@@ -64,261 +62,220 @@ function createErrorResponse(message: string, status: number, details?: string):
 }
 
 function validateAudioFile(file: File): { isValid: boolean; error?: string } {
-  const maxSize = 25 * 1024 * 1024;
+  const maxSize = 25 * 1024 * 1024; // 25MB
+  
   if (file.size > maxSize) {
     return { isValid: false, error: 'Audio file too large. Maximum size is 25MB.' };
   }
 
-  // Check file type - Whisper supports these formats and codecs
-  const allowedTypes = [
-    'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/webm', 
-    'audio/ogg', 'audio/flac', 'audio/m4a', 'audio/mp3',
-    'audio/webm;codecs=opus', 'audio/ogg;codecs=opus'
-  ];
-  
-  // Also check base type without codecs
-  const baseType = file.type.split(';')[0];
-  const isValidType = allowedTypes.includes(file.type) || 
-                     ['audio/webm', 'audio/ogg', 'audio/wav', 'audio/mp4', 'audio/mpeg', 'audio/flac', 'audio/m4a'].includes(baseType);
-  
-  if (!isValidType) {
-    return { isValid: false, error: `Unsupported audio format: ${file.type}. Supported formats: MP3, MP4, WAV, WebM, OGG, FLAC, M4A.` };
+  if (file.size < 1000) { // Less than 1KB
+    return { isValid: false, error: 'Audio file too short or empty.' };
   }
 
-  // Check minimum file size (should have some content)
-  if (file.size < 1000) { // Less than 1KB is probably empty
-    return { isValid: false, error: 'Audio file appears to be empty or too short.' };
+  // Supported formats
+  const allowedTypes = [
+    'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/webm', 
+    'audio/ogg', 'audio/flac', 'audio/m4a', 'audio/mp3'
+  ];
+  
+  const baseType = file.type.split(';')[0];
+  const isValidType = allowedTypes.includes(file.type) || allowedTypes.includes(baseType);
+  
+  if (!isValidType) {
+    return { 
+      isValid: false, 
+      error: `Unsupported format: ${file.type}. Use MP3, WAV, WebM, OGG, FLAC, or M4A.` 
+    };
   }
 
   return { isValid: true };
 }
 
-// Main POST handler
 export async function POST(request: NextRequest): Promise<NextResponse<VoiceChatResponse>> {
-  console.log('=== Voice Chat API Request Started ===');
+  const startTime = Date.now();
+  console.log(`[${new Date().toISOString()}] === Voice Chat Request Started ===`);
   
   try {
-    // Check for OpenAI API key
+    // Validate API key
     if (!process.env.OPENAI_API_KEY) {
-      console.error('OpenAI API key not configured');
-      return createErrorResponse('Server configuration error', 500, 'OpenAI API key not configured');
+      return createErrorResponse('Server configuration error', 500, 'OpenAI API key missing');
     }
-
-    console.log('OpenAI API key configured');
 
     // Parse form data
     let formData: FormData;
     try {
       formData = await request.formData();
-      console.log('FormData parsed successfully');
     } catch (error) {
-      console.error('Failed to parse form data:', error);
-      return createErrorResponse('Invalid request format. Expected multipart/form-data.', 400, error instanceof Error ? error.message : 'FormData parsing failed');
+      return createErrorResponse(
+        'Invalid request format', 
+        400, 
+        error instanceof Error ? error.message : 'FormData parsing failed'
+      );
     }
 
     const audioFile = formData.get('audio') as File | null;
     const language = (formData.get('language') as string) || 'en';
     const voice = (formData.get('voice') as TTSVoice) || 'alloy';
+    const sessionId = formData.get('sessionId') as string || 'unknown';
 
-    console.log('Request parameters:', {
-      hasAudioFile: !!audioFile,
-      audioFileSize: audioFile?.size || 0,
-      audioFileType: audioFile?.type || 'unknown',
+    console.log(`[${sessionId}] Processing request:`, {
+      audioSize: audioFile?.size || 0,
+      audioType: audioFile?.type || 'none',
       language,
       voice
     });
 
-    // Validate required fields
+    // Validate audio file
     if (!audioFile) {
-      return createErrorResponse('Audio file is required in form data', 400);
+      return createErrorResponse('Audio file required', 400);
     }
 
-    // Validate audio file
     const validation = validateAudioFile(audioFile);
     if (!validation.isValid) {
       return createErrorResponse(validation.error!, 400);
     }
 
-    console.log(`Processing voice chat - Language: ${language}, File: ${audioFile.size} bytes (${audioFile.type})`);
-
+    // Step 1: Transcription
     let transcription: string;
     try {
-      console.log('Starting transcription...');
+      console.log(`[${sessionId}] Starting transcription...`);
       
       const transcriptionResponse = await openai.audio.transcriptions.create({
         file: audioFile,
         model: 'whisper-1',
         language: language === 'en' ? undefined : language,
         response_format: 'text',
-        temperature: 0.2,
+        temperature: 0.1, // Lower for more consistent results
+        prompt: "GT Technologies, voice assistant, digital transformation" // Context for better accuracy
       });
 
       transcription = typeof transcriptionResponse === 'string' 
-        ? transcriptionResponse 
-        : String(transcriptionResponse);
+        ? transcriptionResponse.trim() 
+        : String(transcriptionResponse).trim();
       
-      console.log('Transcription successful:', transcription?.substring(0, 100) + '...');
+      if (!transcription || transcription.length === 0) {
+        return createErrorResponse('Could not understand audio. Please speak clearly.', 400);
+      }
+
+      console.log(`[${sessionId}] Transcription: "${transcription.substring(0, 100)}..."`);
+      
     } catch (error) {
-      console.error('Transcription error:', error);
+      console.error(`[${sessionId}] Transcription failed:`, error);
       
-      // Handle specific OpenAI errors
       if (error instanceof Error) {
         if (error.message?.includes('invalid_audio')) {
-          return createErrorResponse('Audio file format is invalid or corrupted. Please try recording again.', 400, error.message);
+          return createErrorResponse('Invalid audio format. Please try again.', 400);
         }
         if (error.message?.includes('audio_too_short')) {
-          return createErrorResponse('Audio recording is too short. Please speak for at least 1 second.', 400, error.message);
+          return createErrorResponse('Audio too short. Please speak for longer.', 400);
         }
-        if (error.message?.includes('insufficient_quota')) {
-          return createErrorResponse('OpenAI service quota exceeded. Please try again later.', 503, error.message);
+        if (error.message?.includes('quota') || error.message?.includes('rate_limit')) {
+          return createErrorResponse('Service temporarily unavailable. Try again in a moment.', 503);
         }
       }
       
-      return createErrorResponse(
-        'Failed to transcribe audio. Please ensure the audio is clear and try again.', 
-        400,
-        error instanceof Error ? error.message : 'Unknown transcription error'
-      );
+      return createErrorResponse('Audio processing failed. Please try again.', 500);
     }
 
-    // Check if transcription is empty
-    if (!transcription || transcription.trim().length === 0) {
-      return createErrorResponse(
-        'Could not understand the audio. Please speak more clearly and try again.', 
-        400
-      );
-    }
-
-    // Step 2: Generate AI response using GPT
+    // Step 2: Generate Response
     let responseText: string;
     try {
-      console.log('Generating AI response...');
+      console.log(`[${sessionId}] Generating response...`);
       
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini", // Using reliable model
+        model: "gpt-4o-mini",
         messages: [
-          {
-            role: "system",
-            content: VOICE_SYSTEM_PROMPT
-          },
-          {
-            role: "user",
-            content: transcription
-          }
+          { role: "system", content: VOICE_SYSTEM_PROMPT },
+          { role: "user", content: transcription }
         ],
-        max_tokens: 300,
+        max_tokens: 200, // Shorter responses for voice
         temperature: 0.7,
         presence_penalty: 0.1,
         frequency_penalty: 0.1,
       });
 
-      responseText = completion.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
-      console.log('AI Response generated:', responseText?.substring(0, 100) + '...');
-    } catch (error) {
-      console.error('Chat completion error:', error);
+      responseText = completion.choices[0]?.message?.content?.trim() || 
+                    'I apologize, but I could not generate a proper response. Please try again.';
       
-      // Handle specific OpenAI errors
-      if (error instanceof Error) {
-        if (error.message?.includes('insufficient_quota')) {
-          return createErrorResponse('OpenAI service quota exceeded. Please try again later.', 503, error.message);
-        }
-        if (error.message?.includes('rate_limit_exceeded')) {
-          return createErrorResponse('Too many requests. Please wait a moment and try again.', 429, error.message);
-        }
+      console.log(`[${sessionId}] Response: "${responseText.substring(0, 100)}..."`);
+      
+    } catch (error) {
+      console.error(`[${sessionId}] Response generation failed:`, error);
+      
+      if (error instanceof Error && (error.message?.includes('quota') || error.message?.includes('rate_limit'))) {
+        return createErrorResponse('Service temporarily unavailable. Try again in a moment.', 503);
       }
       
-      return createErrorResponse(
-        'Failed to generate response. Please try again.', 
-        500,
-        error instanceof Error ? error.message : 'Unknown completion error'
-      );
+      return createErrorResponse('Response generation failed. Please try again.', 500);
     }
 
-    // Step 3: Convert response to speech using TTS
+    // Step 3: Text-to-Speech
     let audioBase64: string;
     try {
-      console.log('Generating speech audio...');
+      console.log(`[${sessionId}] Generating speech...`);
       
       const speechResponse = await openai.audio.speech.create({
-        model: "tts-1", // Using standard model for reliability
+        model: "tts-1-hd", // Higher quality for better voice experience
         voice: voice,
         input: responseText,
         response_format: "mp3",
-        speed: 1.0,
+        speed: 0.95, // Slightly slower for clarity
       });
 
       const audioBuffer = Buffer.from(await speechResponse.arrayBuffer());
       audioBase64 = audioBuffer.toString('base64');
-      console.log(`Speech audio generated: ${audioBase64.length} characters (base64), ~${Math.round(audioBuffer.length / 1024)}KB`);
-    } catch (error) {
-      console.error('Text-to-speech error:', error);
       
-      // Handle specific OpenAI errors
-      if (error instanceof Error) {
-        if (error.message?.includes('insufficient_quota')) {
-          return createErrorResponse('OpenAI service quota exceeded. Please try again later.', 503, error.message);
-        }
+      console.log(`[${sessionId}] Speech generated: ${Math.round(audioBuffer.length / 1024)}KB`);
+      
+    } catch (error) {
+      console.error(`[${sessionId}] TTS failed:`, error);
+      
+      if (error instanceof Error && (error.message?.includes('quota') || error.message?.includes('rate_limit'))) {
+        return createErrorResponse('Service temporarily unavailable. Try again in a moment.', 503);
       }
       
-      return createErrorResponse(
-        'Failed to generate audio response. Please try again.', 
-        500,
-        error instanceof Error ? error.message : 'Unknown TTS error'
-      );
+      return createErrorResponse('Audio generation failed. Please try again.', 500);
     }
 
-    console.log('=== Voice Chat API Request Completed Successfully ===');
+    const processingTime = Date.now() - startTime;
+    console.log(`[${sessionId}] === Request completed in ${processingTime}ms ===`);
 
     // Return successful response
     return NextResponse.json({
       success: true,
-      transcription: transcription,
+      transcription,
       response: responseText,
       audio: audioBase64,
-      language: language
+      language,
+      processingTime
     }, { 
       status: 200,
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       }
     });
 
   } catch (error) {
-    console.error('Voice chat API error:', error);
+    console.error('Voice chat API unexpected error:', error);
+    
+    const processingTime = Date.now() - startTime;
     
     // Handle specific error types
     if (error instanceof Error) {
-      if (error.message?.includes('insufficient_quota')) {
-        return createErrorResponse(
-          'OpenAI service quota exceeded. Please try again later.', 
-          503,
-          error.message
-        );
+      if (error.message?.includes('quota') || error.message?.includes('rate_limit')) {
+        return createErrorResponse('Service temporarily unavailable. Please try again later.', 503);
       }
       
-      if (error.message?.includes('rate_limit_exceeded')) {
-        return createErrorResponse(
-          'Too many requests. Please wait a moment and try again.', 
-          429,
-          error.message
-        );
-      }
-
-      // Handle network/timeout errors
       if (error.message?.includes('timeout') || error.message?.includes('network')) {
-        return createErrorResponse(
-          'Network timeout. Please check your connection and try again.', 
-          408,
-          error.message
-        );
+        return createErrorResponse('Network timeout. Please check connection and retry.', 408);
       }
     }
 
-    return createErrorResponse(
-      'Voice processing failed. Please try again.', 
-      500,
-      error instanceof Error ? error.message : 'Unknown server error'
-    );
+    return createErrorResponse('Processing failed. Please try again.', 500, 
+      error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -326,16 +283,21 @@ export async function GET(): Promise<NextResponse> {
   return NextResponse.json(
     { 
       success: false,
-      error: 'Method not allowed. Use POST to upload audio.',
-      supportedMethods: ['POST']
+      error: 'Method not allowed. Use POST with audio data.',
+      supportedMethods: ['POST'],
+      timestamp: new Date().toISOString()
     }, 
     { 
       status: 405,
-      headers: { 'Allow': 'POST' }
+      headers: { 
+        'Allow': 'POST',
+        'Content-Type': 'application/json'
+      }
     }
   );
 }
 
+// Optimize for voice processing
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+export const maxDuration = 30; // Reduced for faster responses
