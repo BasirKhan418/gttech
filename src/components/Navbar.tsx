@@ -23,7 +23,7 @@ const Navbar = () => {
     { name: 'Gallery', href: '/gallery' },
     { name: 'Products', href: '/project' },
     { name: 'Career', href: '/career' },
-    { name: 'Contact', href: '/gaq' }
+    { name: 'Contact', href: '/contact' }
   ]
 
   return (
@@ -106,7 +106,7 @@ const Navbar = () => {
             ))}
             <div className="px-4 pt-2">
               <Link
-                href="/contact"
+                href="/gaq"
                 className="block w-full text-center px-6 py-2 bg-gradient-to-r from-cyan-500/80 to-cyan-600/80 text-white rounded-full hover:from-cyan-600/90 hover:to-cyan-700/90 transition-all duration-300 shadow-lg hover:shadow-cyan-500/30 backdrop-blur-lg"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
