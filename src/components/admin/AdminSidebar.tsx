@@ -76,7 +76,6 @@ const AdminSidebar = () => {
       color: 'text-purple-600',
       subItems: [
         { name: 'All Content', href: '/admin/content', icon: Eye },
-        { name: 'Create Content', href: '/admin/content/create', icon: Plus },
       ]
     },
     {
@@ -94,8 +93,6 @@ const AdminSidebar = () => {
       color: 'text-green-600',
       subItems: [
         { name: 'All Products', href: '/admin/projects', icon: Eye },
-        { name: 'Add Product', href: '/admin/projects/create', icon: Plus },
-        { name: 'Categories', href: '/admin/projects/categories', icon: Tag },
       ]
     },
     {
@@ -105,8 +102,6 @@ const AdminSidebar = () => {
       color: 'text-orange-600',
       subItems: [
         { name: 'All Requests', href: '/admin/gaq', icon: Eye },
-        { name: 'Pending', href: '/admin/gaq?status=pending', icon: Bell, badge: 'New' },
-        { name: 'Analytics', href: '/admin/gaq/analytics', icon: TrendingUp },
       ]
     },
     {
@@ -115,18 +110,14 @@ const AdminSidebar = () => {
       color: 'text-indigo-600',
       subItems: [
         { name: 'All Careers', href: '/admin/career', icon: Eye },
-        { name: 'Add Job Posting', href: '/admin/career/create', icon: Plus },
-        { name: 'Applications', href: '/admin/career/applications', icon: Users2 },
       ]
     },
     {
-      name: 'Marketing',
+      name: 'News Banner',
       icon: Megaphone,
       color: 'text-pink-600',
       subItems: [
         { name: 'All Banners', href: '/admin/banners', icon: Eye },
-        { name: 'Create Banner', href: '/admin/banners/create', icon: Plus },
-        { name: 'Email Campaigns', href: '/admin/marketing/email', icon: Mail },
       ]
     },
     {
@@ -135,8 +126,6 @@ const AdminSidebar = () => {
       color: 'text-teal-600',
       subItems: [
         { name: 'Hero Sliders', href: '/admin/sliders', icon: Sliders },
-        { name: 'Add Slider', href: '/admin/sliders/create', icon: Plus },
-        { name: 'Navigation', href: '/admin/navigation', icon: Globe },
       ]
     },
     {
@@ -145,8 +134,6 @@ const AdminSidebar = () => {
       color: 'text-violet-600',
       subItems: [
         { name: 'All Media', href: '/admin/gallery', icon: Eye },
-        { name: 'Upload Media', href: '/admin/gallery/upload', icon: Upload },
-        { name: 'Video Gallery', href: '/admin/gallery/videos', icon: ImageIcon },
       ]
     },
     {
@@ -154,9 +141,7 @@ const AdminSidebar = () => {
       icon: Users2,
       color: 'text-emerald-600',
       subItems: [
-        { name: 'All Teams', href: '/admin/teams', icon: Users2 },
-        { name: 'Add Member', href: '/admin/teams/create', icon: UserPlus },
-        { name: 'Departments', href: '/admin/teams/departments', icon: Building2 },
+        { name: 'All Teams', href: '/admin/teams', icon: Users2 }
       ]
     },
     {
@@ -165,21 +150,7 @@ const AdminSidebar = () => {
       color: 'text-red-600',
       subItems: [
         { name: 'All Admins', href: '/admin/users', icon: Users },
-        { name: 'Add Admin', href: '/admin/users/create', icon: UserPlus },
-        { name: 'Permissions', href: '/admin/users/permissions', icon: Shield },
       ]
-    },
-    {
-      name: 'Analytics',
-      href: '/admin/analytics',
-      icon: BarChart3,
-      color: 'text-blue-500'
-    },
-    {
-      name: 'Settings',
-      href: '/admin/settings',
-      icon: Settings,
-      color: 'text-gray-600'
     },
   ]
 

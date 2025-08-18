@@ -39,7 +39,19 @@ interface RecentActivity {
   type: 'content' | 'user' | 'banner' | 'career' | 'gallery' | 'team' | 'slider'
   target?: string
 }
-
+interface Admin {
+  _id: string
+  name: string
+  username?: string
+  email: string
+  img?: string
+  bio: string
+  phone: string
+  iscentraladmin: boolean
+  twofactor: boolean
+  createdAt: string
+  updatedAt: string
+}
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     users: [],
@@ -52,9 +64,11 @@ const AdminDashboard = () => {
   })
   const [loading, setLoading] = useState(true)
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([])
+  const [healthCheck, setHealthCheck] = useState<{ name?: string; email?: string } | null>(null);
 
   useEffect(() => {
     fetchDashboardData()
+    fetchCurrentAdminData()
   }, [])
 
   const fetchDashboardData = async () => {
@@ -83,11 +97,29 @@ const AdminDashboard = () => {
       }
 
       setDashboardData(data)
+      
+      if (!healthCheck && data.users.length > 0) {
+        setHealthCheck({ name: data.users[3].name || 'Admin', email: data.users[0].email || '' })
+      }
+      
       generateRecentActivities(data)
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchCurrentAdminData = async () => {
+    try {
+      const response = await fetch('/api/admin/') 
+      if (response.ok) {
+        const userData = await response.json()
+        setHealthCheck({ name: userData.name, email: userData.email })
+      }
+    } catch (error) {
+      console.error('Error fetching current admin data:', error)
+      setHealthCheck({ name: 'Admin', email: '' })
     }
   }
 
@@ -312,7 +344,7 @@ const AdminDashboard = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="space-y-3">
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-800">
-                Welcome back, <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">Admin</span>
+                Welcome back, <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">{healthCheck?.name}</span>
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
                 Here's what's happening with your GT Technologies platform today.
