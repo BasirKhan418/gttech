@@ -42,12 +42,12 @@ const GAQPage = () => {
   const [uploadedFileName, setUploadedFileName] = useState('')
 
   const budgetRanges = [
-    '$5,000 - $10,000',
-    '$10,000 - $25,000',
-    '$25,000 - $50,000',
-    '$50,000 - $100,000',
-    '$100,000 - $250,000',
-    '$250,000+'
+    'Rs.5,000 - Rs.10,000',
+    'Rs.10,000 - Rs.25,000',
+    'Rs.25,000 - Rs.50,000',
+    'Rs.50,000 - Rs.100,000',
+    'Rs.100,000 - Rs.250,000',
+    'Rs.250,000+'
   ]
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -371,7 +371,7 @@ const GAQPage = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="+91 00000-0000"
                       className="w-full px-4 py-3 bg-white/70 border border-cyan-300/60 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/70 transition-all duration-300"
                       required
                     />

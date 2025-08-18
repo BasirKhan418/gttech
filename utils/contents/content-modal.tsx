@@ -39,11 +39,17 @@ export function ContentModal({ isOpen, onClose, content, onSuccess }: ContentMod
     poster: "",
     images: [],
     lists: [],
-    designType: "",
+    designType: "default",
   })
   const [newListItem, setNewListItem] = useState("")
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  // Available sections
+  const sections = [
+    { value: "solutions", label: "Technology Solutions" },
+    { value: "consult", label: "Consulting Services" }
+  ]
 
   useEffect(() => {
     if (content) {
@@ -56,7 +62,7 @@ export function ContentModal({ isOpen, onClose, content, onSuccess }: ContentMod
         poster: "",
         images: [],
         lists: [],
-        designType: "",
+        designType: "default",
       })
     }
   }, [content])
@@ -162,7 +168,7 @@ export function ContentModal({ isOpen, onClose, content, onSuccess }: ContentMod
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!formData.sectionName || !formData.title || !formData.description || !formData.designType) {
+    if (!formData.sectionName || !formData.title || !formData.description) {
       toast.error("Please fill in all required fields")
       return
     }
@@ -203,34 +209,23 @@ export function ContentModal({ isOpen, onClose, content, onSuccess }: ContentMod
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="sectionName">Section Name *</Label>
-              <Input
-                id="sectionName"
-                value={formData.sectionName}
-                onChange={(e) => handleInputChange("sectionName", e.target.value)}
-                placeholder="e.g., Hero, About, Services"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="designType">Design Type *</Label>
-              <Select value={formData.designType} onValueChange={(value: string) => handleInputChange("designType", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select design type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="hero">Hero</SelectItem>
-                  <SelectItem value="card">Card</SelectItem>
-                  <SelectItem value="list">List</SelectItem>
-                  <SelectItem value="gallery">Gallery</SelectItem>
-                  <SelectItem value="text">Text</SelectItem>
-                  <SelectItem value="feature">Feature</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="sectionName">Service Section *</Label>
+            <Select value={formData.sectionName} onValueChange={(value: string) => handleInputChange("sectionName", value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select service section" />
+              </SelectTrigger>
+              <SelectContent>
+                {sections.map((section) => (
+                  <SelectItem key={section.value} value={section.value}>
+                    {section.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">
+              Choose whether this content belongs to Technology Solutions or Consulting Services
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -338,13 +333,13 @@ export function ContentModal({ isOpen, onClose, content, onSuccess }: ContentMod
           </div>
 
           <div className="space-y-2">
-            <Label>List Items</Label>
+            <Label>Key Features / Benefits</Label>
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Input
                   value={newListItem}
                   onChange={(e) => setNewListItem(e.target.value)}
-                  placeholder="Add list item"
+                  placeholder="Add feature or benefit"
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addListItem())}
                 />
                 <Button type="button" onClick={addListItem} variant="outline" size="sm">
@@ -371,6 +366,9 @@ export function ContentModal({ isOpen, onClose, content, onSuccess }: ContentMod
                 </div>
               )}
             </div>
+            <p className="text-sm text-muted-foreground">
+              Add key features, benefits, or capabilities for this {formData.sectionName === 'solutions' ? 'solution' : 'service'}
+            </p>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
