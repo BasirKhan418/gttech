@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useRef, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { 
   MessageCircle, 
   X, 
@@ -13,7 +14,10 @@ import {
   Volume2,
   VolumeX,
   Globe,
-  Square
+  Square,
+  RefreshCw,
+  Mail,
+  UserCircle
 } from 'lucide-react'
 
 interface Message {
@@ -22,6 +26,13 @@ interface Message {
   sender: 'user' | 'bot'
   timestamp: Date
   isVoice?: boolean
+}
+
+interface UserInfo {
+  name: string
+  email: string
+  phone?: string
+  company?: string
 }
 
 interface VoiceChatResponse {
@@ -40,19 +51,27 @@ type TTSVoice = 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer'
 
 interface ChatbotProps {
   className?: string
+  collectUserInfoAfter?: number // Number of messages before showing form
+  requireUserInfo?: boolean // Whether to require user info
 }
 
-const Chatbot = ({ className = '' }: ChatbotProps) => {
+const Chatbot = ({ 
+  className = '', 
+  collectUserInfoAfter = 3,
+  requireUserInfo = true 
+}: ChatbotProps) => {
   // UI State
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
+  const [showUserForm, setShowUserForm] = useState(false)
+  const [userFormSubmitted, setUserFormSubmitted] = useState(false)
   
   // Chat State
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! 👋 Welcome to GT Technologies. I can help you in multiple languages through text or voice! How can I assist you today?',
+      text: 'Hello! 👋 Welcome to GT Technologies. I\'m your AI assistant. I can help you in multiple languages through text or voice! How can I assist you with our digital transformation solutions today?',
       sender: 'bot',
       timestamp: new Date()
     }
@@ -60,6 +79,17 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [currentLanguage, setCurrentLanguage] = useState('en')
+  const [messageCount, setMessageCount] = useState(0)
+  
+  // User Info State
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
+  const [tempUserInfo, setTempUserInfo] = useState<UserInfo>({ 
+    name: '', 
+    email: '', 
+    phone: '', 
+    company: '' 
+  })
+  const [formErrors, setFormErrors] = useState<Partial<UserInfo>>({})
   
   // Voice State
   const [voiceState, setVoiceState] = useState<ConversationState>('idle')
@@ -71,10 +101,10 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
   const [recordingTime, setRecordingTime] = useState(0)
   
   // Voice Detection Settings
-  const [minRecordingTime] = useState(1000) // 1 second
-  const [maxRecordingTime] = useState(30000) // 30 seconds
+  const [minRecordingTime] = useState(1000)
+  const [maxRecordingTime] = useState(30000)
   const [silenceThreshold] = useState(0.02)
-  const [silenceDuration] = useState(2000) // 2 seconds
+  const [silenceDuration] = useState(2000)
   
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -123,10 +153,10 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
   }, [messages])
 
   useEffect(() => {
-    if (isOpen && !isMinimized && inputRef.current && !isVoiceMode) {
+    if (isOpen && !isMinimized && inputRef.current && !isVoiceMode && !showUserForm) {
       inputRef.current.focus()
     }
-  }, [isOpen, isMinimized, isVoiceMode])
+  }, [isOpen, isMinimized, isVoiceMode, showUserForm])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -141,6 +171,112 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  // Check if user info should be collected
+  useEffect(() => {
+    if (requireUserInfo && messageCount >= collectUserInfoAfter && !userInfo && !showUserForm && !userFormSubmitted) {
+      setShowUserForm(true)
+      const infoMessage: Message = {
+        id: Date.now().toString(),
+        text: 'To provide you with better assistance and keep you updated with our solutions, could you please share your contact information?',
+        sender: 'bot',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, infoMessage])
+    }
+  }, [messageCount, userInfo, showUserForm, userFormSubmitted, requireUserInfo, collectUserInfoAfter])
+
+  // Validate email
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  // Validate phone
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/
+    return phone.length >= 10 && phoneRegex.test(phone)
+  }
+
+  // Handle user info submit
+  const handleUserInfoSubmit = async () => {
+    const errors: Partial<UserInfo> = {}
+    
+    // Validate required fields
+    if (!tempUserInfo.name.trim()) {
+      errors.name = 'Name is required'
+    }
+    
+    if (!tempUserInfo.email.trim()) {
+      errors.email = 'Email is required'
+    } else if (!validateEmail(tempUserInfo.email)) {
+      errors.email = 'Please enter a valid email'
+    }
+    
+    // Validate optional fields if provided
+    if (tempUserInfo.phone && !validatePhone(tempUserInfo.phone)) {
+      errors.phone = 'Please enter a valid phone number'
+    }
+    
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return
+    }
+    
+    setFormErrors({})
+    setUserInfo(tempUserInfo)
+    setShowUserForm(false)
+    setUserFormSubmitted(true)
+    
+    // Subscribe user to CRM/Newsletter
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: tempUserInfo.email,
+          name: tempUserInfo.name,
+          phone: tempUserInfo.phone,
+          company: tempUserInfo.company,
+          status: 'enabled',
+          lists: [1],
+          preconfirm_subscriptions: true
+        })
+      })
+      
+      if (response.ok) {
+        const successMessage: Message = {
+          id: Date.now().toString(),
+          text: `Thank you, ${tempUserInfo.name}! Your information has been saved. You'll receive updates about our latest solutions at ${tempUserInfo.email}. How else can I assist you today?`,
+          sender: 'bot',
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, successMessage])
+      }
+    } catch (error) {
+      console.error('Error subscribing user:', error)
+      const message: Message = {
+        id: Date.now().toString(),
+        text: `Thank you, ${tempUserInfo.name}! Your information has been saved. How else can I assist you today?`,
+        sender: 'bot',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, message])
+    }
+  }
+
+  // Skip user form
+  const skipUserForm = () => {
+    setShowUserForm(false)
+    setUserFormSubmitted(true)
+    const message: Message = {
+      id: Date.now().toString(),
+      text: 'No problem! Feel free to ask me anything about GT Technologies\' solutions.',
+      sender: 'bot',
+      timestamp: new Date()
+    }
+    setMessages(prev => [...prev, message])
+  }
 
   // Voice initialization
   const initializeVoice = useCallback(async () => {
@@ -158,7 +294,6 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
       
       streamRef.current = stream
       
-      // Setup audio context for voice activity detection
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
       analyserRef.current = audioContextRef.current.createAnalyser()
       analyserRef.current.fftSize = 256
@@ -166,7 +301,6 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
       const microphone = audioContextRef.current.createMediaStreamSource(stream)
       microphone.connect(analyserRef.current)
       
-      // Setup MediaRecorder
       const options: MediaRecorderOptions = { audioBitsPerSecond: 32000 }
       
       if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
@@ -212,7 +346,6 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
       
       setAudioLevel(normalizedLevel)
       
-      // Voice activity detection
       if (normalizedLevel > silenceThreshold) {
         lastVoiceActivityRef.current = Date.now()
         if (silenceTimeoutRef.current) {
@@ -251,7 +384,6 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
         throw new Error('Recording too short')
       }
 
-      // Add user message
       const userMessage: Message = {
         id: Date.now().toString(),
         text: '🎤 Processing...',
@@ -260,8 +392,8 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
         isVoice: true
       }
       setMessages(prev => [...prev, userMessage])
+      setMessageCount(prev => prev + 1)
 
-      // Prepare form data
       const formData = new FormData()
       const audioFile = new File([audioBlob], `voice-${Date.now()}.webm`, { type: audioBlob.type })
       
@@ -269,8 +401,12 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
       formData.append('language', currentLanguage)
       formData.append('voice', selectedVoice)
       formData.append('sessionId', sessionIdRef.current)
+      
+      if (userInfo) {
+        formData.append('userName', userInfo.name)
+        formData.append('userEmail', userInfo.email)
+      }
 
-      // API call
       setVoiceStatusMessage('Processing...')
       
       const response = await fetch('/api/voice-chat', {
@@ -284,14 +420,12 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
         throw new Error(data.error || 'Processing failed')
       }
 
-      // Update messages
       setMessages(prev => prev.map(msg => 
         msg.id === userMessage.id 
           ? { ...msg, text: `🎤 "${data.transcription}"` }
           : msg
       ))
 
-      // Add bot response
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: data.response!,
@@ -301,7 +435,6 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
       }
       setMessages(prev => [...prev, botMessage])
       
-      // Play response
       if (data.audio) {
         setTimeout(() => playVoiceResponse(data.audio!), 500)
       }
@@ -320,9 +453,9 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
       setVoiceState('idle')
       setVoiceStatusMessage('Click to try again')
     }
-  }, [currentLanguage, selectedVoice])
+  }, [currentLanguage, selectedVoice, userInfo])
 
-  // Start voice recording
+  // Start/Stop voice recording functions (same as before)
   const startVoiceRecording = useCallback(() => {
     if (!mediaRecorderRef.current || voiceState !== 'idle') return
     
@@ -335,7 +468,6 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
     mediaRecorderRef.current.start(100)
     detectVoiceActivity()
     
-    // Recording timer
     const startTime = Date.now()
     recordingTimerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime
@@ -347,11 +479,9 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
     }, 100)
   }, [voiceState, detectVoiceActivity, maxRecordingTime])
 
-  // Stop voice recording
   const stopVoiceRecording = useCallback(() => {
     if (voiceState !== 'listening') return
     
-    // Clear timers
     if (recordingTimerRef.current) {
       clearInterval(recordingTimerRef.current)
       recordingTimerRef.current = null
@@ -388,13 +518,11 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
       setVoiceState('speaking')
       setVoiceStatusMessage('Speaking...')
       
-      // Stop current audio
       if (currentAudioRef.current) {
         currentAudioRef.current.pause()
         currentAudioRef.current.src = ''
       }
       
-      // Convert base64 to audio
       const binaryString = atob(audioBase64)
       const audioArray = new Uint8Array(binaryString.length)
       for (let i = 0; i < binaryString.length; i++) {
@@ -447,7 +575,8 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage,
-          language: currentLanguage
+          language: currentLanguage,
+          userInfo: userInfo
         })
       })
 
@@ -475,6 +604,7 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
     setMessages(prev => [...prev, userMessage])
     setInputValue('')
     setIsTyping(true)
+    setMessageCount(prev => prev + 1)
 
     const aiResponse = await callChatAPI(inputValue)
     
@@ -490,13 +620,43 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
     }, 500)
   }
 
+  // Reset chat
+  const resetChat = () => {
+    setMessages([
+      {
+        id: '1',
+        text: 'Hello! 👋 Welcome to GT Technologies. I\'m your AI assistant. I can help you in multiple languages through text or voice! How can I assist you with our digital transformation solutions today?',
+        sender: 'bot',
+        timestamp: new Date()
+      }
+    ])
+    setMessageCount(0)
+    setUserInfo(null)
+    setShowUserForm(false)
+    setUserFormSubmitted(false)
+    setTempUserInfo({ name: '', email: '', phone: '', company: '' })
+    setFormErrors({})
+    sessionIdRef.current = Date.now().toString()
+    
+    if (voiceState !== 'idle') {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop()
+      }
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause()
+        currentAudioRef.current.src = ''
+      }
+      setVoiceState('idle')
+      setVoiceStatusMessage('Voice ready!')
+    }
+  }
+
   // Toggle voice mode
   const toggleVoiceMode = async () => {
     if (!isVoiceMode) {
       await initializeVoice()
       setIsVoiceMode(true)
     } else {
-      // Cleanup
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop())
         streamRef.current = null
@@ -541,512 +701,407 @@ const Chatbot = ({ className = '' }: ChatbotProps) => {
   // Responsive chat window positioning
   const getChatPosition = () => {
     if (typeof window !== 'undefined' && window.innerWidth < 640) {
-      // Mobile: full screen
       return 'fixed inset-0 m-0 w-full h-full rounded-none'
     } else if (isMinimized) {
-      // Minimized: small bar
       return 'fixed bottom-4 right-4 w-80 h-14'
     } else {
-      // Desktop: positioned bottom-right
       return 'fixed bottom-4 right-4 w-full max-w-md h-[600px] sm:h-[700px]'
     }
   }
 
   if (!isOpen) {
     return (
-      <>
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 group"
-          aria-label="Open chat"
-        >
-          <div className="relative">
-            {/* Main Button */}
-            <div className="relative w-16 h-16 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-700 hover:scale-110 flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-white/90 group-hover:to-white/70 group-hover:border-cyan-400/40">
-              {/* Enhanced glass effects */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-cyan-50/10 rounded-2xl"></div>
-              <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/10 via-transparent to-cyan-300/8 rounded-2xl"></div>
-              
-              {/* Shimmer effect */}
-              <div className="absolute inset-0 rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-shimmer"></div>
-              </div>
-              
-              {/* Icon container with enhanced depth */}
-              <div className="relative z-10 w-10 h-10 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-xl flex items-center justify-center text-white shadow-2xl shadow-cyan-500/50 ring-1 ring-white/20">
-                <MessageCircle className="w-6 h-6" />
-              </div>
-              
-              {/* Enhanced notification badge */}
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-red-400 to-red-600 rounded-full shadow-xl border-2 border-white animate-pulse ring-2 ring-red-400/30"></div>
-              
-              {/* Enhanced floating particles */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className={`absolute w-1.5 h-1.5 rounded-full animate-float opacity-0 group-hover:opacity-100 transition-all duration-700 ${
-                      i % 3 === 0 ? 'bg-cyan-400/70 shadow-lg shadow-cyan-400/50' : 
-                      i % 3 === 1 ? 'bg-cyan-300/60 shadow-lg shadow-cyan-300/40' : 
-                      'bg-cyan-200/50 shadow-lg shadow-cyan-200/30'
-                    }`}
-                    style={{
-                      left: `${15 + (i * 18)}%`,
-                      top: `${10 + (i * 20)}%`,
-                      animationDelay: `${i * 0.4}s`,
-                      animationDuration: `${2.5 + (i % 2)}s`
-                    }}
-                  ></div>
-                ))}
-              </div>
-
-              {/* Ripple effect on hover */}
-              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="absolute inset-0 bg-cyan-400/20 rounded-2xl animate-ping"></div>
-              </div>
-            </div>
-          </div>
-        </button>
-
-        {/* Enhanced Animations */}
-        <style jsx>{`
-          @keyframes float {
-            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
-            33% { transform: translateY(-12px) translateX(6px) rotate(2deg); }
-            66% { transform: translateY(6px) translateX(-4px) rotate(-1deg); }
-          }
-          
-          @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-          }
-          
-          .animate-float {
-            animation: float 3.5s ease-in-out infinite;
-          }
-          
-          .animate-shimmer {
-            animation: shimmer 3s ease-in-out infinite;
-          }
-        `}</style>
-      </>
+      <button
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 z-50 group"
+        aria-label="Open chat"
+      >
+        <div className="relative w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center">
+          <MessageCircle className="w-6 h-6 text-white" />
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+        </div>
+      </button>
     )
   }
 
   return (
-    <>
-      <div className={`${getChatPosition()} z-50 transition-all duration-700 ${className}`}>
-        <div className="h-full relative bg-gradient-to-br from-white/85 to-white/70 backdrop-blur-2xl border border-white/40 rounded-3xl shadow-2xl shadow-cyan-500/20 overflow-hidden ring-1 ring-white/30">
-          {/* Enhanced glass effects */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-white/25 to-cyan-50/15"></div>
-          <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/6"></div>
-          
-          {/* Enhanced background grid pattern */}
-          <div className="absolute inset-0 opacity-15">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `
-                linear-gradient(rgba(6,182,212,0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(6,182,212,0.15) 1px, transparent 1px)
-              `,
-              backgroundSize: '24px 24px'
-            }}></div>
-            {/* Subtle dots overlay */}
-            <div className="absolute inset-0" style={{
-              backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(6,182,212,0.08) 1px, transparent 0)',
-              backgroundSize: '48px 48px'
-            }}></div>
-          </div>
-
-          {/* Enhanced floating particles */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(12)].map((_, i) => (
-              <div
-                key={i}
-                className={`absolute rounded-full animate-float ${
-                  i % 4 === 0 ? 'w-1.5 h-1.5 bg-cyan-400/25 shadow-lg shadow-cyan-400/40' : 
-                  i % 4 === 1 ? 'w-1 h-1 bg-cyan-300/20 shadow-md shadow-cyan-300/30' : 
-                  i % 4 === 2 ? 'w-0.5 h-0.5 bg-cyan-200/15 shadow-sm shadow-cyan-200/25' :
-                  'w-2 h-2 bg-cyan-500/30 shadow-xl shadow-cyan-500/50'
-                }`}
-                style={{
-                  left: `${5 + (i * 8)}%`,
-                  top: `${3 + (i * 9)}%`,
-                  animationDelay: `${i * 0.5}s`,
-                  animationDuration: `${4 + (i % 4)}s`
-                }}
-              ></div>
-            ))}
-          </div>
-
-          <div className="relative z-10 h-full flex flex-col">
-            {/* Enhanced Header */}
-            <div className="bg-gradient-to-r from-cyan-500/95 to-cyan-600/95 backdrop-blur-xl text-white p-4 flex items-center justify-between border-b border-cyan-400/30 shadow-lg">
-              {!isMinimized && (
-                <>
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 bg-white/25 backdrop-blur-md border border-white/40 rounded-xl flex items-center justify-center shadow-xl ring-1 ring-white/20">
-                      <Bot className="w-6 h-6 text-white drop-shadow-sm" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg text-white drop-shadow-sm">GT Assistant</h3>
-                      <div className="text-xs opacity-95 flex items-center gap-2">
-                        <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-md shadow-green-400/50"></span>
-                        <span className="font-medium">{isVoiceMode ? 'Voice Mode' : 'Online'}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    {/* Enhanced Language Selector */}
-                    <div className="relative  " ref={dropdownRef}>
-                      <button 
-                        onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
-                        className="p-2.5 hover:bg-white/25 rounded-xl transition-all duration-300 border border-white/30 backdrop-blur-md shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-                        title="Change Language"
-                      >
-                        <Globe className="w-5 h-5 drop-shadow-sm" />
-                      </button>
-                      {showLanguageDropdown && (
-                        <div className="absolute top-full  right-0 mt-2 bg-white/95 backdrop-blur-xl border border-white/50 rounded-2xl shadow-2xl overflow-hidden min-w-[220px] ring-1 ring-white/20">
-
-                          {languages.map((lang) => (
-                            <button
-                              key={lang.code}
-                              onClick={() => {
-                                setCurrentLanguage(lang.code)
-                                setShowLanguageDropdown(false)
-                              }}
-                              className={`w-full text-left px-4 py-3.5  text-sm hover:bg-cyan-50/80 transition-all duration-200 flex items-center gap-3 ${
-                                currentLanguage === lang.code ? 'bg-cyan-50/90 text-cyan-700 font-semibold shadow-inner' : 'text-gray-700'
-                              }`}
-                            >
-                              <span className="text-lg drop-shadow-sm">{lang.flag}</span>
-                              <span>{lang.name}</span>
-                              {currentLanguage === lang.code && (
-                                <span className="ml-auto w-2 h-2 bg-cyan-500 rounded-full shadow-sm"></span>
-                              )}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Enhanced Voice Mode Toggle */}
-                    <button
-                      onClick={toggleVoiceMode}
-                      className={`p-2.5 rounded-xl transition-all duration-300 border backdrop-blur-md shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 ${
-                        isVoiceMode 
-                          ? 'bg-white/25 border-white/50 text-white ring-2 ring-white/30' 
-                          : 'hover:bg-white/25 border-white/30 text-white/90 hover:text-white'
-                      }`}
-                      title={isVoiceMode ? 'Disable Voice' : 'Enable Voice'}
-                    >
-                      {isVoiceMode ? <Mic className="w-5 h-5 drop-shadow-sm" /> : <MicOff className="w-5 h-5 drop-shadow-sm" />}
-                    </button>
-
-                    {/* Enhanced Mute Toggle */}
-                    {isVoiceMode && (
-                      <button
-                        onClick={() => setIsMuted(!isMuted)}
-                        className={`p-2.5 rounded-xl transition-all duration-300 border backdrop-blur-md shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 ${
-                          isMuted 
-                            ? 'bg-red-500/30 border-red-400/50 text-red-100 ring-2 ring-red-400/40' 
-                            : 'hover:bg-white/25 border-white/30 text-white/90 hover:text-white'
-                        }`}
-                        title={isMuted ? 'Unmute' : 'Mute'}
-                      >
-                        {isMuted ? <VolumeX className="w-5 h-5 drop-shadow-sm" /> : <Volume2 className="w-5 h-5 drop-shadow-sm" />}
-                      </button>
-                    )}
-
-                    {/* Enhanced Minimize */}
-                    <button
-                      onClick={() => setIsMinimized(true)}
-                      className="p-2.5 hover:bg-white/25 rounded-xl transition-all duration-300 border border-white/30 backdrop-blur-md shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 hidden sm:block"
-                      title="Minimize"
-                    >
-                      <Minimize2 className="w-5 h-5 drop-shadow-sm" />
-                    </button>
-
-                    {/* Enhanced Close */}
-                    <button
-                      onClick={() => setIsOpen(false)}
-                      className="p-2.5 hover:bg-white/25 rounded-xl transition-all duration-300 border border-white/30 backdrop-blur-md shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-                      title="Close"
-                    >
-                      <X className="w-5 h-5 drop-shadow-sm" />
-                    </button>
-                  </div>
-                </>
-              )}
-              
-              {isMinimized && (
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white/25 backdrop-blur-md border border-white/40 rounded-lg flex items-center justify-center shadow-lg">
-                      <Bot className="w-5 h-5 drop-shadow-sm" />
-                    </div>
-                    <span className="font-semibold drop-shadow-sm">GT Assistant</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setIsMinimized(false)}
-                      className="p-1.5 hover:bg-white/25 rounded-lg transition-all duration-300 backdrop-blur-md shadow-md hover:scale-105"
-                      title="Restore"
-                    >
-                      <Maximize2 className="w-4 h-4 drop-shadow-sm" />
-                    </button>
-                    <button
-                      onClick={() => setIsOpen(false)}
-                      className="p-1.5 hover:bg-white/25 rounded-lg transition-all duration-300 backdrop-blur-md shadow-md hover:scale-105"
-                      title="Close"
-                    >
-                      <X className="w-4 h-4 drop-shadow-sm" />
-                    </button>
-                  </div>
+    <div className={`${getChatPosition()} z-50 transition-all duration-300 ${className}`}>
+      <div className="h-full bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden">
+        
+        {/* Header */}
+        <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-4 flex items-center justify-between">
+          {!isMinimized && (
+            <>
+              <div className="flex items-center gap-3">
+                 <img
+                 width={100}
+                 height={90}
+                src="./logo.png"
+                alt="oops"
+                 />
+                <div>
+                  <h3 className="font-semibold">GT Assistant</h3>
+                  <p className="text-xs opacity-90">
+                    {isVoiceMode ? 'Voice Mode' : 'Online'} 
+                    {userInfo && ` • ${userInfo.name}`}
+                  </p>
                 </div>
-              )}
-            </div>
-
-            {!isMinimized && (
-              <>
-                {/* Enhanced Voice Status Bar */}
-                {isVoiceMode && (
-                  <div className={`px-4 py-4 text-sm font-semibold text-center backdrop-blur-xl border-b border-white/30 shadow-inner ${
-                    voiceState === 'listening' ? 'bg-gradient-to-r from-red-500/95 to-red-600/95 text-white' :
-                    voiceState === 'processing' ? 'bg-gradient-to-r from-amber-500/95 to-amber-600/95 text-white' :
-                    voiceState === 'speaking' ? 'bg-gradient-to-r from-blue-500/95 to-blue-600/95 text-white' :
-                    voiceState === 'error' ? 'bg-gradient-to-r from-red-600/95 to-red-700/95 text-white' :
-                    'bg-gradient-to-r from-gray-50/95 to-gray-100/95 text-gray-700'
-                  }`}>
-                    <div className="flex items-center justify-center gap-4">
-                      {voiceState === 'listening' && (
-                        <>
-                          <div className="flex gap-1.5">
-                            {[...Array(3)].map((_, i) => (
-                              <div
-                                key={i}
-                                className="w-1.5 bg-white rounded-full animate-pulse shadow-lg"
-                                style={{
-                                  height: `${12 + audioLevel * 20}px`,
-                                  animationDelay: `${i * 0.15}s`
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <span className="font-bold text-lg drop-shadow-sm">{Math.round(recordingTime / 1000)}s</span>
-                        </>
-                      )}
-                      <span className="drop-shadow-sm">{voiceStatusMessage}</span>
+              </div>
+              
+              <div className="flex items-center gap-1">
+                {/* Language Selector */}
+                <div className="relative" ref={dropdownRef}>
+                  <button 
+                    onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                    className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                    title="Change Language"
+                  >
+                    <Globe className="w-5 h-5" />
+                  </button>
+                  {showLanguageDropdown && (
+                    <div className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-xl overflow-hidden z-50">
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => {
+                            setCurrentLanguage(lang.code)
+                            setShowLanguageDropdown(false)
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                            currentLanguage === lang.code ? 'bg-gray-100 text-cyan-600' : 'text-gray-700'
+                          }`}
+                        >
+                          {lang.flag} {lang.name}
+                        </button>
+                      ))}
                     </div>
-                  </div>
+                  )}
+                </div>
+
+                {/* Voice Mode Toggle */}
+                <button
+                  onClick={toggleVoiceMode}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                  title={isVoiceMode ? 'Disable Voice' : 'Enable Voice'}
+                >
+                  {isVoiceMode ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                </button>
+
+                {/* Mute Toggle */}
+                {isVoiceMode && (
+                  <button
+                    onClick={() => setIsMuted(!isMuted)}
+                    className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                    title={isMuted ? 'Unmute' : 'Mute'}
+                  >
+                    {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                  </button>
                 )}
 
-                {/* Enhanced Messages */}
-                <div className="flex-1 -z-50 overflow-y-auto p-4 space-y-4 relative scrollbar-thin scrollbar-thumb-cyan-200/50 scrollbar-track-transparent">
-                  {messages.map((message, index) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`}
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    >
-                      <div className={`flex items-start gap-3 max-w-[85%] ${
-                        message.sender === 'user' ? 'flex-row-reverse' : ''
-                      }`}>
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-xl backdrop-blur-md border ring-1 ${
-                          message.sender === 'user' 
-                            ? 'bg-gradient-to-br from-cyan-500 to-cyan-600 text-white border-cyan-400/60 ring-white/20' 
-                            : 'bg-white/90 text-gray-600 border-gray-200/60 ring-white/30'
-                        }`}>
-                          {message.sender === 'user' ? <User className="w-5 h-5 drop-shadow-sm" /> : <Bot className="w-5 h-5" />}
-                        </div>
-                        <div className={`relative backdrop-blur-xl border shadow-xl ring-1 ${
-                          message.sender === 'user' 
-                            ? 'bg-gradient-to-br from-cyan-500/95 to-cyan-600/95 text-white border-cyan-400/60 ring-white/20' 
-                            : 'bg-white/90 text-gray-800 border-gray-200/60 ring-white/30'
-                        } rounded-2xl px-4 py-3 max-w-full transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl`}>
-                          {/* Enhanced glass effect overlay */}
-                          <div className={`absolute inset-0 rounded-2xl ${
-                            message.sender === 'user' 
-                              ? 'bg-gradient-to-br from-white/15 via-white/8 to-transparent' 
-                              : 'bg-gradient-to-br from-white/70 via-white/40 to-cyan-50/15'
-                          }`}></div>
-                          
-                          <div className="relative z-10">
-                            <p className="text-sm whitespace-pre-wrap leading-relaxed font-medium">{message.text}</p>
-                            <span className={`text-xs opacity-80 mt-2 block font-medium ${
-                              message.sender === 'user' ? 'text-right' : ''
-                            }`}>
-                              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                {/* Reset Chat */}
+                <button
+                  onClick={resetChat}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                  title="Reset Chat"
+                >
+                  <RefreshCw className="w-5 h-5" />
+                </button>
 
-                  {isTyping && (
-                    <div className="flex justify-start animate-fade-in-up">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md border border-gray-200/60 flex items-center justify-center shadow-xl ring-1 ring-white/30">
-                          <Bot className="w-5 h-5 text-gray-600" />
-                        </div>
-                        <div className="bg-white/90 backdrop-blur-xl border border-gray-200/60 rounded-2xl px-4 py-3 shadow-xl ring-1 ring-white/30">
-                          <div className="flex gap-1.5">
-                            {[...Array(3)].map((_, i) => (
-                              <div
-                                key={i}
-                                className="w-2.5 h-2.5 bg-gray-400 rounded-full animate-bounce shadow-sm"
-                                style={{ animationDelay: `${i * 0.2}s` }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div ref={messagesEndRef} />
-                </div>
+                {/* Minimize */}
+                <button
+                  onClick={() => setIsMinimized(true)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors hidden sm:block"
+                  title="Minimize"
+                >
+                  <Minimize2 className="w-5 h-5" />
+                </button>
 
-                {/* Enhanced Input Area */}
-                <div className="border-t border-white/30 p-4 backdrop-blur-xl bg-white/40 shadow-inner">
-                  {isVoiceMode ? (
-                    <div className="flex flex-col items-center gap-4">
-                      {/* Enhanced Voice Controls */}
-                      <select
-                        value={selectedVoice}
-                        onChange={(e) => setSelectedVoice(e.target.value as TTSVoice)}
-                        disabled={voiceState !== 'idle'}
-                        className="text-sm bg-white/90 backdrop-blur-md border border-cyan-200/60 rounded-xl px-4 py-2.5 disabled:opacity-50 shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/60 focus:border-cyan-400/60 transition-all duration-300 font-medium ring-1 ring-white/20"
-                      >
-                        {voices.map((voice) => (
-                          <option key={voice.id} value={voice.id}>{voice.name}</option>
-                        ))}
-                      </select>
-
-                      {/* Enhanced Voice Button */}
-                      <button
-                        onClick={handleVoiceToggle}
-                        disabled={voiceState === 'processing'}
-                        className={`relative w-24 h-24 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl backdrop-blur-xl border-2 ring-4 ${
-                          voiceState === 'listening' ? 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-red-400/60 ring-red-400/30 animate-pulse scale-110 shadow-red-500/40' :
-                          voiceState === 'processing' ? 'bg-gradient-to-br from-amber-500 to-amber-600 border-amber-400/60 ring-amber-400/30 shadow-amber-500/40' :
-                          voiceState === 'speaking' ? 'bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-400/60 ring-blue-400/30 animate-pulse shadow-blue-500/40' :
-                          'bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 border-cyan-400/60 ring-cyan-400/30 hover:scale-110 shadow-cyan-500/40'
-                        } text-white disabled:opacity-50 group active:scale-95`}
-                      >
-                        {/* Enhanced glass overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-white/15 to-transparent rounded-2xl"></div>
-                        
-                        {/* Button content with enhanced effects */}
-                        <div className="relative z-10 drop-shadow-lg">
-                          {voiceState === 'listening' ? <Square className="w-10 h-10" /> :
-                           voiceState === 'processing' ? <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin" /> :
-                           voiceState === 'speaking' ? <Volume2 className="w-10 h-10" /> :
-                           <Mic className="w-10 h-10" />}
-                        </div>
-
-                        {/* Enhanced ripple effect for listening state */}
-                        {voiceState === 'listening' && (
-                          <>
-                            <div className="absolute inset-0 rounded-2xl bg-red-400/40 animate-ping"></div>
-                            <div className="absolute inset-0 rounded-2xl bg-red-300/30 animate-ping" style={{ animationDelay: '0.5s' }}></div>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex gap-3">
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
-                        placeholder="Type your message..."
-                        className="flex-1 px-4 py-3.5 bg-white/90 backdrop-blur-md border border-cyan-200/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/60 focus:border-cyan-400/60 transition-all duration-300 shadow-lg text-gray-700 placeholder-gray-500 font-medium ring-1 ring-white/20 hover:bg-white/95"
-                      />
-                      <button
-                        onClick={handleSendMessage}
-                        disabled={!inputValue.trim()}
-                        className="px-4 py-3.5 bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg backdrop-blur-md border border-cyan-400/60 hover:scale-105 disabled:hover:scale-100 active:scale-95 ring-1 ring-white/20"
-                      >
-                        <Send className="w-5 h-5 drop-shadow-sm" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+                {/* Close */}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                  title="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </>
+          )}
+          
+          {isMinimized && (
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <Bot className="w-5 h-5" />
+                <span className="font-medium">GT Assistant</span>
+                {userInfo && <span className="text-xs opacity-75">• {userInfo.name}</span>}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsMinimized(false)}
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
+
+        {!isMinimized && (
+          <>
+            {/* Voice Status Bar */}
+            {isVoiceMode && (
+              <div className={`px-4 py-2 text-sm font-medium text-center ${
+                voiceState === 'listening' ? 'bg-red-500 text-white' :
+                voiceState === 'processing' ? 'bg-amber-500 text-white' :
+                voiceState === 'speaking' ? 'bg-blue-500 text-white' :
+                voiceState === 'error' ? 'bg-red-600 text-white' :
+                'bg-gray-100 text-gray-700'
+              }`}>
+                <div className="flex items-center justify-center gap-2">
+                  {voiceState === 'listening' && (
+                    <>
+                      <div className="flex gap-1">
+                        {[...Array(3)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-1 bg-white rounded-full animate-pulse"
+                            style={{
+                              height: `${4 + audioLevel * 20}px`,
+                              animationDelay: `${i * 0.1}s`
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <span>{Math.round(recordingTime / 1000)}s</span>
+                    </>
+                  )}
+                  <span>{voiceStatusMessage}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`flex items-start gap-2 max-w-[80%] ${
+                    message.sender === 'user' ? 'flex-row-reverse' : ''
+                  }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      message.sender === 'user' ? 'bg-cyan-500' : 'bg-gray-300'
+                    }`}>
+                      {message.sender === 'user' ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-gray-600" />}
+                    </div>
+                    <div className={`rounded-lg px-4 py-2 ${
+                      message.sender === 'user' 
+                        ? 'bg-cyan-500 text-white' 
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                      <span className={`text-xs opacity-70 mt-1 block ${
+                        message.sender === 'user' ? 'text-right' : ''
+                      }`}>
+                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* User Info Collection Form */}
+              {showUserForm && (
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 space-y-3 border border-gray-200">
+                  <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                    <UserCircle className="w-5 h-5 text-cyan-600" />
+                    Please share your details
+                  </h4>
+                  
+                  <div className="space-y-2">
+                    {/* Name Input */}
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Your Name *"
+                        value={tempUserInfo.name}
+                        onChange={(e) => {
+                          setTempUserInfo(prev => ({ ...prev, name: e.target.value }))
+                          setFormErrors(prev => ({ ...prev, name: '' }))
+                        }}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                          formErrors.name ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      />
+                      {formErrors.name && (
+                        <p className="text-xs text-red-500 mt-1">{formErrors.name}</p>
+                      )}
+                    </div>
+
+                    {/* Email Input */}
+                    <div>
+                      <input
+                        type="email"
+                        placeholder="Your Email *"
+                        value={tempUserInfo.email}
+                        onChange={(e) => {
+                          setTempUserInfo(prev => ({ ...prev, email: e.target.value }))
+                          setFormErrors(prev => ({ ...prev, email: '' }))
+                        }}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                          formErrors.email ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      />
+                      {formErrors.email && (
+                        <p className="text-xs text-red-500 mt-1">{formErrors.email}</p>
+                      )}
+                    </div>
+
+                    {/* Phone Input */}
+                    <div>
+                      <input
+                        type="tel"
+                        placeholder="Phone Number (Optional)"
+                        value={tempUserInfo.phone}
+                        onChange={(e) => {
+                          setTempUserInfo(prev => ({ ...prev, phone: e.target.value }))
+                          setFormErrors(prev => ({ ...prev, phone: '' }))
+                        }}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                          formErrors.phone ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      />
+                      {formErrors.phone && (
+                        <p className="text-xs text-red-500 mt-1">{formErrors.phone}</p>
+                      )}
+                    </div>
+
+                    {/* Company Input */}
+                    <input
+                      type="text"
+                      placeholder="Company Name (Optional)"
+                      value={tempUserInfo.company}
+                      onChange={(e) => setTempUserInfo(prev => ({ ...prev, company: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+
+                    {/* Buttons */}
+                    <div className="flex gap-2 pt-2">
+                      <button
+                        onClick={handleUserInfoSubmit}
+                        className="flex-1 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white py-2 rounded-lg text-sm font-medium hover:from-cyan-600 hover:to-cyan-700 transition-all flex items-center justify-center gap-2"
+                      >
+                        <Mail className="w-4 h-4" />
+                        Submit
+                      </button>
+                      <button
+                        onClick={skipUserForm}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors"
+                      >
+                        Skip
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-gray-500 text-center">
+                    We respect your privacy and will only use this to improve our service
+                  </p>
+                </div>
+              )}
+
+              {/* Typing Indicator */}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                      <Bot className="w-4 h-4 text-gray-600" />
+                    </div>
+                    <div className="bg-gray-100 rounded-lg px-4 py-3">
+                      <div className="flex gap-1">
+                        {[...Array(3)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            style={{ animationDelay: `${i * 0.2}s` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="border-t p-4">
+              {isVoiceMode ? (
+                <div className="flex flex-col items-center gap-4">
+                  {/* Voice Controls */}
+                  <select
+                    value={selectedVoice}
+                    onChange={(e) => setSelectedVoice(e.target.value as TTSVoice)}
+                    disabled={voiceState !== 'idle'}
+                    className="text-sm border rounded-lg px-3 py-1 disabled:opacity-50"
+                  >
+                    {voices.map((voice) => (
+                      <option key={voice.id} value={voice.id}>{voice.name}</option>
+                    ))}
+                  </select>
+
+                  {/* Voice Button */}
+                  <button
+                    onClick={handleVoiceToggle}
+                    disabled={voiceState === 'processing'}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
+                      voiceState === 'listening' ? 'bg-red-500 hover:bg-red-600 animate-pulse' :
+                      voiceState === 'processing' ? 'bg-amber-500' :
+                      voiceState === 'speaking' ? 'bg-blue-500 hover:bg-blue-600' :
+                      'bg-cyan-500 hover:bg-cyan-600'
+                    } text-white shadow-lg hover:shadow-xl disabled:opacity-50`}
+                  >
+                    {voiceState === 'listening' ? <Square className="w-6 h-6" /> :
+                     voiceState === 'processing' ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" /> :
+                     voiceState === 'speaking' ? <Volume2 className="w-6 h-6" /> :
+                     <Mic className="w-6 h-6" />}
+                  </button>
+                </div>
+              ) : (
+                !showUserForm && (
+                  <div className="flex gap-2">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                      placeholder="Type your message..."
+                      className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={!inputValue.trim()}
+                      className="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
+                  </div>
+                )
+              )}
+            </div>
+          </>
+        )}
       </div>
-
-      {/* Enhanced Custom Animations */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
-          33% { transform: translateY(-12px) translateX(6px) rotate(2deg); }
-          66% { transform: translateY(6px) translateX(-4px) rotate(-1deg); }
-        }
-
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        .animate-shimmer {
-          animation: shimmer 3s ease-in-out infinite;
-        }
-
-        /* Custom scrollbar styles */
-        .scrollbar-thin {
-          scrollbar-width: thin;
-        }
-
-        .scrollbar-thumb-cyan-200\/50::-webkit-scrollbar-thumb {
-          background-color: rgba(165, 243, 252, 0.5);
-          border-radius: 6px;
-        }
-
-        .scrollbar-track-transparent::-webkit-scrollbar-track {
-          background-color: transparent;
-        }
-
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-          background-color: rgba(165, 243, 252, 0.5);
-          border-radius: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-          background-color: transparent;
-        }
-      `}</style>
-    </>
+    </div>
   )
 }
 
