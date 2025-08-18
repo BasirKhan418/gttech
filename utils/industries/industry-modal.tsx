@@ -50,9 +50,10 @@ interface IndustryModalProps {
   industry: Industry | null
   categories: Category[]
   onSuccess: () => void
+  aiGeneratedData?: Partial<Industry> | null
 }
 
-export function IndustryModal({ isOpen, onClose, industry, categories, onSuccess }: IndustryModalProps) {
+export function IndustryModal({ isOpen, onClose, industry, categories, onSuccess, aiGeneratedData }: IndustryModalProps) {
   const [formData, setFormData] = useState<Industry>({
     title: "",
     subtitle: "",
@@ -83,6 +84,29 @@ export function IndustryModal({ isOpen, onClose, industry, categories, onSuccess
   useEffect(() => {
     if (industry) {
       setFormData(industry)
+    } else if (aiGeneratedData) {
+      // Pre-populate with AI generated data
+      setFormData({
+        title: aiGeneratedData.title || "",
+        subtitle: aiGeneratedData.subtitle || "",
+        description: aiGeneratedData.description || "",
+        highlights: aiGeneratedData.highlights || [],
+        technologies: aiGeneratedData.technologies || [],
+        poster: aiGeneratedData.poster || "",
+        images: aiGeneratedData.images || [],
+        category: aiGeneratedData.category || "",
+        gradientFrom: aiGeneratedData.gradientFrom || "from-sky-500/20",
+        gradientTo: aiGeneratedData.gradientTo || "to-cyan-500/20",
+        borderColor: aiGeneratedData.borderColor || "border-sky-500/20",
+        hoverBorderColor: aiGeneratedData.hoverBorderColor || "hover:border-sky-400/40",
+        textColor: aiGeneratedData.textColor || "text-sky-400",
+        hoverTextColor: aiGeneratedData.hoverTextColor || "group-hover:text-sky-200",
+        buttonGradient: aiGeneratedData.buttonGradient || "from-sky-500/80 to-sky-600/80 hover:from-sky-600/90 hover:to-sky-700/90",
+        iconBg: aiGeneratedData.iconBg || "bg-gradient-to-r from-sky-500/20 to-cyan-500/20",
+        iconBorder: aiGeneratedData.iconBorder || "border-sky-400/30",
+        isActive: aiGeneratedData.isActive !== false,
+        isFeatured: aiGeneratedData.isFeatured || false,
+      })
     } else {
       setFormData({
         title: "",
@@ -106,7 +130,7 @@ export function IndustryModal({ isOpen, onClose, industry, categories, onSuccess
         isFeatured: false,
       })
     }
-  }, [industry])
+  }, [industry, aiGeneratedData])
 
   const handleInputChange = (field: keyof Industry, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -261,8 +285,18 @@ export function IndustryModal({ isOpen, onClose, industry, categories, onSuccess
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{industry ? "Edit Industry" : "Create New Industry"}</DialogTitle>
+          <DialogTitle>
+            {industry ? "Edit Industry" : aiGeneratedData ? "Create Industry from AI" : "Create New Industry"}
+          </DialogTitle>
         </DialogHeader>
+
+        {aiGeneratedData && !industry && (
+          <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800 mb-4">
+            <p className="text-purple-700 dark:text-purple-300 text-sm">
+              ✨ This form has been pre-filled with AI-generated content. You can review and modify any fields before saving.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
@@ -341,7 +375,7 @@ export function IndustryModal({ isOpen, onClose, industry, categories, onSuccess
 
           {/* Images */}
           <div className="space-y-2">
-            <Label>Poster Image *</Label>
+            <Label>Poster Image</Label>
             <div className="flex items-center gap-4">
               <Button
                 type="button"

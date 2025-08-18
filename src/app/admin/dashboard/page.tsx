@@ -41,7 +41,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { names } from '../../../../.next/server/chunks/node_modules_3e7d4e7f._';
 
 interface User {
   _id: string
