@@ -30,11 +30,11 @@ const Navbar = () => {
 
   // Product categories for dropdown
   const productCategories = [
-    { name: 'Software Products', href: '/products/industrial-equipment'},
-    { name: 'SAAP', href: '/products/manufacturing-tools'},
-    { name: 'Electric Vehicles', href: '/products/automation-systems'},
-    { name: 'Furnitures', href: '/products/quality-control'},
-    { name: 'Garments', href: '/products/safety-equipment'},
+    { name: 'Software Products', href: '/category/Software%20products'},
+    { name: 'SAAP', href: '/category/saap'},
+    { name: 'Electric Vehicles', href: '/category/electric%20vehicles'},
+    { name: 'Furnitures', href: '/category/furnitures'},
+    { name: 'Garments', href: '/category/garments'},
   ]
 
   // Handle dropdown hover with delay

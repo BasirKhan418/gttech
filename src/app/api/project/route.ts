@@ -167,6 +167,7 @@ export const GET = async (req: NextRequest) => {
         if (category && category !== 'all' && PRODUCT_CATEGORIES.includes(category)) {
             if (Array.isArray(response.data)) {
                 response.data = response.data.filter((project: any) => project.category === category);
+                
             }
         }
         
