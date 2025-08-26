@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { Plus, Search, Filter, Edit, Trash2, Eye, Star, Code, Layers, Lightbulb, Zap, Rocket, Settings, Monitor, Smartphone, Database, Globe } from 'lucide-react'
+import { Plus, Search, Filter, Edit, Trash2, Eye, Star, Code, Layers, Lightbulb, Zap, Rocket, Settings, Monitor, Smartphone, Database, Globe, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { ProjectModal } from '../../../../utils/projects/project-modal'
+import { ProjectAIModal } from '../../../../utils/projects/project-ai-modal'
 import { toast, Toaster } from 'sonner'
 
 // Icon mapping
@@ -65,6 +66,8 @@ const AdminProjectsPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false)
+  const [aiGeneratedProject, setAiGeneratedProject] = useState<Partial<Project> | null>(null)
   const [deleteProject, setDeleteProject] = useState<Project | null>(null)
 
   useEffect(() => {
@@ -92,11 +95,24 @@ const AdminProjectsPage = () => {
 
   const handleCreateProject = () => {
     setSelectedProject(null)
+    setAiGeneratedProject(null)
+    setIsModalOpen(true)
+  }
+
+  const handleCreateProjectWithAI = () => {
+    setIsAIModalOpen(true)
+  }
+
+  const handleAIGenerateProject = (projectData: Partial<Project>) => {
+    setAiGeneratedProject(projectData)
+    setSelectedProject(null)
+    setIsAIModalOpen(false)
     setIsModalOpen(true)
   }
 
   const handleEditProject = (project: Project) => {
     setSelectedProject(project)
+    setAiGeneratedProject(null)
     setIsModalOpen(true)
   }
 
@@ -130,6 +146,7 @@ const AdminProjectsPage = () => {
   const handleModalSuccess = () => {
     setIsModalOpen(false)
     setSelectedProject(null)
+    setAiGeneratedProject(null)
     fetchProjects()
   }
 
@@ -205,10 +222,16 @@ const AdminProjectsPage = () => {
           <h1 className="text-3xl font-bold text-gray-800">Products</h1>
           <p className="text-gray-600 mt-1">Manage your product portfolio</p>
         </div>
-        <Button onClick={handleCreateProject} className="gap-2">
-          <Plus className="w-4 h-4" />
-          Add Product
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleCreateProjectWithAI} variant="outline" className="gap-2">
+            <Sparkles className="w-4 h-4" />
+            Create with AI
+          </Button>
+          <Button onClick={handleCreateProject} className="gap-2">
+            <Plus className="w-4 h-4" />
+            Add Product
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -283,10 +306,16 @@ const AdminProjectsPage = () => {
             }
           </p>
           {!searchTerm && (
-            <Button onClick={handleCreateProject} className="gap-2">
-              <Plus className="w-4 h-4" />
-              Create Product
-            </Button>
+            <div className="flex justify-center gap-2">
+              <Button onClick={handleCreateProjectWithAI} variant="outline" className="gap-2">
+                <Sparkles className="w-4 h-4" />
+                Create with AI
+              </Button>
+              <Button onClick={handleCreateProject} className="gap-2">
+                <Plus className="w-4 h-4" />
+                Create Product
+              </Button>
+            </div>
           )}
         </Card>
       ) : (
@@ -408,6 +437,14 @@ const AdminProjectsPage = () => {
         onClose={() => setIsModalOpen(false)}
         project={selectedProject}
         onSuccess={handleModalSuccess}
+        aiGeneratedData={aiGeneratedProject}
+      />
+
+      {/* AI Modal */}
+      <ProjectAIModal
+        open={isAIModalOpen}
+        onOpenChange={setIsAIModalOpen}
+        onCreateProject={handleAIGenerateProject}
       />
 
       {/* Delete Confirmation Dialog */}

@@ -24,10 +24,12 @@ import {
   Star, 
   Building2,
   Tag,
-  Loader2
+  Loader2,
+  Sparkles
 } from 'lucide-react'
 import { IndustryModal } from '../../../../utils/industries/industry-modal'
 import { CategoryModal } from '../../../../utils/industries/category-modal'
+import { IndustryAIModal } from '../../../../utils/industries/industry-ai-modal'
 import { toast, Toaster } from 'sonner'
 
 interface Industry {
@@ -93,6 +95,8 @@ const AdminIndustriesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [isIndustryModalOpen, setIsIndustryModalOpen] = useState(false)
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false)
+  const [aiGeneratedIndustry, setAiGeneratedIndustry] = useState<Partial<Industry> | null>(null)
   const [deleteItem, setDeleteItem] = useState<{type: 'industry' | 'category', item: Industry | Category} | null>(null)
   const [activeTab, setActiveTab] = useState('industries')
   const [error, setError] = useState<string | null>(null)
@@ -185,11 +189,24 @@ const AdminIndustriesPage = () => {
 
   const handleCreateIndustry = () => {
     setSelectedIndustry(null)
+    setAiGeneratedIndustry(null)
+    setIsIndustryModalOpen(true)
+  }
+
+  const handleCreateIndustryWithAI = () => {
+    setIsAIModalOpen(true)
+  }
+
+  const handleAIGenerateIndustry = (industryData: Partial<Industry>) => {
+    setAiGeneratedIndustry(industryData)
+    setSelectedIndustry(null)
+    setIsAIModalOpen(false)
     setIsIndustryModalOpen(true)
   }
 
   const handleEditIndustry = (industry: Industry) => {
     setSelectedIndustry(industry)
+    setAiGeneratedIndustry(null)
     setIsIndustryModalOpen(true)
   }
 
@@ -243,6 +260,7 @@ const AdminIndustriesPage = () => {
     setIsCategoryModalOpen(false)
     setSelectedIndustry(null)
     setSelectedCategory(null)
+    setAiGeneratedIndustry(null)
     await fetchData()
   }
 
@@ -397,10 +415,16 @@ const AdminIndustriesPage = () => {
                 className="pl-10"
               />
             </div>
-            <Button onClick={handleCreateIndustry} className="gap-2">
-              <Plus className="w-4 h-4" />
-              Add Industry
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleCreateIndustryWithAI} variant="outline" className="gap-2">
+                <Sparkles className="w-4 h-4" />
+                Create with AI
+              </Button>
+              <Button onClick={handleCreateIndustry} className="gap-2">
+                <Plus className="w-4 h-4" />
+                Add Industry
+              </Button>
+            </div>
           </div>
 
           {/* Industries Grid */}
@@ -419,10 +443,16 @@ const AdminIndustriesPage = () => {
                 }
               </p>
               {!searchTerm && (
-                <Button onClick={handleCreateIndustry} className="gap-2">
-                  <Plus className="w-4 h-4" />
-                  Create Industry
-                </Button>
+                <div className="flex justify-center gap-2">
+                  <Button onClick={handleCreateIndustryWithAI} variant="outline" className="gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    Create with AI
+                  </Button>
+                  <Button onClick={handleCreateIndustry} className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Create Industry
+                  </Button>
+                </div>
               )}
             </Card>
           ) : (
@@ -669,6 +699,7 @@ const AdminIndustriesPage = () => {
         industry={selectedIndustry}
         categories={categories.filter(c => c.isActive)}
         onSuccess={handleModalSuccess}
+        aiGeneratedData={aiGeneratedIndustry}
       />
 
       <CategoryModal
@@ -676,6 +707,12 @@ const AdminIndustriesPage = () => {
         onClose={() => setIsCategoryModalOpen(false)}
         category={selectedCategory}
         onSuccess={handleModalSuccess}
+      />
+
+      <IndustryAIModal
+        open={isAIModalOpen}
+        onOpenChange={setIsAIModalOpen}
+        onCreateIndustry={handleAIGenerateIndustry}
       />
 
       {/* Delete Confirmation Dialog */}

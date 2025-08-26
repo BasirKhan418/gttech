@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Mic, MicOff, Volume2, RotateCcw, X, Play, Pause } from 'lucide-react';
 
 interface VoiceChatResponse {
   success: boolean;
@@ -10,714 +11,659 @@ interface VoiceChatResponse {
   language?: string;
   error?: string;
   details?: string;
+  processingTime?: number;
 }
 
-const VoiceAssistant = () => {
-  const [isRecording, setIsRecording] = useState(false);
-  const [status, setStatus] = useState('Press and hold to start conversation');
+type ConversationState = 'idle' | 'recording' | 'processing' | 'speaking' | 'error';
+type TTSVoice = 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer';
+
+interface ConversationEntry {
+  id: string;
+  transcription: string;
+  response: string;
+  timestamp: Date;
+}
+
+const SequentialVoiceAssistant = () => {
+  // Core state management
+  const [state, setState] = useState<ConversationState>('idle');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const [selectedVoice, setSelectedVoice] = useState<'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer'>('alloy');
+  const [selectedVoice, setSelectedVoice] = useState<TTSVoice>('alloy');
+  const [statusMessage, setStatusMessage] = useState('Click the microphone to start');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [debugInfo, setDebugInfo] = useState('');
+  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
+  const [audioLevel, setAudioLevel] = useState(0);
+  const [isInitialized, setIsInitialized] = useState(false);
   
+  // Recording state
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [minRecordingTime] = useState(1000); // Minimum 1 second
+  const [maxRecordingTime] = useState(30000); // Maximum 30 seconds
+  
+  // Refs for media handling
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const microphoneRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const sessionIdRef = useRef(Date.now().toString());
 
-  // Initialize floating particles on mount
-  useEffect(() => {
-    createFloatingParticles();
-    
-    return () => {
-      // Cleanup
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-      }
-    };
-  }, []);
-
-  const createFloatingParticles = () => {
-    const particlesContainer = document.querySelector('.floating-particles');
-    if (!particlesContainer) return;
-    
-    // Clear existing particles
-    particlesContainer.innerHTML = '';
-    
-    for (let i = 0; i < 50; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'particle';
-      particle.style.left = Math.random() * 100 + '%';
-      particle.style.animationDelay = Math.random() * 3 + 's';
-      particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
-      particlesContainer.appendChild(particle);
-    }
-  };
-
-  const initializeAudio = async () => {
+  // Initialize audio system
+  const initializeAudio = useCallback(async () => {
     try {
-      setDebugInfo('Requesting microphone access...');
+      setStatusMessage('Requesting microphone access...');
+      
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Media devices not supported in this browser');
+      }
       
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
-          sampleRate: 44100
+          sampleRate: 16000,
+          channelCount: 1
         }
       });
+      
       streamRef.current = stream;
       
-      setDebugInfo('Microphone access granted, setting up recorder...');
+      // Setup audio context for visualization
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      analyserRef.current.fftSize = 256;
       
-      // Setup MediaRecorder for audio capture
-      let options: MediaRecorderOptions = {
-        audioBitsPerSecond: 128000
+      microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
+      microphoneRef.current.connect(analyserRef.current);
+      
+      // Setup MediaRecorder with optimal settings
+      const options: MediaRecorderOptions = {
+        audioBitsPerSecond: 32000
       };
       
-      // Try different MIME types in order of preference
       if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
         options.mimeType = 'audio/webm;codecs=opus';
       } else if (MediaRecorder.isTypeSupported('audio/webm')) {
         options.mimeType = 'audio/webm';
-      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-        options.mimeType = 'audio/mp4';
       } else if (MediaRecorder.isTypeSupported('audio/wav')) {
         options.mimeType = 'audio/wav';
       }
       
-      setDebugInfo(`Using MIME type: ${options.mimeType}`);
-      
       mediaRecorderRef.current = new MediaRecorder(stream, options);
       
       mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
+        if (event.data && event.data.size > 0) {
           audioChunksRef.current.push(event.data);
-          setDebugInfo(`Audio chunk received: ${event.data.size} bytes`);
         }
       };
 
-      mediaRecorderRef.current.onstop = async () => {
-        if (audioChunksRef.current.length > 0) {
-          await processAudioRecording();
-        }
+      mediaRecorderRef.current.onstop = () => {
+        processRecording();
       };
 
-      mediaRecorderRef.current.onerror = (event) => {
-        console.error('MediaRecorder error:', event);
-        setErrorMessage('Recording failed. Please try again.');
-        setDebugInfo(`MediaRecorder error: ${event}`);
-      };
-
-      setDebugInfo('Audio recorder initialized successfully');
-      return true;
+      setIsInitialized(true);
+      setStatusMessage('Ready! Click the microphone to start talking');
+      setErrorMessage('');
+      
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      setErrorMessage(`Microphone access denied: ${errorMsg}`);
-      setDebugInfo(`Audio initialization failed: ${errorMsg}`);
-      console.error('Audio initialization error:', error);
-      return false;
+      console.error('Audio initialization failed:', error);
+      setErrorMessage(
+        error instanceof Error 
+          ? `Microphone access failed: ${error.message}` 
+          : 'Failed to access microphone'
+      );
+      setStatusMessage('Microphone access required');
+      setState('error');
     }
-  };
+  }, []);
 
-  const processAudioRecording = async () => {
+  // Cleanup function
+  const cleanup = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.src = '';
+      currentAudioRef.current = null;
+    }
+    if (recordingTimerRef.current) {
+      clearTimeout(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+  }, []);
+
+  // Audio level monitoring
+  const monitorAudioLevel = useCallback(() => {
+    if (!analyserRef.current) return;
+    
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    
+    const updateLevel = () => {
+      if (!analyserRef.current || state !== 'recording') return;
+      
+      analyserRef.current.getByteFrequencyData(dataArray);
+      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+      const normalizedLevel = average / 255;
+      
+      setAudioLevel(normalizedLevel);
+      
+      animationFrameRef.current = requestAnimationFrame(updateLevel);
+    };
+    
+    updateLevel();
+  }, [state]);
+
+  // Start recording
+  const startRecording = useCallback(() => {
+    if (!mediaRecorderRef.current || state !== 'idle') return;
+    
+    setState('recording');
+    setStatusMessage('Listening... Speak now');
+    setErrorMessage('');
+    setRecordingTime(0);
+    audioChunksRef.current = [];
+    
     try {
-      setIsProcessing(true);
-      setStatus('Processing your voice...');
-      setDebugInfo(`Processing ${audioChunksRef.current.length} audio chunks...`);
-
-      // Create audio blob from recorded chunks
-      const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
-      const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+      mediaRecorderRef.current.start(100);
+      monitorAudioLevel();
       
-      setDebugInfo(`Created audio blob: ${audioBlob.size} bytes, type: ${audioBlob.type}`);
+      // Recording timer
+      let startTime = Date.now();
+      recordingTimerRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        setRecordingTime(elapsed);
+        
+        if (elapsed >= maxRecordingTime) {
+          stopRecording();
+        }
+      }, 100);
       
-      // Clear chunks for next recording
-      audioChunksRef.current = [];
+    } catch (error) {
+      console.error('Recording start failed:', error);
+      setErrorMessage('Failed to start recording');
+      setState('error');
+    }
+  }, [state, monitorAudioLevel, maxRecordingTime]);
 
-      // Validate blob size
-      if (audioBlob.size === 0) {
+  // Stop recording
+  const stopRecording = useCallback(() => {
+    if (!mediaRecorderRef.current || state !== 'recording') return;
+    
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+    
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    
+    setAudioLevel(0);
+    
+    if (recordingTime < minRecordingTime) {
+      setErrorMessage('Recording too short. Please speak for at least 1 second.');
+      setState('idle');
+      setStatusMessage('Click the microphone to try again');
+      return;
+    }
+    
+    setState('processing');
+    setStatusMessage('Processing your voice...');
+    
+    try {
+      mediaRecorderRef.current.stop();
+    } catch (error) {
+      console.error('Recording stop failed:', error);
+      setErrorMessage('Failed to stop recording');
+      setState('error');
+    }
+  }, [state, recordingTime, minRecordingTime]);
+
+  // Process the recorded audio
+  const processRecording = useCallback(async () => {
+    try {
+      if (audioChunksRef.current.length === 0) {
         throw new Error('No audio data recorded');
       }
 
+      const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+      const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+      
       if (audioBlob.size < 1000) {
-        throw new Error('Audio recording too short');
+        throw new Error('Recording too short or empty');
       }
 
-      // Create FormData to send to API
       const formData = new FormData();
-      
-      // Create a file with proper extension based on MIME type
-      const extension = mimeType.includes('webm') ? '.webm' : 
-                      mimeType.includes('mp4') ? '.mp4' : 
-                      mimeType.includes('wav') ? '.wav' : '.webm';
-      
-      const audioFile = new File([audioBlob], `recording${extension}`, { type: mimeType });
+      const extension = mimeType.includes('wav') ? '.wav' : '.webm';
+      const audioFile = new File([audioBlob], `voice-${Date.now()}${extension}`, { type: mimeType });
       
       formData.append('audio', audioFile);
       formData.append('language', selectedLanguage);
       formData.append('voice', selectedVoice);
+      formData.append('sessionId', sessionIdRef.current);
 
-      setDebugInfo(`Sending request to API: ${audioFile.size} bytes`);
-
-      // Send to API with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
-
-      const response = await fetch('/api/voice-chat-c', {
+      const response = await fetch('/api/voice-chat', {
         method: 'POST',
         body: formData,
-        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
+      const data: VoiceChatResponse = await response.json();
 
-      setDebugInfo(`API response received: ${response.status} ${response.statusText}`);
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
 
-      let data: VoiceChatResponse;
+      if (!data.transcription || !data.response || !data.audio) {
+        throw new Error('Incomplete response from server');
+      }
+
+      // Add to conversation history
+      const newEntry: ConversationEntry = {
+        id: Date.now().toString(),
+        transcription: data.transcription,
+        response: data.response,
+        timestamp: new Date()
+      };
       
-      // Check if response is JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const textResponse = await response.text();
-        console.error('Non-JSON response:', textResponse);
-        throw new Error(`Server returned non-JSON response. Status: ${response.status}. Content: ${textResponse.substring(0, 200)}`);
-      }
-
-      try {
-        data = await response.json();
-      } catch (jsonError) {
-        const textResponse = await response.text();
-        console.error('JSON parse error:', jsonError, 'Response:', textResponse);
-        throw new Error(`Invalid JSON response from server: ${textResponse.substring(0, 200)}`);
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      if (data.success && data.transcription && data.response && data.audio) {
-        setDebugInfo('API request successful');
-        
-        // Display transcription briefly
-        setStatus(`You said: "${data.transcription}"`);
-        
-        // Play the AI response audio
-        setTimeout(() => {
-          playAudioResponse(data.audio!, data.response!);
-        }, 1500);
-      } else {
-        throw new Error(data.error || 'Processing failed - incomplete response');
-      }
-
+      setConversationHistory(prev => [...prev, newEntry]);
+      setStatusMessage(`You said: "${data.transcription}"`);
+      
+      // Play the response
+      setTimeout(() => playAudioResponse(data.audio!, data.response!), 500);
+      
     } catch (error) {
-      console.error('Voice processing error:', error);
+      console.error('Processing failed:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Processing failed');
+      setState('error');
+      setTimeout(() => {
+        setState('idle');
+        setStatusMessage('Click the microphone to try again');
+      }, 3000);
+    }
+  }, [selectedLanguage, selectedVoice]);
+
+  // Play audio response
+  const playAudioResponse = useCallback(async (audioBase64: string, responseText: string) => {
+    try {
+      setState('speaking');
+      setStatusMessage('GT Assistant is speaking...');
       
-      let errorMessage = 'Failed to process voice. Please try again.';
-      
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = 'Request timed out. Please try again.';
-        } else if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'Network error. Please check your connection and try again.';
-        } else {
-          errorMessage = error.message;
-        }
+      // Stop any currently playing audio
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.src = '';
       }
       
-      setErrorMessage(errorMessage);
-      setDebugInfo(`Error: ${errorMessage}`);
-      setStatus('Press and hold to start conversation');
-      setIsProcessing(false);
-    }
-  };
-
-  const playAudioResponse = async (audioBase64: string, responseText: string) => {
-    try {
-      setIsSpeaking(true);
-      setStatus('GT Assistant is speaking...');
-      setDebugInfo('Playing audio response...');
-      
-      // Convert base64 to audio blob
-      const audioData = atob(audioBase64);
-      const audioArray = new Uint8Array(audioData.length);
-      for (let i = 0; i < audioData.length; i++) {
-        audioArray[i] = audioData.charCodeAt(i);
+      // Convert base64 to audio
+      const binaryString = atob(audioBase64);
+      const audioArray = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        audioArray[i] = binaryString.charCodeAt(i);
       }
       
       const audioBlob = new Blob([audioArray], { type: 'audio/mp3' });
       const audioUrl = URL.createObjectURL(audioBlob);
       
-      setDebugInfo(`Audio blob created: ${audioBlob.size} bytes`);
-      
-      // Stop any currently playing audio
-      if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-        currentAudioRef.current = null;
-      }
-      
       const audio = new Audio(audioUrl);
       currentAudioRef.current = audio;
       
-      audio.onloadstart = () => setDebugInfo('Audio loading...');
-      audio.oncanplay = () => setDebugInfo('Audio ready to play');
+      audio.onloadeddata = () => {
+        setStatusMessage(`Speaking... (${Math.round(audio.duration)}s)`);
+      };
       
       audio.onended = () => {
-        setIsSpeaking(false);
-        setIsProcessing(false);
-        setStatus('Press and hold to speak');
-        setDebugInfo('Audio playback completed');
+        setState('idle');
+        setStatusMessage('Click the microphone to continue talking');
         URL.revokeObjectURL(audioUrl);
         currentAudioRef.current = null;
       };
       
       audio.onerror = (error) => {
-        console.error('Audio playback error:', error);
-        setIsSpeaking(false);
-        setIsProcessing(false);
-        setStatus('Press and hold to speak');
-        setErrorMessage('Audio playback failed');
-        setDebugInfo(`Audio error: ${error}`);
+        console.error('Audio playback failed:', error);
+        setState('idle');
+        setStatusMessage('Click the microphone to continue talking');
         URL.revokeObjectURL(audioUrl);
         currentAudioRef.current = null;
       };
       
       await audio.play();
-      setDebugInfo('Audio playing...');
       
     } catch (error) {
       console.error('Audio playback error:', error);
-      setIsSpeaking(false);
-      setIsProcessing(false);
-      setStatus('Press and hold to speak');
       setErrorMessage('Audio playback failed');
-      setDebugInfo(`Playback error: ${error instanceof Error ? error.message : error}`);
+      setState('idle');
+      setStatusMessage('Click the microphone to continue talking');
     }
-  };
+  }, []);
 
-  const handleMouseDown = async () => {
-    if (isProcessing || isSpeaking) return;
+  // Initialize on mount
+  useEffect(() => {
+    initializeAudio();
+    return cleanup;
+  }, [initializeAudio, cleanup]);
 
-    setDebugInfo('Recording started...');
+  // Handle recording button
+  const handleRecordingToggle = useCallback(() => {
+    if (!isInitialized) {
+      initializeAudio();
+      return;
+    }
+    
+    switch (state) {
+      case 'idle':
+        startRecording();
+        break;
+      case 'recording':
+        stopRecording();
+        break;
+      default:
+        // Cannot toggle during processing or speaking
+        break;
+    }
+  }, [state, isInitialized, initializeAudio, startRecording, stopRecording]);
 
-    // Stop any currently playing audio
+  // Stop speaking
+  const stopSpeaking = useCallback(() => {
+    if (currentAudioRef.current && state === 'speaking') {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.src = '';
+      currentAudioRef.current = null;
+      setState('idle');
+      setStatusMessage('Click the microphone to continue talking');
+    }
+  }, [state]);
+
+  // Reset conversation
+  const resetConversation = useCallback(() => {
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
-      currentAudioRef.current = null;
-      setIsSpeaking(false);
+      currentAudioRef.current.src = '';
     }
-
+    setConversationHistory([]);
     setErrorMessage('');
-    const audioInitialized = await initializeAudio();
-    if (!audioInitialized) return;
+    setState('idle');
+    setStatusMessage('Click the microphone to start');
+    sessionIdRef.current = Date.now().toString();
+  }, []);
 
-    setIsRecording(true);
-    setIsListening(true);
-    setStatus('Listening... speak now');
-    
-    // Start recording
-    audioChunksRef.current = [];
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'inactive') {
-      mediaRecorderRef.current.start(100); // Collect data every 100ms
-      setDebugInfo('MediaRecorder started');
+  // Get appropriate colors based on state
+  const getStateColors = () => {
+    switch (state) {
+      case 'recording':
+        return {
+          bg: 'from-red-500 to-red-600',
+          text: 'text-red-400',
+          border: 'border-red-400/50'
+        };
+      case 'processing':
+        return {
+          bg: 'from-amber-500 to-amber-600',
+          text: 'text-amber-400',
+          border: 'border-amber-400/50'
+        };
+      case 'speaking':
+        return {
+          bg: 'from-blue-500 to-blue-600',
+          text: 'text-blue-400',
+          border: 'border-blue-400/50'
+        };
+      case 'error':
+        return {
+          bg: 'from-red-600 to-red-700',
+          text: 'text-red-400',
+          border: 'border-red-400/50'
+        };
+      default:
+        return {
+          bg: 'from-cyan-500 to-cyan-600',
+          text: 'text-cyan-400',
+          border: 'border-cyan-400/50'
+        };
     }
   };
 
-  const handleMouseUp = () => {
-    if (!isRecording) return;
-
-    setDebugInfo('Recording stopped');
-    setIsRecording(false);
-    setIsListening(false);
-    setStatus('Processing...');
-    
-    // Stop recording
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
-      setDebugInfo('MediaRecorder stopped');
-    }
-
-    // Stop the stream
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-  };
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedLanguage(e.target.value);
-    setDebugInfo(`Language changed to: ${e.target.value}`);
-  };
-
-  const handleVoiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedVoice(e.target.value as typeof selectedVoice);
-    setDebugInfo(`Voice changed to: ${e.target.value}`);
-  };
-
-  const getStatusClassName = () => {
-    if (isListening) return 'status listening';
-    if (isSpeaking) return 'status speaking';
-    if (isProcessing) return 'status processing';
-    return 'status';
-  };
-
-  const getButtonText = () => {
-    if (isProcessing) return '⏳';
-    if (isSpeaking) return '🔊';
-    return '🎤';
-  };
+  const colors = getStateColors();
+  const canRecord = isInitialized && (state === 'idle' || state === 'recording');
+  const isActive = state === 'recording' || state === 'processing' || state === 'speaking';
 
   return (
-    <div className="voice-assistant-container">
-      <style jsx>{`
-        .voice-assistant-container {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background: linear-gradient(135deg, #1e293b, #0f172a);
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          color: white;
-          overflow: hidden;
-          position: relative;
-          padding: 1rem;
-        }
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `linear-gradient(rgba(6,182,212,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.1) 1px, transparent 1px)`,
+          backgroundSize: '20px 20px'
+        }}></div>
+      </div>
 
-        .floating-particles {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          z-index: -1;
-        }
-
-        .particle {
-          position: absolute;
-          width: 2px;
-          height: 2px;
-          background: rgba(14, 165, 233, 0.3);
-          border-radius: 50%;
-          animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-          50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
-        }
-
-        .container {
-          text-align: center;
-          padding: 2rem;
-          max-width: 500px;
-          width: 90%;
-        }
-
-        .logo {
-          font-size: 2rem;
-          font-weight: bold;
-          margin-bottom: 1rem;
-          background: linear-gradient(45deg, #0ea5e9, #06b6d4);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .controls {
-          display: flex;
-          gap: 1rem;
-          margin-bottom: 2rem;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-
-        .control-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .control-group label {
-          font-size: 0.9rem;
-          color: #94a3b8;
-        }
-
-        .control-group select {
-          background: rgba(30, 41, 59, 0.8);
-          border: 1px solid #475569;
-          color: white;
-          padding: 0.5rem 1rem;
-          border-radius: 0.5rem;
-          font-size: 0.9rem;
-          min-width: 120px;
-        }
-
-        .control-group select:focus {
-          outline: none;
-          border-color: #0ea5e9;
-        }
-
-        .status {
-          font-size: 1.2rem;
-          margin-bottom: 2rem;
-          color: #94a3b8;
-          transition: all 0.3s ease;
-          min-height: 1.5rem;
-        }
-
-        .status.listening {
-          color: #22c55e;
-          animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .status.speaking {
-          color: #3b82f6;
-          animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .status.processing {
-          color: #f59e0b;
-          animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .voice-button {
-          width: 120px;
-          height: 120px;
-          border-radius: 50%;
-          border: 4px solid #0ea5e9;
-          background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 2rem;
-          position: relative;
-          overflow: hidden;
-          user-select: none;
-        }
-
-        .voice-button:hover:not(.disabled) {
-          transform: scale(1.1);
-          box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
-        }
-
-        .voice-button:active:not(.disabled) {
-          transform: scale(0.95);
-        }
-
-        .voice-button.active {
-          background: linear-gradient(135deg, #dc2626, #ef4444);
-          border-color: #dc2626;
-          animation: recording 2s ease-in-out infinite;
-        }
-
-        .voice-button.disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          background: linear-gradient(135deg, #64748b, #475569);
-          border-color: #64748b;
-        }
-
-        .voice-button.processing {
-          background: linear-gradient(135deg, #f59e0b, #d97706);
-          border-color: #f59e0b;
-          animation: processing 2s ease-in-out infinite;
-        }
-
-        .voice-button.speaking {
-          background: linear-gradient(135deg, #3b82f6, #2563eb);
-          border-color: #3b82f6;
-          animation: speaking 1.5s ease-in-out infinite;
-        }
-
-        .voice-icon {
-          font-size: 3rem;
-        }
-
-        .wave-visualization {
-          position: absolute;
-          bottom: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: 3px;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-
-        .wave-visualization.active {
-          opacity: 1;
-        }
-
-        .wave-bar {
-          width: 4px;
-          height: 20px;
-          background: linear-gradient(to top, #0ea5e9, #06b6d4);
-          border-radius: 2px;
-          animation: wave 1.2s ease-in-out infinite;
-        }
-
-        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
-        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
-        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
-
-        .error-message {
-          color: #ef4444;
-          margin-bottom: 1rem;
-          font-size: 0.9rem;
-          min-height: 1.2rem;
-          padding: 0.5rem;
-          background: rgba(239, 68, 68, 0.1);
-          border-radius: 0.5rem;
-          border: 1px solid rgba(239, 68, 68, 0.3);
-          display: ${errorMessage ? 'block' : 'none'};
-        }
-
-        .debug-info {
-          color: #64748b;
-          font-size: 0.8rem;
-          margin-bottom: 1rem;
-          min-height: 1rem;
-          font-family: monospace;
-          background: rgba(100, 116, 139, 0.1);
-          padding: 0.5rem;
-          border-radius: 0.25rem;
-          text-align: left;
-          max-width: 100%;
-          overflow-wrap: break-word;
-        }
-
-        .instructions {
-          font-size: 0.9rem;
-          color: #64748b;
-          margin-top: 1rem;
-          line-height: 1.4;
-        }
-
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; }
-        }
-
-        @keyframes recording {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
-          50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
-        }
-
-        @keyframes processing {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-          50% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-        }
-
-        @keyframes speaking {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-          50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-        }
-
-        @keyframes wave {
-          0%, 100% { height: 20px; }
-          50% { height: 40px; }
-        }
-
-        @media (max-width: 768px) {
-          .controls {
-            flex-direction: column;
-            align-items: center;
-          }
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl">
           
-          .control-group select {
-            min-width: 200px;
-          }
-        }
-      `}</style>
-
-      <div className="floating-particles"></div>
-
-      <div className="container">
-        <div className="logo">GT Voice Assistant</div>
-        
-        <div className="controls">
-          <div className="control-group">
-            <label>Language</label>
-            <select value={selectedLanguage} onChange={handleLanguageChange} disabled={isRecording || isProcessing}>
-              <option value="en">🇺🇸 English</option>
-              <option value="hi">🇮🇳 हिंदी</option>
-              <option value="te">🇮🇳 తెలుగు</option>
-              <option value="es">🇪🇸 Español</option>
-              <option value="fr">🇫🇷 Français</option>
-              <option value="de">🇩🇪 Deutsch</option>
-              <option value="ja">🇯🇵 日本語</option>
-              <option value="zh">🇨🇳 中文</option>
-              <option value="ko">🇰🇷 한국어</option>
-              <option value="ar">🇸🇦 العربية</option>
-              <option value="pt">🇧🇷 Português</option>
-              <option value="ru">🇷🇺 Русский</option>
-              <option value="it">🇮🇹 Italiano</option>
-            </select>
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center px-6 py-3 bg-slate-800/60 backdrop-blur-md rounded-full mb-6 border border-slate-600/30">
+              <div className={`w-2 h-2 ${colors.text} rounded-full mr-3 ${isActive ? 'animate-pulse' : ''}`}></div>
+              <span className="text-slate-300 font-medium">GT Voice Assistant</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              <span className="block">Sequential Voice</span>
+              <span className="block bg-gradient-to-r from-cyan-400 to-cyan-300 bg-clip-text text-transparent">
+                Assistant
+              </span>
+            </h1>
+            
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+              Click to speak → I'll listen → Process → Respond → Ready for next question
+            </p>
           </div>
-          
-          <div className="control-group">
-            <label>Voice</label>
-            <select value={selectedVoice} onChange={handleVoiceChange} disabled={isRecording || isProcessing}>
-              <option value="alloy">Alloy</option>
-              <option value="echo">Echo</option>
-              <option value="fable">Fable</option>
-              <option value="onyx">Onyx</option>
-              <option value="nova">Nova</option>
-              <option value="shimmer">Shimmer</option>
-            </select>
+
+          {/* Main Control Panel */}
+          <div className="bg-slate-800/60 backdrop-blur-md rounded-3xl p-8 mb-6 border border-slate-600/30">
+            
+            {/* Settings */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+              <div>
+                <label className="text-slate-400 text-sm mb-2 block">Language</label>
+                <select 
+                  value={selectedLanguage} 
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  disabled={isActive}
+                  className="bg-slate-700/80 border border-slate-600/50 text-white px-4 py-2 rounded-lg backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50 disabled:opacity-50"
+                >
+                  <option value="en">🇺🇸 English</option>
+                  <option value="hi">🇮🇳 हिंदी</option>
+                  <option value="te">🇮🇳 తెలుగు</option>
+                  <option value="es">🇪🇸 Español</option>
+                  <option value="fr">🇫🇷 Français</option>
+                  <option value="de">🇩🇪 Deutsch</option>
+                  <option value="ja">🇯🇵 日本語</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="text-slate-400 text-sm mb-2 block">Voice</label>
+                <select 
+                  value={selectedVoice} 
+                  onChange={(e) => setSelectedVoice(e.target.value as TTSVoice)}
+                  disabled={isActive}
+                  className="bg-slate-700/80 border border-slate-600/50 text-white px-4 py-2 rounded-lg backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50 disabled:opacity-50"
+                >
+                  <option value="alloy">Alloy (Neutral)</option>
+                  <option value="echo">Echo (Male)</option>
+                  <option value="fable">Fable (British)</option>
+                  <option value="onyx">Onyx (Deep)</option>
+                  <option value="nova">Nova (Female)</option>
+                  <option value="shimmer">Shimmer (Soft)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Status Display */}
+            <div className="text-center mb-8">
+              <div className={`text-xl font-semibold mb-2 ${colors.text} transition-colors duration-300`}>
+                {statusMessage}
+              </div>
+              
+              {state === 'recording' && (
+                <div className="text-slate-400">
+                  Recording: {Math.round(recordingTime / 1000)}s / 30s
+                </div>
+              )}
+            </div>
+
+            {/* Main Recording Button */}
+            <div className="flex justify-center mb-8">
+              <div className="relative">
+                {/* Audio Level Visualization */}
+                {state === 'recording' && (
+                  <div className="absolute -inset-4 flex items-center justify-center">
+                    <div 
+                      className="absolute w-32 h-32 rounded-full border-2 border-red-400/30 animate-ping"
+                      style={{ animationDuration: `${1 + audioLevel * 2}s` }}
+                    ></div>
+                    <div 
+                      className="absolute w-24 h-24 rounded-full border border-red-400/50"
+                      style={{ 
+                        transform: `scale(${1 + audioLevel * 0.5})`,
+                        transition: 'transform 0.1s ease-out'
+                      }}
+                    ></div>
+                  </div>
+                )}
+                
+                <button
+                  onClick={handleRecordingToggle}
+                  disabled={!canRecord && state !== 'recording'}
+                  className={`relative w-24 h-24 rounded-full bg-gradient-to-br ${colors.bg} hover:scale-105 active:scale-95 transform transition-all duration-200 shadow-xl border-2 ${colors.border} disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center`}
+                >
+                  {state === 'recording' ? (
+                    <MicOff className="w-8 h-8 text-white" />
+                  ) : state === 'processing' ? (
+                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : state === 'speaking' ? (
+                    <Volume2 className="w-8 h-8 text-white animate-pulse" />
+                  ) : (
+                    <Mic className="w-8 h-8 text-white" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-center gap-4">
+              {state === 'speaking' && (
+                <button
+                  onClick={stopSpeaking}
+                  className="px-6 py-3 bg-red-600/80 hover:bg-red-500/80 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 border border-red-500/50 backdrop-blur-sm flex items-center gap-2"
+                >
+                  <Pause className="w-4 h-4" />
+                  Stop Speaking
+                </button>
+              )}
+              
+              <button
+                onClick={resetConversation}
+                disabled={state === 'processing'}
+                className="px-6 py-3 bg-slate-700/80 hover:bg-slate-600/80 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 border border-slate-600/50 backdrop-blur-sm disabled:opacity-50 flex items-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Reset Chat
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className={getStatusClassName()}>
-          {status}
-        </div>
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="bg-red-900/60 backdrop-blur-md border border-red-500/30 rounded-xl p-4 mb-6">
+              <div className="text-red-400 text-center">
+                <div className="font-semibold mb-1">Error</div>
+                <div className="text-sm">{errorMessage}</div>
+              </div>
+            </div>
+          )}
 
-        <div 
-          className={`voice-button ${isRecording ? 'active' : ''} ${isProcessing ? 'processing' : ''} ${isSpeaking ? 'speaking' : ''} ${(isProcessing || isSpeaking) ? 'disabled' : ''}`}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onTouchStart={handleMouseDown}
-          onTouchEnd={handleMouseUp}
-        >
-          <div className="voice-icon">{getButtonText()}</div>
-        </div>
+          {/* Conversation History */}
+          {conversationHistory.length > 0 && (
+            <div className="bg-slate-800/60 backdrop-blur-md rounded-2xl p-6 mb-6 border border-slate-600/30">
+              <h3 className="text-cyan-300 font-semibold mb-4 flex items-center">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>
+                Conversation History ({conversationHistory.length})
+              </h3>
+              
+              <div className="space-y-4 max-h-80 overflow-y-auto">
+                {conversationHistory.slice(-5).map((item, index) => (
+                  <div key={item.id} className="space-y-2">
+                    <div className="bg-green-900/30 backdrop-blur-sm rounded-lg p-3 border border-green-400/20">
+                      <div className="text-green-300 text-sm font-medium mb-1 flex items-center justify-between">
+                        <span>You said:</span>
+                        <span className="text-slate-400 text-xs">
+                          {item.timestamp.toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className="text-slate-200 text-sm">"{item.transcription}"</div>
+                    </div>
+                    <div className="bg-blue-900/30 backdrop-blur-sm rounded-lg p-3 border border-blue-400/20">
+                      <div className="text-blue-300 text-sm font-medium mb-1">GT Assistant:</div>
+                      <div className="text-slate-200 text-sm">{item.response}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {conversationHistory.length > 5 && (
+                <div className="text-center mt-4">
+                  <span className="text-slate-400 text-sm">
+                    Showing last 5 conversations...
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
-        <div className={`wave-visualization ${isListening ? 'active' : ''}`}>
-          <div className="wave-bar"></div>
-          <div className="wave-bar"></div>
-          <div className="wave-bar"></div>
-          <div className="wave-bar"></div>
-          <div className="wave-bar"></div>
-        </div>
-
-        <div className="error-message">
-          {errorMessage}
-        </div>
-
-        <div className="debug-info">
-          {debugInfo || 'Ready to start...'}
-        </div>
-
-        <div className="instructions">
-          Hold the microphone button and speak your question about GT Technologies. Release to get an AI response.
-          <br />
-          <small>Make sure to allow microphone permissions when prompted.</small>
+          {/* Instructions */}
+          <div className="bg-slate-800/40 backdrop-blur-md rounded-xl p-6 border border-slate-600/20">
+            <h4 className="text-slate-300 font-semibold mb-3">How to use:</h4>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-slate-400">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center text-cyan-400 font-bold text-xs">1</div>
+                <span>Click microphone to start recording</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center text-red-400 font-bold text-xs">2</div>
+                <span>Speak your question clearly</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center text-amber-400 font-bold text-xs">3</div>
+                <span>Click again to stop & process</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-bold text-xs">4</div>
+                <span>Listen to the response</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default VoiceAssistant;
+export default SequentialVoiceAssistant;

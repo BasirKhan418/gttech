@@ -45,9 +45,10 @@ interface ProjectModalProps {
   onClose: () => void
   project: Project | null
   onSuccess: () => void
+  aiGeneratedData?: Partial<Project> | null
 }
 
-export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectModalProps) {
+export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedData }: ProjectModalProps) {
   const [formData, setFormData] = useState<Project>({
     title: "",
     category: "",
@@ -68,6 +69,20 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
   useEffect(() => {
     if (project) {
       setFormData(project)
+    } else if (aiGeneratedData) {
+      // Pre-populate with AI generated data
+      setFormData({
+        title: aiGeneratedData.title || "",
+        category: aiGeneratedData.category || "",
+        description: aiGeneratedData.description || "",
+        poster: aiGeneratedData.poster || "",
+        images: aiGeneratedData.images || [],
+        icon: aiGeneratedData.icon || "",
+        technologies: aiGeneratedData.technologies || [],
+        features: aiGeneratedData.features || [],
+        isActive: aiGeneratedData.isActive !== false,
+        isFeatured: aiGeneratedData.isFeatured || false,
+      })
     } else {
       setFormData({
         title: "",
@@ -82,7 +97,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
         isFeatured: false,
       })
     }
-  }, [project])
+  }, [project, aiGeneratedData])
 
   const handleInputChange = (field: keyof Project, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -242,8 +257,18 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{project ? "Edit Product" : "Create New Product"}</DialogTitle>
+          <DialogTitle>
+            {project ? "Edit Product" : aiGeneratedData ? "Create Product from AI" : "Create New Product"}
+          </DialogTitle>
         </DialogHeader>
+
+        {aiGeneratedData && !project && (
+          <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800 mb-4">
+            <p className="text-purple-700 dark:text-purple-300 text-sm">
+              ✨ This form has been pre-filled with AI-generated content. You can review and modify any fields before saving.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           
@@ -472,7 +497,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
                 </div>
               )}
             </div>
-            </div>
+          </div>
 
           {/* Status Options */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -491,7 +516,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess }: ProjectMod
                 checked={formData.isFeatured}
                 onCheckedChange={(checked) => handleInputChange("isFeatured", checked)}
               />
-              <Label htmlFor="isFeatured">Featured Products</Label>
+              <Label htmlFor="isFeatured">Featured Product</Label>
             </div>
           </div>
 
