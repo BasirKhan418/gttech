@@ -474,14 +474,6 @@ const HeroSection = () => {
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-cyan-400/10 rounded-xl blur-sm"></div>
-                    <div className="relative">
-                      <Image
-                        src="/logo.png"
-                        alt="GT Technologies Logo"
-                        width={300}
-                        height={100}
-                      />
-                    </div>
                   </div>
                 </div>
               </div>

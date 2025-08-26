@@ -506,6 +506,199 @@ const AboutPage = () => {
         </div>
       </section>
 
+      {/* Vision & Mission Section - Cyan Theme */}
+      <section className="relative z-10 py-12 md:py-6 lg:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Vision & Mission Header */}
+          <div className="text-center mb-12 md:mb-16 max-w-4xl mx-auto">
+            <div className="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-md">
+              <Target className="w-4 h-4 mr-2" />
+              <span className="font-semibold">Our Core Values</span>
+            </div>
+
+            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-4 md:mb-6 leading-tight">
+              <span className="block">Driving Innovation with</span>
+              <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
+                Purpose & Vision
+              </span>
+            </h2>
+            
+            <p className="text-base md:text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
+              Our mission and vision shape every decision, project, and partnership we undertake, 
+              guiding us toward a future of sustainable innovation.
+            </p>
+          </div>
+
+          {/* Vision & Mission Cards */}
+          <div className="grid lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
+            
+            {/* Vision Card */}
+            <div className="relative group transition-all duration-700 hover:scale-105">
+              <div className="glass-card relative backdrop-blur-xl overflow-hidden transition-all duration-500 border border-cyan-400/50 hover:border-cyan-500/70 shadow-lg shadow-cyan-500/15 bg-gradient-to-br from-white/80 via-cyan-50/60 to-white/70 rounded-3xl">
+                
+                {/* Multiple Glass Layers */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.4] via-white/[0.2] to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/[0.08] via-transparent to-cyan-300/[0.05]"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.3] to-transparent"></div>
+                
+                {/* Header */}
+                <div className="p-6 md:p-8 pb-4 md:pb-6 relative z-10">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 group-hover:text-cyan-700 transition-colors duration-300">
+                    Our Vision
+                  </h3>
+                  
+                  <div className="flex items-center gap-3 mb-4 md:mb-6">
+                    <div className="p-2 md:p-3 rounded-xl bg-cyan-500/25 border border-cyan-400/50 backdrop-blur-sm shadow-md">
+                      <Target className="w-6 h-6 md:w-8 md:h-8 text-cyan-600" />
+                    </div>
+                    <span className="text-gray-600 text-sm md:text-base">
+                      Future-focused aspirations
+                    </span>
+                  </div>
+                  
+                  <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-6">
+                    To develop cost-effective, sustainable, and high-impact products 
+                    and accelerators that address complex and urgent societal challenges.
+                  </p>
+                </div>
+
+                {/* Content */}
+                <div className="px-6 md:px-8 pb-6 md:pb-8">
+                  <h4 className="text-gray-800 font-semibold mb-4 flex items-center text-sm md:text-base">
+                    <span className="w-2 h-2 bg-cyan-500 rounded-full mr-3"></span>
+                    What drives us:
+                  </h4>
+                  
+                  <div className="space-y-3">
+                    {[
+                      "Local engineering talent development",
+                      "State-of-the-art technology platforms",
+                      "Transformative global solutions",
+                      "Sustainable innovation approach"
+                    ].map((feature, index) => (
+                      <div key={index} className="flex items-start gap-3 group/item">
+                        <div className="glass-check flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 backdrop-blur-sm bg-cyan-500/25 border border-cyan-400/60 shadow-sm">
+                          <CheckCircle className="w-3 h-3 text-cyan-600" />
+                        </div>
+                        <span className="text-gray-600 group-hover/item:text-gray-800 transition-colors duration-200 text-sm md:text-base">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 flex items-center space-x-3 text-cyan-700 bg-cyan-500/15 rounded-lg p-3 md:p-4 border border-cyan-400/30 shadow-sm">
+                    <Zap className="w-5 h-5 flex-shrink-0" />
+                    <span className="text-sm md:text-base font-medium">Transforming challenges into opportunities</span>
+                  </div>
+                </div>
+
+                {/* Decorative Glass Elements */}
+                <div className="absolute bottom-4 right-4 opacity-40">
+                  <div className="grid grid-cols-2 gap-2">
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-2 h-2 rounded-full backdrop-blur-sm border bg-cyan-400/50 border-cyan-500/70 animate-pulse"
+                        style={{ animationDelay: `${i * 0.2}s` }}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Corner Glass Highlights */}
+                <div className="absolute top-3 left-3 w-6 md:w-8 h-6 md:h-8 border-l-2 border-t-2 border-cyan-300/40 rounded-tl-2xl"></div>
+                <div className="absolute bottom-3 right-3 w-6 md:w-8 h-6 md:h-8 border-r-2 border-b-2 border-cyan-300/40 rounded-br-2xl"></div>
+
+                {/* Shine Effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
+              </div>
+            </div>
+
+            {/* Mission Card */}
+            <div className="relative group transition-all duration-700 hover:scale-105 lg:mt-8">
+              <div className="glass-card relative backdrop-blur-xl overflow-hidden transition-all duration-500 border border-cyan-500/50 hover:border-cyan-600/70 shadow-lg shadow-cyan-500/15 bg-gradient-to-br from-white/80 via-cyan-50/60 to-white/70 rounded-3xl">
+                
+                {/* Multiple Glass Layers */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.4] via-white/[0.2] to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-tl from-cyan-600/[0.08] via-transparent to-cyan-400/[0.05]"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.3] to-transparent"></div>
+                
+                {/* Header */}
+                <div className="p-6 md:p-8 pb-4 md:pb-6 relative z-10">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 group-hover:text-cyan-700 transition-colors duration-300">
+                    Our Mission
+                  </h3>
+                  
+                  <div className="flex items-center gap-3 mb-4 md:mb-6">
+                    <div className="p-2 md:p-3 rounded-xl bg-cyan-600/25 border border-cyan-500/50 backdrop-blur-sm shadow-md">
+                      <Lightbulb className="w-6 h-6 md:w-8 md:h-8 text-cyan-700" />
+                    </div>
+                    <span className="text-gray-600 text-sm md:text-base">
+                      Present-day commitment
+                    </span>
+                  </div>
+                  
+                  <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-6">
+                    We bridge the gap between cutting-edge technology and practical 
+                    industry applications, creating skilled workforce and driving innovation.
+                  </p>
+                </div>
+
+                {/* Content */}
+                <div className="px-6 md:px-8 pb-6 md:pb-8">
+                  <h4 className="text-gray-800 font-semibold mb-4 flex items-center text-sm md:text-base">
+                    <span className="w-2 h-2 bg-cyan-600 rounded-full mr-3"></span>
+                    What we deliver:
+                  </h4>
+                  
+                  <div className="space-y-3">
+                    {[
+                      "Electric vehicle manufacturing solutions",
+                      "Digital automation for agriculture",
+                      "Scientific consulting excellence",
+                      "Digital transformation leadership",
+                      "Workforce development programs",
+                      "Technology partnership guidance"
+                    ].map((feature, index) => (
+                      <div key={index} className="flex items-start gap-3 group/item">
+                        <div className="glass-check flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 backdrop-blur-sm bg-cyan-600/25 border border-cyan-500/60 shadow-sm">
+                          <CheckCircle className="w-3 h-3 text-cyan-700" />
+                        </div>
+                        <span className="text-gray-600 group-hover/item:text-gray-800 transition-colors duration-200 text-sm md:text-base">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Decorative Glass Elements */}
+                <div className="absolute bottom-4 right-4 opacity-40">
+                  <div className="grid grid-cols-2 gap-2">
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-2 h-2 rounded-full backdrop-blur-sm border bg-cyan-500/50 border-cyan-600/70 animate-pulse"
+                        style={{ animationDelay: `${i * 0.2}s` }}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Corner Glass Highlights */}
+                <div className="absolute top-3 left-3 w-6 md:w-8 h-6 md:h-8 border-l-2 border-t-2 border-cyan-300/40 rounded-tl-2xl"></div>
+                <div className="absolute bottom-3 right-3 w-6 md:w-8 h-6 md:h-8 border-r-2 border-b-2 border-cyan-300/40 rounded-br-2xl"></div>
+
+                {/* Shine Effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Our Foundation Section - Enhanced Design with Cyan Theme */}
       <section className="relative z-10 py-6 md:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -730,199 +923,6 @@ const AboutPage = () => {
               />
             </>
           )}
-        </div>
-      </section>
-
-      {/* Vision & Mission Section - Cyan Theme */}
-      <section className="relative z-10 py-12 md:py-6 lg:py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Vision & Mission Header */}
-          <div className="text-center mb-12 md:mb-16 max-w-4xl mx-auto">
-            <div className="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-md">
-              <Target className="w-4 h-4 mr-2" />
-              <span className="font-semibold">Our Core Values</span>
-            </div>
-
-            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-4 md:mb-6 leading-tight">
-              <span className="block">Driving Innovation with</span>
-              <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
-                Purpose & Vision
-              </span>
-            </h2>
-            
-            <p className="text-base md:text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-              Our mission and vision shape every decision, project, and partnership we undertake, 
-              guiding us toward a future of sustainable innovation.
-            </p>
-          </div>
-
-          {/* Vision & Mission Cards */}
-          <div className="grid lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-            
-            {/* Vision Card */}
-            <div className="relative group transition-all duration-700 hover:scale-105">
-              <div className="glass-card relative backdrop-blur-xl overflow-hidden transition-all duration-500 border border-cyan-400/50 hover:border-cyan-500/70 shadow-lg shadow-cyan-500/15 bg-gradient-to-br from-white/80 via-cyan-50/60 to-white/70 rounded-3xl">
-                
-                {/* Multiple Glass Layers */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.4] via-white/[0.2] to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/[0.08] via-transparent to-cyan-300/[0.05]"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.3] to-transparent"></div>
-                
-                {/* Header */}
-                <div className="p-6 md:p-8 pb-4 md:pb-6 relative z-10">
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 group-hover:text-cyan-700 transition-colors duration-300">
-                    Our Vision
-                  </h3>
-                  
-                  <div className="flex items-center gap-3 mb-4 md:mb-6">
-                    <div className="p-2 md:p-3 rounded-xl bg-cyan-500/25 border border-cyan-400/50 backdrop-blur-sm shadow-md">
-                      <Target className="w-6 h-6 md:w-8 md:h-8 text-cyan-600" />
-                    </div>
-                    <span className="text-gray-600 text-sm md:text-base">
-                      Future-focused aspirations
-                    </span>
-                  </div>
-                  
-                  <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-6">
-                    To develop cost-effective, sustainable, and high-impact products 
-                    and accelerators that address complex and urgent societal challenges.
-                  </p>
-                </div>
-
-                {/* Content */}
-                <div className="px-6 md:px-8 pb-6 md:pb-8">
-                  <h4 className="text-gray-800 font-semibold mb-4 flex items-center text-sm md:text-base">
-                    <span className="w-2 h-2 bg-cyan-500 rounded-full mr-3"></span>
-                    What drives us:
-                  </h4>
-                  
-                  <div className="space-y-3">
-                    {[
-                      "Local engineering talent development",
-                      "State-of-the-art technology platforms",
-                      "Transformative global solutions",
-                      "Sustainable innovation approach"
-                    ].map((feature, index) => (
-                      <div key={index} className="flex items-start gap-3 group/item">
-                        <div className="glass-check flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 backdrop-blur-sm bg-cyan-500/25 border border-cyan-400/60 shadow-sm">
-                          <CheckCircle className="w-3 h-3 text-cyan-600" />
-                        </div>
-                        <span className="text-gray-600 group-hover/item:text-gray-800 transition-colors duration-200 text-sm md:text-base">
-                          {feature}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 flex items-center space-x-3 text-cyan-700 bg-cyan-500/15 rounded-lg p-3 md:p-4 border border-cyan-400/30 shadow-sm">
-                    <Zap className="w-5 h-5 flex-shrink-0" />
-                    <span className="text-sm md:text-base font-medium">Transforming challenges into opportunities</span>
-                  </div>
-                </div>
-
-                {/* Decorative Glass Elements */}
-                <div className="absolute bottom-4 right-4 opacity-40">
-                  <div className="grid grid-cols-2 gap-2">
-                    {[...Array(4)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-2 h-2 rounded-full backdrop-blur-sm border bg-cyan-400/50 border-cyan-500/70 animate-pulse"
-                        style={{ animationDelay: `${i * 0.2}s` }}
-                      ></div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Corner Glass Highlights */}
-                <div className="absolute top-3 left-3 w-6 md:w-8 h-6 md:h-8 border-l-2 border-t-2 border-cyan-300/40 rounded-tl-2xl"></div>
-                <div className="absolute bottom-3 right-3 w-6 md:w-8 h-6 md:h-8 border-r-2 border-b-2 border-cyan-300/40 rounded-br-2xl"></div>
-
-                {/* Shine Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
-              </div>
-            </div>
-
-            {/* Mission Card */}
-            <div className="relative group transition-all duration-700 hover:scale-105 lg:mt-8">
-              <div className="glass-card relative backdrop-blur-xl overflow-hidden transition-all duration-500 border border-cyan-500/50 hover:border-cyan-600/70 shadow-lg shadow-cyan-500/15 bg-gradient-to-br from-white/80 via-cyan-50/60 to-white/70 rounded-3xl">
-                
-                {/* Multiple Glass Layers */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.4] via-white/[0.2] to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-tl from-cyan-600/[0.08] via-transparent to-cyan-400/[0.05]"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.3] to-transparent"></div>
-                
-                {/* Header */}
-                <div className="p-6 md:p-8 pb-4 md:pb-6 relative z-10">
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 group-hover:text-cyan-700 transition-colors duration-300">
-                    Our Mission
-                  </h3>
-                  
-                  <div className="flex items-center gap-3 mb-4 md:mb-6">
-                    <div className="p-2 md:p-3 rounded-xl bg-cyan-600/25 border border-cyan-500/50 backdrop-blur-sm shadow-md">
-                      <Lightbulb className="w-6 h-6 md:w-8 md:h-8 text-cyan-700" />
-                    </div>
-                    <span className="text-gray-600 text-sm md:text-base">
-                      Present-day commitment
-                    </span>
-                  </div>
-                  
-                  <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-6">
-                    We bridge the gap between cutting-edge technology and practical 
-                    industry applications, creating skilled workforce and driving innovation.
-                  </p>
-                </div>
-
-                {/* Content */}
-                <div className="px-6 md:px-8 pb-6 md:pb-8">
-                  <h4 className="text-gray-800 font-semibold mb-4 flex items-center text-sm md:text-base">
-                    <span className="w-2 h-2 bg-cyan-600 rounded-full mr-3"></span>
-                    What we deliver:
-                  </h4>
-                  
-                  <div className="space-y-3">
-                    {[
-                      "Electric vehicle manufacturing solutions",
-                      "Digital automation for agriculture",
-                      "Scientific consulting excellence",
-                      "Digital transformation leadership",
-                      "Workforce development programs",
-                      "Technology partnership guidance"
-                    ].map((feature, index) => (
-                      <div key={index} className="flex items-start gap-3 group/item">
-                        <div className="glass-check flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 backdrop-blur-sm bg-cyan-600/25 border border-cyan-500/60 shadow-sm">
-                          <CheckCircle className="w-3 h-3 text-cyan-700" />
-                        </div>
-                        <span className="text-gray-600 group-hover/item:text-gray-800 transition-colors duration-200 text-sm md:text-base">
-                          {feature}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Decorative Glass Elements */}
-                <div className="absolute bottom-4 right-4 opacity-40">
-                  <div className="grid grid-cols-2 gap-2">
-                    {[...Array(4)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-2 h-2 rounded-full backdrop-blur-sm border bg-cyan-500/50 border-cyan-600/70 animate-pulse"
-                        style={{ animationDelay: `${i * 0.2}s` }}
-                      ></div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Corner Glass Highlights */}
-                <div className="absolute top-3 left-3 w-6 md:w-8 h-6 md:h-8 border-l-2 border-t-2 border-cyan-300/40 rounded-tl-2xl"></div>
-                <div className="absolute bottom-3 right-3 w-6 md:w-8 h-6 md:h-8 border-r-2 border-b-2 border-cyan-300/40 rounded-br-2xl"></div>
-
-                {/* Shine Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 

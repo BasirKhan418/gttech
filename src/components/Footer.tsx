@@ -9,13 +9,7 @@ const Footer = () => {
       { name: 'About Us', href: '/about' },
       { name: 'Our Team', href: '/team' },
       { name: 'Careers', href: '/career' },
-      { name: 'News & Updates', href: '/news' }
-    ],
-    services: [
-      { name: 'Digital Product Design', href: '/services/design' },
-      { name: 'Industry 4.0 Solutions', href: '/services/industry40' },
-      { name: 'Smart City Solutions', href: '/services/smartcity' },
-      { name: 'Engineering Services', href: '/services/engineering' }
+      { name: 'Gallery', href: '/gallery' }
     ],
     industries: [
       { name: 'Automotive', href: '/industries/automotive' },
@@ -104,38 +98,6 @@ const Footer = () => {
                   <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Company</h3>
                   <ul className="space-y-4">
                     {footerLinks.company.map((link) => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className="text-cyan-200/80 hover:text-white transition-all duration-300 hover:translate-x-1 transform inline-block hover:text-cyan-100"
-                        >
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Services</h3>
-                  <ul className="space-y-4">
-                    {footerLinks.services.map((link) => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className="text-cyan-200/80 hover:text-white transition-all duration-300 hover:translate-x-1 transform inline-block hover:text-cyan-100"
-                        >
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Industries</h3>
-                  <ul className="space-y-4">
-                    {footerLinks.industries.map((link) => (
                       <li key={link.name}>
                         <Link
                           href={link.href}
