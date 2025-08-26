@@ -109,7 +109,7 @@ const Navbar = () => {
                         ? 'opacity-100 translate-y-0 pointer-events-auto' 
                         : 'opacity-0 translate-y-2 pointer-events-none'
                     }`}>
-                      <div className="bg-white/70 backdrop-blur-xl rounded-xl border border-cyan-200/70 shadow-xl shadow-cyan-500/30 overflow-hidden">
+                      <div className="bg-white backdrop-blur-xl rounded-xl border border-cyan-200/70 shadow-xl shadow-cyan-500/30 overflow-hidden">
                         <div className="py-2">
                           {productCategories.map((category, index) => (
                             <Link
@@ -138,7 +138,7 @@ const Navbar = () => {
                             href="/project"
                             className="flex items-center justify-center w-full px-4 py-2 bg-gradient-to-r from-cyan-500/80 to-cyan-600/80 text-white rounded-lg hover:from-cyan-600/90 hover:to-cyan-700/90 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-cyan-500/30 font-medium text-sm 2xl:text-base"
                           >
-                            View All Products
+                            View All Categories
                           </Link>
                         </div>
                       </div>
