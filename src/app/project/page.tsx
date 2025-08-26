@@ -10,7 +10,12 @@ import {
   Target,
   Star,
   Code,
-  Layers
+  Layers,
+  Car,
+  Sofa,
+  Shirt,
+  Monitor,
+  Cloud
 } from 'lucide-react'
 
 interface Project {
@@ -29,11 +34,19 @@ interface Project {
   updatedAt: string
 }
 
+interface CategoryStats {
+  name: string
+  value: string
+  count: number
+  icon: React.ComponentType<any>
+  color: string
+  description: string
+}
+
 const ProjectsPage = () => {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -77,13 +90,51 @@ const ProjectsPage = () => {
     }
   }
 
-  // Get unique categories
-  const categories = ['all', ...Array.from(new Set(projects.map(project => project.category)))]
-  
-  // Filter projects based on selected category
-  const filteredProjects = selectedCategory === 'all' 
-    ? projects 
-    : projects.filter(project => project.category === selectedCategory)
+  // Get category statistics
+  const getCategoryStats = (): CategoryStats[] => {
+    const categories = [
+      {
+        name: "Software Products",
+        value: "Software products",
+        icon: Monitor,
+        color: "from-blue-500 to-blue-600",
+        description: "Custom software solutions and applications",
+      },
+      {
+        name: "SaaS Solutions",
+        value: "saap",
+        icon: Cloud,
+        color: "from-purple-500 to-purple-600",
+        description: "Software as a Service platforms",
+      },
+      {
+        name: "Electric Vehicles",
+        value: "electric vehicles",
+        icon: Car,
+        color: "from-green-500 to-green-600",
+        description: "Sustainable transportation solutions",
+      },
+      {
+        name: "Furniture",
+        value: "furnitures",
+        icon: Sofa,
+        color: "from-orange-500 to-orange-600",
+        description: "Modern and functional furniture designs",
+      },
+      {
+        name: "Garments",
+        value: "garments",
+        icon: Shirt,
+        color: "from-pink-500 to-pink-600",
+        description: "Fashion and textile products",
+      },
+    ]
+
+    return categories.map((cat) => ({
+      ...cat,
+      count: projects.filter((project) => project.category === cat.value).length,
+    }))
+  }
 
   // Get featured projects
   const featuredProjects = projects.filter(project => project.isFeatured)
@@ -130,6 +181,8 @@ const ProjectsPage = () => {
       </main>
     )
   }
+
+  const categoryStats = getCategoryStats()
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
@@ -213,33 +266,105 @@ const ProjectsPage = () => {
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
-                <span className="block">Featured</span>
+                <span className="block">Explore Our</span>
                 <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
-                  Products
+                  Product Categories
                 </span>
               </h1>
               
               <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-                Explore our diverse portfolio of innovative products spanning across various technologies 
-                and industries, showcasing our expertise in digital transformation.
+                Discover our diverse range of innovative products across multiple industries. From cutting-edge software 
+                solutions to sustainable transportation and modern design.
               </p>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Categories Overview Section */}
+      <section className="relative z-10  px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-on-scroll opacity-0 translate-y-10 mb-12">
+            <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+              <Layers className="w-6 h-6 text-cyan-500 mr-3" />
+              Product Categories
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {categoryStats.map((category, index) => {
+              const IconComponent = category.icon
+              return (
+                <div
+                  key={category.value}
+                  className="animate-on-scroll opacity-0 translate-y-10"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <Link href={`/category/${category.value}`}>
+                    <div className="group relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/15 group-hover:bg-white/80 h-full">
+                      {/* Glass Effects */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
+                      <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
+
+                      {/* Content */}
+                      <div className="relative z-10 p-8">
+                        {/* Icon and Count */}
+                        <div className="flex items-center justify-between mb-6">
+                          <div
+                            className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${category.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                          >
+                            <IconComponent className="w-8 h-8 text-white" />
+                          </div>
+                          <div className="text-right">
+                            <div className="text-3xl font-bold text-gray-800 group-hover:text-cyan-700 transition-colors duration-300">
+                              {category.count}
+                            </div>
+                            <div className="text-sm text-gray-600">Products</div>
+                          </div>
+                        </div>
+
+                        {/* Category Info */}
+                        <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-cyan-700 transition-colors duration-300">
+                          {category.name}
+                        </h3>
+
+                        <p className="text-gray-600 text-base leading-relaxed mb-6 group-hover:text-gray-700 transition-colors duration-300">
+                          {category.description}
+                        </p>
+
+                        {/* CTA */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-cyan-600 font-semibold group-hover:text-cyan-700 transition-colors duration-300">
+                            Explore Category
+                          </span>
+                          <ArrowRight className="w-5 h-5 text-cyan-600 group-hover:translate-x-1 group-hover:text-cyan-700 transition-all duration-300" />
+                        </div>
+                      </div>
+
+                      {/* Decorative Elements */}
+                      <div className="absolute top-4 right-4 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+                      <div className="absolute bottom-4 left-4 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+                    </div>
+                  </Link>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Featured Projects Section */}
       {featuredProjects.length > 0 && (
-        <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8">
+        <section className="relative z-10 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="animate-on-scroll opacity-0 translate-y-10">
-              <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+              <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center justify-center">
                 <Star className="w-6 h-6 text-yellow-500 mr-3" />
                 Featured Products
               </h2>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                {featuredProjects.slice(0, 3).map((project, index) => (
+                {featuredProjects.map((project, index) => (
                   <div
                     key={project._id}
                     className="animate-on-scroll opacity-0 translate-y-10"
@@ -334,168 +459,6 @@ const ProjectsPage = () => {
           </div>
         </section>
       )}
-
-      {/* Category Filter */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-on-scroll opacity-0 translate-y-10">
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-sm ${
-                    selectedCategory === category
-                      ? 'bg-cyan-500/20 text-cyan-700 border border-cyan-400/40 shadow-lg'
-                      : 'bg-white/60 text-gray-600 border border-gray-300/40 hover:bg-cyan-100/60 hover:text-cyan-700'
-                  }`}
-                >
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* All Projects Grid */}
-      <section className="relative z-10 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          
-          {filteredProjects.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="animate-on-scroll opacity-0 translate-y-10">
-                <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-12 max-w-2xl mx-auto shadow-xl">
-                  {/* Glass Effects */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
-                  <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
-                  
-                  <div className="relative z-10">
-                    <div className="w-16 h-16 bg-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-cyan-400/40 backdrop-blur-sm shadow-lg">
-                      <Layers className="w-8 h-8 text-cyan-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                      {selectedCategory === 'all' ? 'No Products Found' : `No ${selectedCategory} Products`}
-                    </h3>
-                    <p className="text-gray-600 mb-8">
-                      {selectedCategory === 'all' 
-                        ? 'We\'re working on exciting products. Check back soon!' 
-                        : `No products found in the ${selectedCategory} category. Try selecting a different category.`
-                      }
-                    </p>
-                    <Link
-                      href="/contact"
-                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-lg shadow-cyan-500/25 backdrop-blur-sm border border-cyan-400/50"
-                    >
-                      Get in Touch
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="animate-on-scroll opacity-0 translate-y-10 mb-4">
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">
-                  {selectedCategory === 'all' ? 'All Products' : `${selectedCategory} Products`}
-                </h2>
-                <p className="text-gray-600">
-                  {filteredProjects.length} {filteredProjects.length === 1 ? 'product' : 'products'} found
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredProjects.map((project, index) => (
-                  <div
-                    key={project._id}
-                    className="animate-on-scroll opacity-0 translate-y-10"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <Link href={`/project/${project._id}`}>
-                      <div className="group relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/15 group-hover:bg-white/80">
-                        
-                        {/* Glass Effects */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
-                        <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
-                        
-                        {/* Hover Glow */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-cyan-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                        {/* Image Section */}
-                        {project.poster && (
-                          <div className="relative h-48 overflow-hidden">
-                            <img
-                              src={project.poster}
-                              alt={project.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
-                            
-                            {/* View Indicator */}
-                            <div className="absolute top-4 right-4 p-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
-                              <Eye className="w-4 h-4 text-cyan-600" />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Content Section */}
-                        <div className="relative z-10 p-6">
-                          <div className="flex items-center justify-between mb-4">
-                            <span className="px-3 py-1 bg-cyan-500/20 text-cyan-700 text-xs font-medium rounded-full border border-cyan-400/40 backdrop-blur-sm">
-                              {project.category}
-                            </span>
-                            <span className="text-gray-500 text-xs">
-                              {new Date(project.createdAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-cyan-700 transition-colors duration-300 line-clamp-2">
-                            {project.title}
-                          </h3>
-                          
-                          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 group-hover:text-gray-700 transition-colors duration-300">
-                            {project.description}
-                          </p>
-
-                          {/* Technologies Preview */}
-                          {project.technologies && project.technologies.length > 0 && (
-                            <div className="mb-4">
-                              <div className="flex flex-wrap gap-2">
-                                {project.technologies.slice(0, 3).map((tech, idx) => (
-                                  <div key={idx} className="flex items-center space-x-1">
-                                    <Code className="w-3 h-3 text-cyan-600" />
-                                    <span className="text-xs text-gray-600">{tech}</span>
-                                  </div>
-                                ))}
-                                {project.technologies.length > 3 && (
-                                  <span className="text-xs text-cyan-600 font-medium">+{project.technologies.length - 3} more</span>
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* CTA */}
-                          <div className="flex items-center justify-between">
-                            <span className="text-cyan-600 font-semibold text-sm group-hover:text-cyan-700 transition-colors duration-300">
-                              View Product
-                            </span>
-                            <ArrowRight className="w-4 h-4 text-cyan-600 group-hover:translate-x-1 group-hover:text-cyan-700 transition-all duration-300" />
-                          </div>
-                        </div>
-
-                        {/* Decorative Elements */}
-                        <div className="absolute top-3 left-3 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
-                        <div className="absolute bottom-3 right-3 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      </section>
 
       {/* Call to Action */}
       <section className="relative z-10 py-6 px-4 sm:px-6 lg:px-8">
