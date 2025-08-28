@@ -50,19 +50,19 @@ const CategoryPage = () => {
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest")
 
   const categoryConfig = {
-    "Software%20products": {
+    "Software products": {
       name: "Software Products",
       icon: Monitor,
       color: "from-blue-500 to-blue-600",
       description: "Custom software solutions and applications",
     },
     saap: {
-      name: "SaaS Solutions",
+      name: "SAAP Solutions",
       icon: Cloud,
       color: "from-purple-500 to-purple-600",
       description: "Software as a Service platforms",
     },
-    "electric%20vehicles": {
+    "electric vehicles": {
       name: "Electric Vehicles",
       icon: Car,
       color: "from-green-500 to-green-600",
@@ -82,7 +82,7 @@ const CategoryPage = () => {
     },
   }
 
-  const currentCategory = categoryConfig[category as keyof typeof categoryConfig]
+  const currentCategory = categoryConfig[decodeURIComponent(category) as keyof typeof categoryConfig]
 
   useEffect(() => {
     fetchProjects()
@@ -136,10 +136,9 @@ const CategoryPage = () => {
       
       console.log('Fetching projects for category:', category)
       
-      const response = await fetch(`/api/project?category=${encodeURIComponent(category)}`)
-
+      const decodedCategory = decodeURIComponent(category)
+      const response = await fetch(`/api/project?category=${encodeURIComponent(decodedCategory)}`)
       
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }

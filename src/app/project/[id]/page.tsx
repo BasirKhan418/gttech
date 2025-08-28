@@ -142,7 +142,7 @@ const ProjectDetailPage = () => {
         accentColor: "blue",
       },
       saap: {
-        name: "SaaS Solutions",
+        name: "SAAP Solutions",
         icon: Cloud,
         color: "from-purple-500 to-purple-600",
         bgGradient: "from-purple-50 to-purple-100",

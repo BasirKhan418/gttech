@@ -21,7 +21,7 @@ const ProjectSchema = new mongoose.Schema({
     capabilities: { type: [String], required: false },
     valuePropositions: { type: [String], required: false },
     
-    // SaaS specific fields
+    // SaaP specific fields
     pricingModel: { type: String, required: false },
     integrations: { type: [String], required: false },
     apiSupport: { type: Boolean, required: false },

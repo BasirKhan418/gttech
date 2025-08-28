@@ -30,7 +30,7 @@ const AVAILABLE_ICONS = [
 // Product categories
 const PRODUCT_CATEGORIES = [
   { value: 'Software products', label: 'Software Products' },
-  { value: 'saap', label: 'SaaS' },
+  { value: 'saap', label: 'SAAP' },
   { value: 'electric vehicles', label: 'Electric Vehicles' },
   { value: 'furnitures', label: 'Furnitures' },
   { value: 'garments', label: 'Garments' }
@@ -55,7 +55,7 @@ interface Project {
   capabilities?: string[]
   valuePropositions?: string[]
   
-  // SaaS specific
+  // SaaP specific
   pricingModel?: string
   integrations?: string[]
   apiSupport?: boolean

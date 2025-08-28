@@ -20,7 +20,7 @@ const PRODUCT_CATEGORIES = [
   },
   { 
     value: 'saap', 
-    label: 'SaaS',
+    label: 'SAAP',
     icon: Monitor,
     description: 'Software as a Service solutions and cloud platforms',
     fields: ['pricingModel', 'integrations', 'apiSupport']
