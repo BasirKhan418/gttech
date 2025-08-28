@@ -287,129 +287,131 @@ const CategoryPage = () => {
         ))}
       </div>
 
-      {/* Header Section */}
-      <section className="relative z-10 pt-20 pb-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Navigation */}
-          <Link
-            href="/project"
-            className="inline-flex items-center text-cyan-600 hover:text-cyan-700 transition-colors duration-300 mb-8"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to All Categories
-          </Link>
+        {/* Compact Header Section */}
+<section className="relative z-10 pt-20 pb-6 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto">
+    {/* Navigation */}
+    <Link
+      href="/project"
+      className="inline-flex items-center text-cyan-600 hover:text-cyan-700 transition-all duration-300 mb-6 group text-sm"
+    >
+      <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+      All Categories
+    </Link>
 
-          {/* Category Header */}
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-6">
-              <div
-                className={`w-20 h-20 rounded-3xl bg-gradient-to-r ${currentCategory.color} flex items-center justify-center shadow-2xl`}
-              >
-                <IconComponent className="w-10 h-10 text-white" />
-              </div>
-            </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4 leading-tight">
+    {/* Compact Header Card */}
+    <div className="bg-white/90 backdrop-blur-sm border border-cyan-200/50 rounded-2xl p-6 shadow-lg">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        {/* Left: Icon + Title */}
+        <div className="flex items-center gap-4">
+          <div className={`w-14 h-14 rounded-xl bg-gradient-to-r ${currentCategory.color} flex items-center justify-center shadow-lg`}>
+            <IconComponent className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">
               {currentCategory.name}
             </h1>
-
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6">
-              {currentCategory.description}
-            </p>
-
-            <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-cyan-500 rounded-full"></span>
-                {filteredProjects.length} Products
-              </span>
-              <span className="flex items-center gap-2">
-                <Star className="w-4 h-4 text-yellow-500" />
-                {filteredProjects.filter((p) => p.isFeatured).length} Featured
-              </span>
-            </div>
+            <p className="text-gray-600 text-sm mt-1">{currentCategory.description}</p>
           </div>
         </div>
-      </section>
 
-      {/* Search and Filter Section */}
-      <section className="relative z-10 pb-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-2xl p-6 shadow-xl">
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-              {/* Search Bar */}
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-10 py-3 bg-white/80 border border-cyan-300/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all duration-300 text-black"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={clearSearch}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center gap-4">
-                {/* Sort Dropdown */}
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="text-black px-4 py-2 bg-white/80 border border-cyan-300/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 text-sm"
-                >
-                  <option value="newest">Newest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="title">Alphabetical</option>
-                  <option value="featured">Featured First</option>
-                </select>
-
-                {/* View Mode Toggle */}
-                <div className="flex items-center bg-white/80 border border-cyan-300/50 rounded-lg p-1">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === "grid" ? "bg-cyan-500 text-white" : "text-gray-600 hover:text-cyan-600"
-                    }`}
-                  >
-                    <Grid3X3 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === "list" ? "bg-cyan-500 text-white" : "text-gray-600 hover:text-cyan-600"
-                    }`}
-                  >
-                    <List className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+        {/* Right: Stats */}
+        <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-cyan-50 rounded-lg border border-cyan-200">
+            <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+            <span className="font-medium text-gray-700">{filteredProjects.length}</span>
+          </div>
+          {filteredProjects.filter((p) => p.isFeatured).length > 0 && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 rounded-lg border border-yellow-200">
+              <Star className="w-3 h-3 text-yellow-600" />
+              <span className="font-medium text-gray-700">{filteredProjects.filter((p) => p.isFeatured).length}</span>
             </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-            {/* Active Filters */}
-            {searchQuery && (
-              <div className="mt-4 flex items-center gap-2">
-                <span className="text-sm text-gray-600">Active filters:</span>
-                <div className="flex items-center gap-1 px-3 py-1 bg-cyan-500/20 text-cyan-700 text-sm rounded-full border border-cyan-400/40">
-                  Search: "{searchQuery}"
-                  <button onClick={clearSearch} className="ml-1 hover:text-cyan-800">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            )}
+<section className="relative z-10 pb-8 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto">
+    <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl p-4 shadow-md">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center md:justify-between gap-4">
+  {/* Search Bar */}
+  <div className="relative flex-1 max-w-md">
+    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+    <input
+      type="text"
+      placeholder="Search products..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-400 transition-all text-black text-sm"
+    />
+    {searchQuery && (
+      <button
+        onClick={clearSearch}
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+      >
+        <X className="w-4 h-4" />
+      </button>
+    )}
+  </div>
+
+  {/* Controls */}
+  <div className="flex items-center gap-3">
+    {/* Sort */}
+    <select
+      value={sortBy}
+      onChange={(e) => setSortBy(e.target.value)}
+      className="text-black px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/30 text-sm"
+    >
+      <option value="newest">Latest</option>
+      <option value="oldest">Oldest</option>
+      <option value="title">A-Z</option>
+      <option value="featured">Featured</option>
+    </select>
+
+    {/* View Toggle */}
+    <div className="flex items-center bg-gray-100 border border-gray-300 rounded-lg p-0.5">
+      <button
+        onClick={() => setViewMode("grid")}
+        className={`p-2 rounded-md transition-colors ${
+          viewMode === "grid" ? "bg-white text-cyan-600 shadow-sm" : "text-gray-600 hover:text-gray-800"
+        }`}
+      >
+        <Grid3X3 className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => setViewMode("list")}
+        className={`p-2 rounded-md transition-colors ${
+          viewMode === "list" ? "bg-white text-cyan-600 shadow-sm" : "text-gray-600 hover:text-gray-800"
+        }`}
+      >
+        <List className="w-4 h-4" />
+      </button>
+    </div>
+  </div>
+</div>
+
+
+      {/* Active Filters */}
+      {searchQuery && (
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-xs text-gray-500">Filtering by:</span>
+          <div className="inline-flex items-center gap-1 px-2 py-1 bg-cyan-100 text-cyan-700 text-xs rounded-md border border-cyan-200">
+            "{searchQuery}"
+            <button onClick={clearSearch} className="ml-1 hover:text-cyan-800">
+              <X className="w-3 h-3" />
+            </button>
           </div>
         </div>
-      </section>
+      )}
+    </div>
+  </div>
+</section>
 
       {/* Products Grid/List */}
-      <section className="relative z-10 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {filteredProjects.length === 0 ? (
             <div className="text-center py-16">
