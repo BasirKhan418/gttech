@@ -47,7 +47,7 @@ export function AIPromptModal({ isOpen, onClose, onSubmit }: AIPromptModalProps)
     "Create a hero slider for a modern tech startup",
     "Design a product showcase for eco-friendly products",
     "Make a testimonial slider for a fitness app",
-    "Build a feature highlight for a SaaS platform",
+    "Build a feature highlight for a SAAP platform",
   ]
 
   return (
