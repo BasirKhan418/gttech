@@ -12,26 +12,12 @@ const ServiceSchema = new mongoose.Schema({
   lists: { type: [String], required: false },
   designType: { type: String, required: true },
   icon: { type: String, required: true },
-  
+  subServices:{type: Array, required: false},
   // Additional fields for flexibility
   isActive: { type: Boolean, default: true },
   isFeatured: { type: Boolean, default: false },
   lastEditedAuthor: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: false },
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: false },
-  
-  // Service specific fields
-  industries: { type: [String], required: false },
-  technologies: { type: [String], required: false },
-  capabilities: { type: [String], required: false },
-  benefits: { type: [String], required: false },
-  pricingModel: { type: String, required: false },
-  duration: { type: String, required: false },
-  teamSize: { type: String, required: false },
-  
-  // SEO and metadata
-  metaTitle: { type: String, required: false },
-  metaDescription: { type: String, required: false },
-  keywords: { type: [String], required: false },
 }, {
   timestamps: true,
   strict: false // Allows additional fields not defined in schema

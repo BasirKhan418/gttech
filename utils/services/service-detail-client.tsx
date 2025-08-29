@@ -20,10 +20,17 @@ import {
   DollarSign,
   Timer,
   Users,
+  Grid3X3,
 } from "lucide-react"
 import ServiceDetailSkeleton from "./service-detail-skeleton"
 
 type Author = { _id?: string; name?: string; email?: string }
+
+type SubService = {
+  title: string
+  desc: string
+  image: string
+}
 
 type Service = {
   _id: string
@@ -42,8 +49,7 @@ type Service = {
   lastEditedAuthor?: Author
   author?: Author | string
   industries?: string[]
-  technologies?: string[]
-  capabilities?: string[]
+  subServices?: SubService[]
   benefits?: string[]
   pricingModel?: string
   duration?: string
@@ -143,8 +149,7 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
     "lastEditedAuthor",
     "author",
     "industries",
-    "technologies",
-    "capabilities",
+    "subServices",
     "benefits",
     "pricingModel",
     "duration",
@@ -243,22 +248,29 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
           <div className="lg:col-span-2 space-y-8">
             {/* Overview */}
             <Card>
-              <CardHeader icon={<ListTree className="h-5 w-5 text-cyan-700" />} title="Overview" />
+              <CardHeader icon={<ListTree className="h-5 w-5 text-cyan-700" />} title="Description" />
               <p className="text-gray-700 leading-relaxed">{service.description}</p>
             </Card>
 
-            {/* Features (lists) */}
-            {service.lists && service.lists.length > 0 ? (
+            {/* Sub Services */}
+            {service.subServices && service.subServices.length > 0 ? (
               <Card>
-                <CardHeader icon={<CheckCircle className="h-5 w-5 text-cyan-700" />} title="Key Features" />
-                <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  {service.lists.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3 rounded-lg border border-cyan-100 bg-white p-3">
-                      <CheckCircle className="mt-0.5 h-4 w-4 text-cyan-700" />
-                      <span className="text-gray-800">{item}</span>
-                    </li>
+                <CardHeader icon={<Grid3X3 className="h-5 w-5 text-cyan-700" />} title="Sub Services" />
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  {service.subServices.map((subService, idx) => (
+                    <div key={idx} className="rounded-lg border border-cyan-100 bg-white p-4">
+                      <div className="mb-3">
+                        <img
+                          src={subService.image || "/placeholder.svg?height=120&width=200&query=sub%20service"}
+                          alt={subService.title}
+                          className="h-24 w-full rounded-md object-cover"
+                        />
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-2">{subService.title}</h4>
+                      <p className="text-sm text-gray-600">{subService.desc}</p>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </Card>
             ) : null}
 
@@ -313,39 +325,11 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
               </Card>
             )}
 
-            <Card>
-              <Accordion type="single" collapsible>
-                <AccordionItem value="additional">
-                  <AccordionTrigger className="text-lg font-semibold text-gray-900">Additional Fields</AccordionTrigger>
-                  <AccordionContent>
-                    {additionalEntries.length === 0 ? (
-                      <p className="text-gray-600">No additional fields present.</p>
-                    ) : (
-                      <dl className="divide-y divide-gray-100">
-                        {additionalEntries.map(([key, val]) => (
-                          <div key={key} className="flex items-start justify-between gap-4 py-2">
-                            <dt className="text-sm text-gray-600">{key}</dt>
-                            <dd className="max-w-[60ch] break-words text-sm text-gray-900">
-                              {typeof val === "string" || typeof val === "number" || typeof val === "boolean"
-                                ? String(val)
-                                : Array.isArray(val)
-                                  ? JSON.stringify(val)
-                                  : val
-                                    ? JSON.stringify(val)
-                                    : ""}
-                            </dd>
-                          </div>
-                        ))}
-                      </dl>
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </Card>
+           
           </div>
 
           {/* Sidebar */}
-          <aside className="space-y-8">
+          <aside className="space-y-8 mt-4">
             {/* Actions */}
             <div className="sticky top-6">
               <div className="rounded-2xl border border-cyan-200 bg-white p-5">
@@ -374,69 +358,8 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
               </div>
             </div>
 
-            {/* Details */}
-            <div className="rounded-2xl border border-cyan-200 bg-white p-5">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900">Service Details</h3>
-              {/* Show slug and icon as appropriate */}
-              <DetailRow label="Slug" value={service.slug} />
-              {/* If icon is URL, show preview; otherwise show the string */}
-              {iconIsUrl ? (
-                <div className="mb-2 flex items-start justify-between gap-4 text-sm">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <span>Icon:</span>
-                  </div>
-                  <img
-                    src={service.icon || "/placeholder.svg"}
-                    alt=""
-                    aria-hidden="true"
-                    className="h-6 w-6 rounded bg-gray-100 ring-1 ring-gray-200 object-cover"
-                  />
-                </div>
-              ) : (
-                <DetailRow label="Icon" value={service.icon} />
-              )}
-              <DetailRow label="Category" value={service.sectionName} />
-              <DetailRow label="Type" value={service.designType} />
-              {service.updatedAt && (
-                <DetailRow label="Last Updated" value={new Date(service.updatedAt).toLocaleDateString()} />
-              )}
-              <DetailRow
-                label="Status"
-                value={service.isActive ? "Available" : "Unavailable"}
-                valueClass={service.isActive ? "text-green-700" : "text-red-700"}
-              />
-              {service.pricingModel && (
-                <DetailRow
-                  icon={<DollarSign className="h-4 w-4 text-cyan-700" />}
-                  label="Pricing"
-                  value={service.pricingModel}
-                />
-              )}
-              {service.duration && (
-                <DetailRow
-                  icon={<Timer className="h-4 w-4 text-cyan-700" />}
-                  label="Duration"
-                  value={service.duration}
-                />
-              )}
-              {service.teamSize && (
-                <DetailRow
-                  icon={<Users className="h-4 w-4 text-cyan-700" />}
-                  label="Team Size"
-                  value={service.teamSize}
-                />
-              )}
-              {/* Show last edited by and author in details as well if desired */}
-              {authorName && <DetailRow label="Author" value={authorName} />}
-              {lastEditedBy && <DetailRow label="Last Edited By" value={lastEditedBy} />}
-
-              <ChipGroup title="Industries" items={service.industries} />
-              <ChipGroup title="Technologies" items={service.technologies} />
-              <ChipGroup title="Capabilities" items={service.capabilities} />
-              <ChipGroup title="Keywords" items={service.keywords} />
-            </div>
           </aside>
-        </div>
+        </div>  
       </section>
 
       {/* CTA */}

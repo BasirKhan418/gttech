@@ -9,9 +9,21 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { ImageUploader } from "./image-uploader";
+import { Plus, Trash2 } from "lucide-react"
 import type { Service } from "@/app/admin/services/page"
+
+interface SubService {
+  title: string
+  desc: string
+  image: string
+}
+
+interface ServiceWithSubServices extends Service {
+  subServices?: SubService[]
+}
 
 interface Props {
   open: boolean
@@ -40,7 +52,7 @@ const DESIGN_TYPES = ["classic", "modern", "minimal", "brutalist", "glassmorphis
 export function ServiceModal({ open, onOpenChange, service, aiDraft, onSuccess }: Props) {
   const isEdit = !!service?._id
 
-  const [form, setForm] = useState<Partial<Service>>({
+  const [form, setForm] = useState<Partial<ServiceWithSubServices>>({
     slug: "",
     sectionName: "",
     title: "",
@@ -53,8 +65,7 @@ export function ServiceModal({ open, onOpenChange, service, aiDraft, onSuccess }
     icon: "code",
     isActive: true,
     isFeatured: false,
-    technologies: [],
-    capabilities: [],
+    subServices: [],
   })
 
   useEffect(() => {
@@ -76,13 +87,29 @@ export function ServiceModal({ open, onOpenChange, service, aiDraft, onSuccess }
         icon: "code",
         isActive: true,
         isFeatured: false,
-        technologies: [],
-        capabilities: [],
+        subServices: [],
       })
     }
   }, [service, aiDraft, open])
 
   const commaString = (arr?: string[]) => (arr && arr.length ? arr.join(", ") : "")
+
+  const addSubService = () => {
+    const newSubService: SubService = { title: "", desc: "", image: "" }
+    setForm((f) => ({ ...f, subServices: [...(f.subServices || []), newSubService] }))
+  }
+
+  const updateSubService = (index: number, field: keyof SubService, value: string) => {
+    const subServices = [...(form.subServices || [])]
+    subServices[index] = { ...subServices[index], [field]: value }
+    setForm((f) => ({ ...f, subServices }))
+  }
+
+  const removeSubService = (index: number) => {
+    const subServices = [...(form.subServices || [])]
+    subServices.splice(index, 1)
+    setForm((f) => ({ ...f, subServices }))
+  }
 
   const handleSubmit = async () => {
     try {
@@ -113,7 +140,7 @@ export function ServiceModal({ open, onOpenChange, service, aiDraft, onSuccess }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col p-0">
+      <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
           <DialogTitle className="text-balance">
             {isEdit ? "Edit Service" : aiDraft ? "Review AI Service" : "Create Service"}
@@ -124,14 +151,14 @@ export function ServiceModal({ open, onOpenChange, service, aiDraft, onSuccess }
         <div className="flex-1 overflow-y-auto px-6 pb-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 py-6">
             {/* Left column - basics */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="space-y-8">
               {/* Basic Information */}
               <div className="space-y-6">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b pb-2">
                   Basic Information
                 </h3>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-3">
                     <Label htmlFor="slug">Slug *</Label>
                     <Input
@@ -233,78 +260,12 @@ export function ServiceModal({ open, onOpenChange, service, aiDraft, onSuccess }
                 </div>
               </div>
 
-              {/* Technical Details */}
+              {/* Lists */}
               <div className="space-y-6">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b pb-2">
-                  Technical Details
+                  Additional Details
                 </h3>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <Label>Technologies (comma separated)</Label>
-                    <Input
-                      value={commaString(form.technologies)}
-                      onChange={(e) =>
-                        setForm((f) => ({
-                          ...f,
-                          technologies: e.target.value
-                            .split(",")
-                            .map((s) => s.trim())
-                            .filter(Boolean),
-                        }))
-                      }
-                      placeholder="Next.js, Tailwind, AWS"
-                      className="h-11"
-                    />
-                    {(form.technologies?.length ?? 0) > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        {form.technologies!.slice(0, 5).map((tech, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {(form.technologies?.length ?? 0) > 5 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{form.technologies!.length - 5} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label>Capabilities (comma separated)</Label>
-                    <Input
-                      value={commaString(form.capabilities)}
-                      onChange={(e) =>
-                        setForm((f) => ({
-                          ...f,
-                          capabilities: e.target.value
-                            .split(",")
-                            .map((s) => s.trim())
-                            .filter(Boolean),
-                        }))
-                      }
-                      placeholder="SSR, RSC, SEO"
-                      className="h-11"
-                    />
-                    {(form.capabilities?.length ?? 0) > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        {form.capabilities!.slice(0, 5).map((cap, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">
-                            {cap}
-                          </Badge>
-                        ))}
-                        {(form.capabilities?.length ?? 0) > 5 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{form.capabilities!.length - 5} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
                 <div className="space-y-3">
                   <Label>Lists (comma separated)</Label>
                   <Input
@@ -456,6 +417,90 @@ export function ServiceModal({ open, onOpenChange, service, aiDraft, onSuccess }
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Key Sub Services Section - Full Width */}
+          <div className="space-y-6 mt-8">
+            <div className="flex items-center justify-between border-b pb-2">
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                Key Sub Services
+              </h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addSubService}
+                className="h-8 gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add Sub Service
+              </Button>
+            </div>
+
+            {(form.subServices?.length ?? 0) === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No sub services added yet. Click "Add Sub Service" to get started.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {(form.subServices || []).map((subService, index) => (
+                  <Card key={index} className="relative">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm">Sub Service {index + 1}</CardTitle>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSubService(index)}
+                          className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-xs">Title</Label>
+                        <Input
+                          value={subService.title}
+                          onChange={(e) => updateSubService(index, 'title', e.target.value)}
+                          placeholder="Sub service title"
+                          className="h-9 text-sm"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-xs">Description</Label>
+                        <Textarea
+                          value={subService.desc}
+                          onChange={(e) => updateSubService(index, 'desc', e.target.value)}
+                          placeholder="Sub service description"
+                          rows={3}
+                          className="text-sm resize-none"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-xs">Image</Label>
+                        <ImageUploader
+                          label="Upload image"
+                          value={subService.image}
+                          onChange={(url) => updateSubService(index, 'image', url as string)}
+                        />
+                        {subService.image && (
+                          <img
+                            src={subService.image}
+                            alt={`Sub service ${index + 1}`}
+                            className="w-full h-20 object-cover rounded border mt-2"
+                          />
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
