@@ -243,7 +243,7 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
 
       {/* Content grid */}
       <section className="mx-auto max-w-6xl px-4 py-10">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 mt-4 ">
           {/* Main column */}
           <div className="lg:col-span-2 space-y-8">
             {/* Overview */}
@@ -258,7 +258,7 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
                 <CardHeader icon={<Grid3X3 className="h-5 w-5 text-cyan-700" />} title="Sub Services" />
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   {service.subServices.map((subService, idx) => (
-                    <div key={idx} className="rounded-lg border border-cyan-100 bg-white p-4">
+                    <div key={idx} className="rounded-lg  border-cyan-100 shadow-md bg-white p-4">
                       <div className="mb-3">
                         <img
                           src={subService.image || "/placeholder.svg?height=120&width=200&query=sub%20service"}
@@ -280,7 +280,7 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
                 <CardHeader icon={<BadgeCheck className="h-5 w-5 text-cyan-700" />} title="Benefits" />
                 <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   {service.benefits.map((b, i) => (
-                    <li key={i} className="rounded-lg border border-cyan-100 bg-white p-3 text-gray-800">
+                    <li key={i} className="rounded-lg  bg-white p-3 text-gray-800">
                       {b}
                     </li>
                   ))}
@@ -294,7 +294,7 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
                 <CardHeader icon={<ImageIcon className="h-5 w-5 text-cyan-700" />} title="Gallery" />
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                   {service.images.map((src, i) => (
-                    <div key={i} className="overflow-hidden rounded-lg border border-cyan-100">
+                    <div key={i} className="overflow-hidden rounded-lg shadow-sm">
                       <img
                         src={src || "/placeholder.svg?height=176&width=320&query=service%20image"}
                         alt={`${service.title} image ${i + 1}`}
@@ -329,10 +329,10 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
           </div>
 
           {/* Sidebar */}
-          <aside className="space-y-8 mt-4">
+          <aside className="space-y-8 ">
             {/* Actions */}
-            <div className="sticky top-6">
-              <div className="rounded-2xl border border-cyan-200 bg-white p-5">
+            <div className="sticky top-6 mt-2">
+              <div className="rounded-2xl border border-cyan-200 bg-white p-2">
                 <h3 className="mb-4 text-lg font-semibold text-gray-900">Get Started</h3>
                 <div className="flex flex-col gap-3">
                   <Link
@@ -359,12 +359,12 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
             </div>
 
           </aside>
-        </div>  
+        </div>
       </section>
 
       {/* CTA */}
-      <section className="border-t bg-gray-50">
-        <div className="mx-auto max-w-6xl px-4 py-10">
+      <section className=" bg-gray-50 shadow">
+        <div className="mx-auto max-w-6xl px-4 py-10 mt-6 mb-0.5">
           <div className="rounded-2xl border border-cyan-200 bg-white p-6 md:p-8">
             <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
               <div>
@@ -396,7 +396,7 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-2xl border border-cyan-200 bg-white p-5">{children}</div>
+  return <div className="rounded-2xl bg-white p-5">{children}</div>
 }
 
 function CardHeader({ icon, title }: { icon?: React.ReactNode; title: string }) {
