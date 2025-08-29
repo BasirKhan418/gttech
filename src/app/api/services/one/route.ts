@@ -6,8 +6,8 @@ export const GET = async (request: NextRequest) => {
   try {
     await ConnectDb();
     const url = new URL(request.url);
-    const id = url.searchParams.get("id");
-    const service = await Services.findById(id);
+    const slug = url.searchParams.get("slug");
+    const service = await Services.findOne({ slug });
     if (!service) {
       return NextResponse.json({ success: false, error: "Service not found" });
     }

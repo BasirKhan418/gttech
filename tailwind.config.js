@@ -81,7 +81,9 @@ module.exports = {
   			'spin-slow': 'spin 3s linear infinite',
   			'pulse-custom': 'pulseCustom 2s ease-in-out infinite',
   			shimmer: 'shimmer 2.5s ease-in-out infinite',
-  			glow: 'glow 4s ease-in-out infinite'
+  			glow: 'glow 4s ease-in-out infinite',
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
   		},
   		keyframes: {
   			fadeInUp: {
@@ -157,6 +159,22 @@ module.exports = {
   				},
   				'50%': {
   					boxShadow: '0 0 40px rgba(251, 191, 36, 0.8), 0 0 60px rgba(251, 191, 36, 0.6)'
+  				}
+  			},
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
   				}
   			}
   		},
