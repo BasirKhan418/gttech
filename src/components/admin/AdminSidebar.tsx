@@ -96,6 +96,14 @@ const AdminSidebar = () => {
       ]
     },
     {
+      name: 'Services Management',
+      icon: Briefcase, // Replace ServiceIcon with an existing icon, e.g., Briefcase
+      color: 'text-green-600',
+      subItems: [
+        { name: 'All Services', href: '/admin/services', icon: Eye },
+      ]
+    },
+    {
       name: 'GAQ Management',
       icon: DollarSign,
       badge: 'Important',
