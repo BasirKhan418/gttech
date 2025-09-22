@@ -14,7 +14,7 @@ const ProjectSchema = new mongoose.Schema({
     isFeatured: { type: Boolean, default: false },
     lastEditedAuthor: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
-    
+    subproducts: [{type:Object, required:false}],
     // Software products specific fields
     portfolios: { type: [String], required: false },
     industries: { type: [String], required: false },
