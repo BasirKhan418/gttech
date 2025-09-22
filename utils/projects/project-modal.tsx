@@ -9,31 +9,47 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { X, Upload, Plus, Code, Star, Layers, Lightbulb, Zap, Rocket, Settings, Monitor, Smartphone, Database, Globe } from "lucide-react"
+import {
+  X,
+  Upload,
+  Plus,
+  Code,
+  Star,
+  Layers,
+  Lightbulb,
+  Zap,
+  Rocket,
+  Settings,
+  Monitor,
+  Smartphone,
+  Database,
+  Globe,
+  Edit2,
+} from "lucide-react"
 import { toast } from "sonner"
 
 // Available icons for projects
 const AVAILABLE_ICONS = [
-  { name: 'Code', icon: Code, value: 'code' },
-  { name: 'Star', icon: Star, value: 'star' },
-  { name: 'Layers', icon: Layers, value: 'layers' },
-  { name: 'Lightbulb', icon: Lightbulb, value: 'lightbulb' },
-  { name: 'Zap', icon: Zap, value: 'zap' },
-  { name: 'Rocket', icon: Rocket, value: 'rocket' },
-  { name: 'Settings', icon: Settings, value: 'settings' },
-  { name: 'Monitor', icon: Monitor, value: 'monitor' },
-  { name: 'Smartphone', icon: Smartphone, value: 'smartphone' },
-  { name: 'Database', icon: Database, value: 'database' },
-  { name: 'Globe', icon: Globe, value: 'globe' }
+  { name: "Code", icon: Code, value: "code" },
+  { name: "Star", icon: Star, value: "star" },
+  { name: "Layers", icon: Layers, value: "layers" },
+  { name: "Lightbulb", icon: Lightbulb, value: "lightbulb" },
+  { name: "Zap", icon: Zap, value: "zap" },
+  { name: "Rocket", icon: Rocket, value: "rocket" },
+  { name: "Settings", icon: Settings, value: "settings" },
+  { name: "Monitor", icon: Monitor, value: "monitor" },
+  { name: "Smartphone", icon: Smartphone, value: "smartphone" },
+  { name: "Database", icon: Database, value: "database" },
+  { name: "Globe", icon: Globe, value: "globe" },
 ]
 
 // Product categories
 const PRODUCT_CATEGORIES = [
-  { value: 'Software products', label: 'Software Products' },
-  { value: 'saap', label: 'SAAP' },
-  { value: 'electric vehicles', label: 'Electric Vehicles' },
-  { value: 'furnitures', label: 'Furnitures' },
-  { value: 'garments', label: 'Garments' }
+  { value: "Software products", label: "Software Products" },
+  { value: "saap", label: "SAAP" },
+  { value: "electric vehicles", label: "Electric Vehicles" },
+  { value: "furnitures", label: "Furnitures" },
+  { value: "garments", label: "Garments" },
 ]
 
 interface Project {
@@ -48,35 +64,43 @@ interface Project {
   features?: string[]
   isActive: boolean
   isFeatured: boolean
-  
+
   // Software products specific
   portfolios?: string[]
   industries?: string[]
   capabilities?: string[]
   valuePropositions?: string[]
-  
+
   // SaaP specific
   pricingModel?: string
   integrations?: string[]
   apiSupport?: boolean
-  
+
   // Electric vehicles specific
   batteryCapacity?: string
   range?: string
   chargingTime?: string
   motorType?: string
-  
+
   // Furnitures specific
   material?: string[]
   dimensions?: string
   weight?: string
   assemblyRequired?: boolean
-  
+
   // Garments specific
   sizes?: string[]
   colors?: string[]
   fabric?: string[]
   careInstructions?: string[]
+
+  // Subproducts
+  subproducts?: Array<{
+    title: string
+    description: string
+    learnMoreLink: string
+    image: string
+  }>
 }
 
 interface ProjectModalProps {
@@ -100,7 +124,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
     isActive: true,
     isFeatured: false,
   })
-  
+
   // Dynamic input states
   const [newTechnology, setNewTechnology] = useState("")
   const [newFeature, setNewFeature] = useState("")
@@ -114,13 +138,33 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
   const [newColor, setNewColor] = useState("")
   const [newFabric, setNewFabric] = useState("")
   const [newCareInstruction, setNewCareInstruction] = useState("")
-  
+
+  const [subproducts, setSubproducts] = useState<
+    Array<{
+      title: string
+      description: string
+      learnMoreLink: string
+      image: string
+    }>
+  >([])
+
+  const [currentSubproduct, setCurrentSubproduct] = useState({
+    title: "",
+    description: "",
+    learnMoreLink: "",
+    image: "",
+  })
+
+  const [subproductUploading, setSubproductUploading] = useState(false)
+
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (project) {
       setFormData(project)
+      // Initialize subproducts if they exist on the project
+      setSubproducts(project.subproducts || [])
     } else if (aiGeneratedData) {
       setFormData({
         title: aiGeneratedData.title || "",
@@ -153,7 +197,11 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
         colors: aiGeneratedData.colors || [],
         fabric: aiGeneratedData.fabric || [],
         careInstructions: aiGeneratedData.careInstructions || [],
+        // Initialize subproducts from AI data
+        subproducts: aiGeneratedData.subproducts || [],
       })
+      // Initialize subproducts state from AI data
+      setSubproducts(aiGeneratedData.subproducts || [])
     } else {
       setFormData({
         title: "",
@@ -186,6 +234,8 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
         fabric: [],
         careInstructions: [],
       })
+      // Reset subproducts state for new project
+      setSubproducts([])
     }
   }, [project, aiGeneratedData])
 
@@ -272,7 +322,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
     if (value.trim()) {
       setFormData((prev) => ({
         ...prev,
-        [field]: [...(prev[field] as string[] || []), value.trim()],
+        [field]: [...((prev[field] as string[]) || []), value.trim()],
       }))
       setter("")
     }
@@ -285,6 +335,68 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
     }))
   }
 
+  const handleSubproductImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setSubproductUploading(true)
+    try {
+      // Get signed URL for upload
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+        }),
+      })
+
+      if (!response.ok) throw new Error("Failed to get upload URL")
+
+      const { uploadURL, fileURL } = await response.json()
+
+      // Upload file to S3
+      const uploadResponse = await fetch(uploadURL, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      })
+
+      if (!uploadResponse.ok) throw new Error("Failed to upload file")
+
+      setCurrentSubproduct((prev) => ({ ...prev, image: fileURL }))
+    } catch (error) {
+      console.error("Error uploading subproduct image:", error)
+      toast.error("Failed to upload image. Please try again.")
+    } finally {
+      setSubproductUploading(false)
+    }
+  }
+
+  const addSubproduct = () => {
+    if (!currentSubproduct.title || !currentSubproduct.description) {
+      toast.error("Please fill in title and description for the subproduct")
+      return
+    }
+
+    setSubproducts((prev) => [...prev, currentSubproduct])
+    setCurrentSubproduct({
+      title: "",
+      description: "",
+      learnMoreLink: "",
+      image: "",
+    })
+  }
+
+  const removeSubproduct = (index: number) => {
+    setSubproducts((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const editSubproduct = (index: number) => {
+    setCurrentSubproduct(subproducts[index])
+    removeSubproduct(index)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -295,16 +407,21 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
 
     try {
       setSaving(true)
-      const url = "/api/project"
-      const method = project?._id ? "PUT" : "POST"
-      const body = project ? { ...formData, id: project._id } : formData
-      
+      const url = project ? `/api/project` : "/api/project"
+      const method = project ? "PUT" : "POST"
+
+      const submitData = {
+        ...formData,
+        id: project?._id,
+        subproducts: subproducts,
+      }
+
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(submitData),
       })
 
       const data = await response.json()
@@ -323,13 +440,13 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
   }
 
   const getIconComponent = (iconValue: string) => {
-    const iconData = AVAILABLE_ICONS.find(icon => icon.value === iconValue)
+    const iconData = AVAILABLE_ICONS.find((icon) => icon.value === iconValue)
     return iconData ? iconData.icon : Code
   }
 
   const renderCategorySpecificFields = () => {
     switch (formData.category) {
-      case 'Software products':
+      case "Software products":
         return (
           <div className="space-y-6">
             {/* Portfolios */}
@@ -340,9 +457,16 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newPortfolio}
                   onChange={(e) => setNewPortfolio(e.target.value)}
                   placeholder="Add portfolio"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('portfolios', newPortfolio, setNewPortfolio))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addToArray("portfolios", newPortfolio, setNewPortfolio))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('portfolios', newPortfolio, setNewPortfolio)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("portfolios", newPortfolio, setNewPortfolio)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -355,7 +479,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('portfolios', index)}
+                        onClick={() => removeFromArray("portfolios", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -374,9 +498,16 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newIndustry}
                   onChange={(e) => setNewIndustry(e.target.value)}
                   placeholder="Add industry"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('industries', newIndustry, setNewIndustry))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addToArray("industries", newIndustry, setNewIndustry))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('industries', newIndustry, setNewIndustry)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("industries", newIndustry, setNewIndustry)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -389,7 +520,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('industries', index)}
+                        onClick={() => removeFromArray("industries", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -408,9 +539,17 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newCapability}
                   onChange={(e) => setNewCapability(e.target.value)}
                   placeholder="Add capability"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('capabilities', newCapability, setNewCapability))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" &&
+                    (e.preventDefault(), addToArray("capabilities", newCapability, setNewCapability))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('capabilities', newCapability, setNewCapability)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("capabilities", newCapability, setNewCapability)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -423,7 +562,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('capabilities', index)}
+                        onClick={() => removeFromArray("capabilities", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -442,9 +581,17 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newValueProposition}
                   onChange={(e) => setNewValueProposition(e.target.value)}
                   placeholder="Add value proposition"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('valuePropositions', newValueProposition, setNewValueProposition))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" &&
+                    (e.preventDefault(), addToArray("valuePropositions", newValueProposition, setNewValueProposition))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('valuePropositions', newValueProposition, setNewValueProposition)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("valuePropositions", newValueProposition, setNewValueProposition)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -457,7 +604,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('valuePropositions', index)}
+                        onClick={() => removeFromArray("valuePropositions", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -470,7 +617,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
           </div>
         )
 
-      case 'saap':
+      case "saap":
         return (
           <div className="space-y-6">
             {/* Pricing Model */}
@@ -491,9 +638,17 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newIntegration}
                   onChange={(e) => setNewIntegration(e.target.value)}
                   placeholder="Add integration"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('integrations', newIntegration, setNewIntegration))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" &&
+                    (e.preventDefault(), addToArray("integrations", newIntegration, setNewIntegration))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('integrations', newIntegration, setNewIntegration)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("integrations", newIntegration, setNewIntegration)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -506,7 +661,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('integrations', index)}
+                        onClick={() => removeFromArray("integrations", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -529,7 +684,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
           </div>
         )
 
-      case 'electric vehicles':
+      case "electric vehicles":
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -576,7 +731,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
           </div>
         )
 
-      case 'furnitures':
+      case "furnitures":
         return (
           <div className="space-y-6">
             {/* Materials */}
@@ -587,9 +742,16 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newMaterial}
                   onChange={(e) => setNewMaterial(e.target.value)}
                   placeholder="Add material"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('material', newMaterial, setNewMaterial))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addToArray("material", newMaterial, setNewMaterial))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('material', newMaterial, setNewMaterial)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("material", newMaterial, setNewMaterial)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -602,7 +764,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('material', index)}
+                        onClick={() => removeFromArray("material", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -647,7 +809,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
           </div>
         )
 
-      case 'garments':
+      case "garments":
         return (
           <div className="space-y-6">
             {/* Sizes */}
@@ -658,9 +820,16 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newSize}
                   onChange={(e) => setNewSize(e.target.value)}
                   placeholder="Add size"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('sizes', newSize, setNewSize))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addToArray("sizes", newSize, setNewSize))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('sizes', newSize, setNewSize)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("sizes", newSize, setNewSize)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -673,7 +842,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('sizes', index)}
+                        onClick={() => removeFromArray("sizes", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -692,9 +861,16 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newColor}
                   onChange={(e) => setNewColor(e.target.value)}
                   placeholder="Add color"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('colors', newColor, setNewColor))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addToArray("colors", newColor, setNewColor))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('colors', newColor, setNewColor)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("colors", newColor, setNewColor)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -707,7 +883,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('colors', index)}
+                        onClick={() => removeFromArray("colors", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -726,9 +902,16 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newFabric}
                   onChange={(e) => setNewFabric(e.target.value)}
                   placeholder="Add fabric type"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('fabric', newFabric, setNewFabric))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addToArray("fabric", newFabric, setNewFabric))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('fabric', newFabric, setNewFabric)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("fabric", newFabric, setNewFabric)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -741,7 +924,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('fabric', index)}
+                        onClick={() => removeFromArray("fabric", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -760,9 +943,17 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newCareInstruction}
                   onChange={(e) => setNewCareInstruction(e.target.value)}
                   placeholder="Add care instruction"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('careInstructions', newCareInstruction, setNewCareInstruction))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" &&
+                    (e.preventDefault(), addToArray("careInstructions", newCareInstruction, setNewCareInstruction))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('careInstructions', newCareInstruction, setNewCareInstruction)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("careInstructions", newCareInstruction, setNewCareInstruction)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -775,7 +966,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('careInstructions', index)}
+                        onClick={() => removeFromArray("careInstructions", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -805,13 +996,13 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
         {aiGeneratedData && !project && (
           <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800 mb-4">
             <p className="text-purple-700 dark:text-purple-300 text-sm">
-              ✨ This form has been pre-filled with AI-generated content. You can review and modify any fields before saving.
+              ✨ This form has been pre-filled with AI-generated content. You can review and modify any fields before
+              saving.
             </p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -868,8 +1059,8 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                     onClick={() => handleInputChange("icon", iconData.value)}
                     className={`p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105 ${
                       formData.icon === iconData.value
-                        ? 'border-cyan-500 bg-cyan-50 text-cyan-600'
-                        : 'border-gray-300 hover:border-cyan-300 text-gray-600'
+                        ? "border-cyan-500 bg-cyan-50 text-cyan-600"
+                        : "border-gray-300 hover:border-cyan-300 text-gray-600"
                     }`}
                     title={iconData.name}
                   >
@@ -882,7 +1073,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <span>Selected:</span>
                 {React.createElement(getIconComponent(formData.icon), { className: "w-4 h-4" })}
-                <span>{AVAILABLE_ICONS.find(icon => icon.value === formData.icon)?.name}</span>
+                <span>{AVAILABLE_ICONS.find((icon) => icon.value === formData.icon)?.name}</span>
               </div>
             )}
           </div>
@@ -905,7 +1096,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
               {formData.poster && (
                 <div className="flex items-center gap-2">
                   <img
-                    src={formData.poster}
+                    src={formData.poster || "/placeholder.svg"}
                     alt="Poster preview"
                     className="h-12 w-12 object-cover rounded"
                   />
@@ -950,7 +1141,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   {formData.images.map((image, index) => (
                     <div key={index} className="relative">
                       <img
-                        src={image}
+                        src={image || "/placeholder.svg"}
                         alt={`Image ${index + 1}`}
                         className="h-20 w-20 object-cover rounded"
                       />
@@ -979,9 +1170,17 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newTechnology}
                   onChange={(e) => setNewTechnology(e.target.value)}
                   placeholder="Add technology"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('technologies', newTechnology, setNewTechnology))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" &&
+                    (e.preventDefault(), addToArray("technologies", newTechnology, setNewTechnology))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('technologies', newTechnology, setNewTechnology)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("technologies", newTechnology, setNewTechnology)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -995,7 +1194,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('technologies', index)}
+                        onClick={() => removeFromArray("technologies", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -1016,9 +1215,16 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                   value={newFeature}
                   onChange={(e) => setNewFeature(e.target.value)}
                   placeholder="Add feature"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addToArray('features', newFeature, setNewFeature))}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addToArray("features", newFeature, setNewFeature))
+                  }
                 />
-                <Button type="button" onClick={() => addToArray('features', newFeature, setNewFeature)} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={() => addToArray("features", newFeature, setNewFeature)}
+                  variant="outline"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -1032,7 +1238,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromArray('features', index)}
+                        onClick={() => removeFromArray("features", index)}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -1051,6 +1257,156 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
               {renderCategorySpecificFields()}
             </div>
           )}
+
+          <div className="border-t pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Subproducts</h3>
+              <Badge variant="outline" className="text-xs">
+                {subproducts.length} added
+              </Badge>
+            </div>
+
+            {/* Current Subproduct Form */}
+            <div className="bg-gray-50 rounded-lg p-4 space-y-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Subproduct Title</Label>
+                  <Input
+                    value={currentSubproduct.title}
+                    onChange={(e) => setCurrentSubproduct((prev) => ({ ...prev, title: e.target.value }))}
+                    placeholder="Enter subproduct title"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Learn More Link</Label>
+                  <Input
+                    value={currentSubproduct.learnMoreLink}
+                    onChange={(e) => setCurrentSubproduct((prev) => ({ ...prev, learnMoreLink: e.target.value }))}
+                    placeholder="https://example.com/learn-more"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  value={currentSubproduct.description}
+                  onChange={(e) => setCurrentSubproduct((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe this subproduct..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Subproduct Image</Label>
+                <div className="flex items-center gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById("subproduct-image-upload")?.click()}
+                    disabled={subproductUploading}
+                    className="gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {subproductUploading ? "Uploading..." : "Upload Image"}
+                  </Button>
+                  <input
+                    id="subproduct-image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSubproductImageUpload}
+                    className="hidden"
+                  />
+                  {currentSubproduct.image && (
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={currentSubproduct.image || "/placeholder.svg"}
+                        alt="Subproduct preview"
+                        className="h-12 w-12 object-cover rounded-lg border"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentSubproduct((prev) => ({ ...prev, image: "" }))}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                onClick={addSubproduct}
+                className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+                disabled={!currentSubproduct.title || !currentSubproduct.description}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Subproduct
+              </Button>
+            </div>
+
+            {/* Added Subproducts List */}
+            {subproducts.length > 0 && (
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-gray-700">Added Subproducts:</Label>
+                <div className="grid gap-3">
+                  {subproducts.map((subproduct, index) => (
+                    <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                      <div className="flex items-start justify-between">
+                        <div className="flex gap-3 flex-1">
+                          {subproduct.image && (
+                            <img
+                              src={subproduct.image || "/placeholder.svg"}
+                              alt={subproduct.title}
+                              className="h-16 w-16 object-cover rounded-lg border"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-gray-900 truncate">{subproduct.title}</h4>
+                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">{subproduct.description}</p>
+                            {subproduct.learnMoreLink && (
+                              <a
+                                href={subproduct.learnMoreLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 hover:text-blue-800 mt-1 inline-block"
+                              >
+                                Learn More →
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-1 ml-2">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => editSubproduct(index)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeSubproduct(index)}
+                            className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Status Options */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1078,7 +1434,7 @@ export function ProjectModal({ isOpen, onClose, project, onSuccess, aiGeneratedD
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={saving || uploading}>
+            <Button type="submit" disabled={saving || uploading || subproductUploading}>
               {saving ? "Saving..." : project ? "Update Product" : "Create Product"}
             </Button>
           </div>

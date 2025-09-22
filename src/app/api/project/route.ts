@@ -208,7 +208,7 @@ export const POST = async (req: NextRequest) => {
         }
 
         // Clean and prepare project data
-        const cleanedData = cleanProjectData(body);
+        const cleanedData = body;
         const projectData = {
             ...cleanedData,
             lastEditedAuthor: userdata.data._id,
@@ -256,6 +256,8 @@ export const PUT = async (req: NextRequest) => {
 
         // Validate project data
         const validationErrors = validateProjectData(body);
+        console.log('Validation Errors:', validationErrors);
+        console.log('Request Body:', body);
         if (validationErrors.length > 0) {
             return NextResponse.json({ 
                 success: false, 
@@ -265,7 +267,7 @@ export const PUT = async (req: NextRequest) => {
         }
 
         // Clean and prepare project data
-        const cleanedData = cleanProjectData(body);
+        const cleanedData = body;
         const projectData = {
             ...cleanedData,
             lastEditedAuthor: userdata.data._id,
