@@ -17,12 +17,12 @@ const Footer = () => {
       { name: 'Railways', href: '/industries/railways' },
       { name: 'Smart Cities', href: '/industries/smartcities' }
     ],
-    support: [
-      { name: 'Contact Us', href: '/contact' },
-      { name: 'Support Center', href: '/support' },
-      { name: 'Documentation', href: '/docs' },
-      { name: 'Privacy Policy', href: '/privacy' }
-    ]
+    // support: [
+    //   { name: 'Contact Us', href: '/contact' },
+    //   { name: 'Support Center', href: '/support' },
+    //   { name: 'Documentation', href: '/docs' },
+    //   { name: 'Privacy Policy', href: '/privacy' }
+    // ]
   }
 
   const socialLinks = [
@@ -110,7 +110,7 @@ const Footer = () => {
                   </ul>
                 </div>
 
-                <div>
+               {/*<div>
                   <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Support</h3>
                   <ul className="space-y-4">
                     {footerLinks.support.map((link) => (
@@ -124,7 +124,7 @@ const Footer = () => {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </div>*/}
               </div>
             </div>
           </div>

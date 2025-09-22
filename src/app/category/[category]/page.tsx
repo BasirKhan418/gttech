@@ -314,20 +314,6 @@ const CategoryPage = () => {
             <p className="text-gray-600 text-sm mt-1">{currentCategory.description}</p>
           </div>
         </div>
-
-        {/* Right: Stats */}
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-cyan-50 rounded-lg border border-cyan-200">
-            <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
-            <span className="font-medium text-gray-700">{filteredProjects.length}</span>
-          </div>
-          {filteredProjects.filter((p) => p.isFeatured).length > 0 && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 rounded-lg border border-yellow-200">
-              <Star className="w-3 h-3 text-yellow-600" />
-              <span className="font-medium text-gray-700">{filteredProjects.filter((p) => p.isFeatured).length}</span>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   </div>

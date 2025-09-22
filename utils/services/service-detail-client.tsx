@@ -291,9 +291,14 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
                           <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 group-hover:text-cyan-600 transition-colors duration-300">
                             {subService.title}
                           </h3>
-                          <p className="text-sm sm:text-base text-gray-600 leading-relaxed line-clamp-3">
-                            {subService.desc}
-                          </p>
+                          <div className="h-16 sm:h-20 overflow-y-auto pr-2" style={{
+                            scrollbarWidth: 'thin',
+                            scrollbarColor: '#67e8f9 #f3f4f6'
+                          }}>
+                            <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                              {subService.desc}
+                            </p>
+                          </div>
                         </div>
                         
                         {/* Decorative corner */}
@@ -461,6 +466,48 @@ export default function ServiceDetailClient({ slug }: { slug: string }) {
 
         .animate-on-scroll {
           transition: all 1s ease-out;
+        }
+
+        /* Custom scrollbar styles */
+        .scrollbar-thin {
+          scrollbar-width: thin;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .scrollbar-thumb-cyan-300::-webkit-scrollbar-thumb {
+          background-color: #67e8f9;
+          border-radius: 3px;
+        }
+        
+        .scrollbar-track-gray-100::-webkit-scrollbar-track {
+          background-color: #f3f4f6;
+          border-radius: 3px;
+        }
+        
+        .hover\\:scrollbar-thumb-cyan-400:hover::-webkit-scrollbar-thumb {
+          background-color: #22d3ee;
+        }
+
+        /* Scrollable description area */
+        div[style*="scrollbarWidth"]::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        div[style*="scrollbarWidth"]::-webkit-scrollbar-track {
+          background: #f3f4f6;
+          border-radius: 3px;
+        }
+        
+        div[style*="scrollbarWidth"]::-webkit-scrollbar-thumb {
+          background: #67e8f9;
+          border-radius: 3px;
+        }
+        
+        div[style*="scrollbarWidth"]::-webkit-scrollbar-thumb:hover {
+          background: #22d3ee;
         }
 
         /* Mobile-specific optimizations */

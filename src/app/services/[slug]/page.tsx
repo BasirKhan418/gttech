@@ -7,7 +7,7 @@ const page = () => {
     console.log('Service slug:', params.slug)
   return (
     <div>
-      <ServiceDetailClient slug={params.slug} />
+        <ServiceDetailClient slug={params.slug}/>
     </div>
   )
 }
