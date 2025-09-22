@@ -21,10 +21,9 @@ const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Services', href: '/services' },
-    { name: 'Industries', href: '/industries' },
+    { name: 'Industry & Value Solution', href: '/industries' },
     { name: 'Products', href: '/project', hasDropdown: true },
-    { name: 'Solutions', href: '/services/solution' },
-    { name: 'Consulting', href: '/services/consult' },
+    { name: 'Future Skills', href: 'https://future-skills-7ae85.web.app', external: true, target: '_blank' },
     { name: 'Contact', href: '/contact' }
   ]
 
@@ -147,6 +146,8 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href={item.href}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noopener noreferrer' : undefined}
                     className="px-3 2xl:px-4 py-2 text-sm 2xl:text-base text-gray-800 hover:text-cyan-700 transition-all duration-300 relative group font-medium backdrop-blur-sm"
                   >
                     {item.name}
@@ -227,6 +228,8 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href={item.href}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noopener noreferrer' : undefined}
                     className="px-2 py-2 text-sm text-gray-800 hover:text-cyan-700 transition-all duration-300 relative group font-medium backdrop-blur-sm"
                   >
                     {item.name}
@@ -294,6 +297,8 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href={item.href}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noopener noreferrer' : undefined}
                     className="block px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 hover:text-cyan-700 hover:bg-cyan-100/50 backdrop-blur-sm transition-all duration-300 rounded-md mx-2 font-medium"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
