@@ -76,6 +76,7 @@ const AdminSidebar = () => {
       color: 'text-purple-600',
       subItems: [
         { name: 'All Content', href: '/admin/content', icon: Eye },
+        { name: 'About Content', href: '/admin/about', icon: Sliders },
       ]
     },
     {
