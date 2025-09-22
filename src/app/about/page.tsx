@@ -417,14 +417,13 @@ const AboutPage = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 relative group px-4">
-                <span className="group-hover:text-gray-600 transition-colors duration-300">Incubated with</span>
+                {/* <span className="group-hover:text-gray-600 transition-colors duration-300">Incubated with</span>
                 <div className="w-4 h-px sm:w-px sm:h-4 bg-cyan-500/60 group-hover:bg-cyan-500/90 transition-colors duration-300"></div>
                 <span className="text-cyan-600 font-semibold group-hover:text-cyan-700 transition-colors duration-300">Centurion University</span>
                 <div className="w-4 h-px sm:w-px sm:h-4 bg-cyan-500/60 group-hover:bg-cyan-500/90 transition-colors duration-300"></div>
-                <span className="group-hover:text-gray-600 transition-colors duration-300">Est. 2018</span>
+                <span className="group-hover:text-gray-600 transition-colors duration-300">Est. 2018</span> */}
                 
-                {/* Subtle glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
+               
               </div>
             </div>
           </div>
