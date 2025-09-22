@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import {
@@ -32,6 +32,7 @@ import {
 } from "lucide-react"
 
 interface Project {
+  subproducts?: { image: string; title: string; description: string; learnMoreLink?: string }[]
   _id: string
   title: string
   category: string
@@ -786,6 +787,67 @@ const ProjectDetailPage = () => {
           </div>
         </div>
       </div>
+            {/* Sub Products */}
+            {projectDetail.subproducts && projectDetail.subproducts.length > 0 && (
+              <div className="bg-white/70 backdrop-blur-sm border border-blue-300/50 rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xl max-w-7xl mx-auto mb-8">
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
+                  <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3" />
+                  Sub Products
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {projectDetail.subproducts.map((subproduct: any, index: number) => (
+                    <div
+                      key={index}
+                      className="group relative bg-white/70 backdrop-blur-sm border border-blue-300/50 rounded-xl sm:rounded-2xl overflow-hidden hover:border-blue-400/70 transition-all duration-300 hover:shadow-xl hover:scale-105"
+                    >
+                      {/* Glass Effects */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-blue-50/20"></div>
+                      <div className="absolute inset-0 bg-gradient-to-tl from-blue-500/8 via-transparent to-blue-300/5"></div>
+
+                      {/* Image Section */}
+                      {subproduct.image && (
+                        <div className="relative h-32 sm:h-40 lg:h-48 overflow-hidden">
+                          <img
+                            src={subproduct.image || "/placeholder.svg"}
+                            alt={subproduct.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.src = "/placeholder.svg"
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-gray-900/20 to-transparent"></div>
+                        </div>
+                      )}
+
+                      {/* Content Section */}
+                      <div className="relative z-10 p-4 sm:p-5">
+                        <h4 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3 group-hover:text-blue-700 transition-colors duration-300 line-clamp-2">
+                          {subproduct.title}
+                        </h4>
+                        
+                        <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-4 line-clamp-3 group-hover:text-gray-700 transition-colors duration-300">
+                          {subproduct.description}
+                        </p>
+
+                        {/* CTA Button */}
+                        {subproduct.learnMoreLink && (
+                          <a
+                            href={subproduct.learnMoreLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center w-full px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25"
+                          >
+                            View More
+                            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
       {/* CTA Section */}
       <section className="relative z-10 py-4 sm:py-6 lg:py-6 xl:py-6 px-3 sm:px-4 lg:px-6 xl:px-8">
