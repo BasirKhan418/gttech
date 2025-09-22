@@ -1,20 +1,20 @@
-'use client'
-import React, { useState, useEffect, memo, useCallback } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { 
-  Users, 
-  Globe, 
-  Target, 
-  Lightbulb, 
+"use client"
+import { useState, useEffect, memo, useCallback } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import {
+  Users,
+  Globe,
+  Target,
+  Lightbulb,
   Zap,
   CheckCircle,
   ArrowRight,
   Building,
   Briefcase,
   Settings,
-  LinkedinIcon
-} from 'lucide-react'
+  LinkedinIcon,
+} from "lucide-react"
 
 // Team Member Interface - Updated to match your API model
 interface TeamMember {
@@ -30,165 +30,184 @@ interface TeamMember {
 }
 
 // Memoized Team Cards Component
-const TeamCards = memo(({ filteredMembers, isLoading }: { 
-  filteredMembers: TeamMember[], 
-  isLoading: boolean 
-}) => {
-  if (isLoading) {
-    return (
-      <div className="text-center py-12">
-        <div className="inline-flex items-center space-x-2 text-cyan-600">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-500"></div>
-          <span className="text-sm font-medium">Loading team members...</span>
+const TeamCards = memo(
+  ({
+    filteredMembers,
+    isLoading,
+  }: {
+    filteredMembers: TeamMember[]
+    isLoading: boolean
+  }) => {
+    if (isLoading) {
+      return (
+        <div className="text-center py-12">
+          <div className="inline-flex items-center space-x-2 text-cyan-600">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-500"></div>
+            <span className="text-sm font-medium">Loading team members...</span>
+          </div>
         </div>
-      </div>
-    )
-  }
+      )
+    }
 
-  if (filteredMembers.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl p-8 max-w-md mx-auto shadow-lg">
-          <Users className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No team members found</h3>
-          <p className="text-gray-500">Try selecting a different category filter.</p>
+    if (filteredMembers.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <div className="bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl p-8 max-w-md mx-auto shadow-lg">
+            <Users className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No team members found</h3>
+            <p className="text-gray-500">Try selecting a different category filter.</p>
+          </div>
         </div>
-      </div>
-    )
-  }
+      )
+    }
 
-  return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-      {filteredMembers.map((member, index) => (
-        <div key={member._id} className="animate-on-scroll opacity-0 translate-y-10" style={{ animationDelay: `${index * 0.1}s` }}>
-          <div className="glass-card bg-white/80 backdrop-blur-xl border border-cyan-200/60 rounded-3xl p-4 md:p-6 hover:border-cyan-400/70 transition-all duration-300 hover:scale-105 group overflow-hidden shadow-lg hover:shadow-cyan-500/20">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
-            
-            {/* Hover Effects */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[300%] transition-transform duration-1000"></div>
-            </div>
+    return (
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        {filteredMembers.map((member, index) => (
+          <div
+            key={member._id}
+            className="animate-on-scroll opacity-0 translate-y-10"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            <div className="glass-card bg-white/80 backdrop-blur-xl border border-cyan-200/60 rounded-3xl p-4 md:p-6 hover:border-cyan-400/70 transition-all duration-300 hover:scale-105 group overflow-hidden shadow-lg hover:shadow-cyan-500/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
 
-            <div className="relative z-10 text-center">
-              {/* Profile Image */}
-              <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 to-cyan-600/25 rounded-2xl animate-pulse"></div>
-                <div className="relative w-full h-full bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-2xl flex items-center justify-center border-2 border-cyan-400/40 group-hover:border-cyan-400/70 transition-all duration-300 overflow-hidden shadow-md">
-                  {member.image ? (
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      width={160}
-                      height={160}
-                      className="w-full h-full object-cover rounded-2xl"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none'
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden')
-                      }}
-                    />
-                  ) : null}
-                  <div className={`w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-100/30 to-cyan-200/30 ${member.image ? 'hidden' : ''}`}>
-                    <Users className="w-12 h-12 md:w-16 md:h-16 text-cyan-600 mb-2" />
-                    <div className="text-xs text-cyan-600/70 font-medium">Photo</div>
+              {/* Hover Effects */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[300%] transition-transform duration-1000"></div>
+              </div>
+
+              <div className="relative z-10 text-center">
+                {/* Profile Image */}
+                <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 to-cyan-600/25 rounded-2xl animate-pulse"></div>
+                  <div className="relative w-full h-full bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-2xl flex items-center justify-center border-2 border-cyan-400/40 group-hover:border-cyan-400/70 transition-all duration-300 overflow-hidden shadow-md">
+                    {member.image ? (
+                      <img
+                        src={member.image || "/placeholder.svg"}
+                        alt={member.name}
+                        width={160}
+                        height={160}
+                        className="w-full h-full object-cover rounded-2xl"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none"
+                          e.currentTarget.nextElementSibling?.classList.remove("hidden")
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-100/30 to-cyan-200/30 ${member.image ? "hidden" : ""}`}
+                    >
+                      <Users className="w-12 h-12 md:w-16 md:h-16 text-cyan-600 mb-2" />
+                      <div className="text-xs text-cyan-600/70 font-medium">Photo</div>
+                    </div>
                   </div>
+                </div>
+
+                {/* Member Info */}
+                <h3 className="text-base md:text-lg font-bold text-gray-800 mb-2 group-hover:text-cyan-700 transition-colors duration-300">
+                  {member.name}
+                </h3>
+                <p className="text-cyan-600 text-sm font-medium mb-4 leading-tight">{member.title}</p>
+
+                {/* LinkedIn Link */}
+                <Link
+                  href={member.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500/25 to-cyan-600/25 hover:from-cyan-500/50 hover:to-cyan-600/50 rounded-full transition-all duration-300 hover:scale-110 group/link border border-cyan-400/40 hover:border-cyan-400/70 shadow-md"
+                >
+                  <LinkedinIcon className="w-5 h-5 text-cyan-600 group-hover/link:text-cyan-700 transition-colors duration-300" />
+                </Link>
+
+                {/* Category Badge */}
+                <div className="mt-3">
+                  <span
+                    className={`px-2 md:px-3 py-1 rounded-full text-xs font-medium ${
+                      member.category === "directors"
+                        ? "bg-gradient-to-r from-cyan-500/25 to-cyan-600/25 text-cyan-700 border border-cyan-400/40"
+                        : member.category === "management"
+                          ? "bg-gradient-to-r from-cyan-400/25 to-cyan-500/25 text-cyan-700 border border-cyan-400/40"
+                          : member.category === "technical"
+                            ? "bg-gradient-to-r from-cyan-600/25 to-cyan-700/25 text-cyan-700 border border-cyan-500/40"
+                            : "bg-gradient-to-r from-cyan-300/25 to-cyan-400/25 text-cyan-700 border border-cyan-400/40"
+                    }`}
+                  >
+                    {member.category.charAt(0).toUpperCase() + member.category.slice(1)}
+                  </span>
                 </div>
               </div>
 
-              {/* Member Info */}
-              <h3 className="text-base md:text-lg font-bold text-gray-800 mb-2 group-hover:text-cyan-700 transition-colors duration-300">
-                {member.name}
-              </h3>
-              <p className="text-cyan-600 text-sm font-medium mb-4 leading-tight">
-                {member.title}
-              </p>
-
-              {/* LinkedIn Link */}
-              <Link
-                href={member.linkedinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500/25 to-cyan-600/25 hover:from-cyan-500/50 hover:to-cyan-600/50 rounded-full transition-all duration-300 hover:scale-110 group/link border border-cyan-400/40 hover:border-cyan-400/70 shadow-md"
-              >
-                <LinkedinIcon className="w-5 h-5 text-cyan-600 group-hover/link:text-cyan-700 transition-colors duration-300" />
-              </Link>
-
-              {/* Category Badge */}
-              <div className="mt-3">
-                <span className={`px-2 md:px-3 py-1 rounded-full text-xs font-medium ${
-                  member.category === 'directors' ? 'bg-gradient-to-r from-cyan-500/25 to-cyan-600/25 text-cyan-700 border border-cyan-400/40' :
-                  member.category === 'management' ? 'bg-gradient-to-r from-cyan-400/25 to-cyan-500/25 text-cyan-700 border border-cyan-400/40' :
-                  member.category === 'technical' ? 'bg-gradient-to-r from-cyan-600/25 to-cyan-700/25 text-cyan-700 border border-cyan-500/40' :
-                  'bg-gradient-to-r from-cyan-300/25 to-cyan-400/25 text-cyan-700 border border-cyan-400/40'
-                }`}>
-                  {member.category.charAt(0).toUpperCase() + member.category.slice(1)}
-                </span>
-              </div>
+              {/* Decorative Elements */}
+              <div className="absolute top-3 right-3 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-ping-slow"></div>
+              <div className="absolute bottom-3 left-3 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse"></div>
             </div>
-
-            {/* Decorative Elements */}
-            <div className="absolute top-3 right-3 w-2 h-2 bg-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-ping-slow"></div>
-            <div className="absolute bottom-3 left-3 w-1 h-1 bg-cyan-300/50 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse"></div>
           </div>
-        </div>
-      ))}
-    </div>
-  )
-})
+        ))}
+      </div>
+    )
+  },
+)
 
-TeamCards.displayName = 'TeamCards'
+TeamCards.displayName = "TeamCards"
 
-// Memoized Filter Buttons Component
-const TeamFilters = memo(({ selectedCategory, onCategoryChange, isLoading, categories }: {
-  selectedCategory: string,
-  onCategoryChange: (category: string) => void,
-  isLoading: boolean,
-  categories: string[]
-}) => {
-  const defaultFilters = [
-    { key: 'all', label: 'All Team' },
-    { key: 'directors', label: 'Leadership' },
-    { key: 'management', label: 'Management' },
-    { key: 'technical', label: 'Technical' },
-    { key: 'operations', label: 'Operations' }
-  ]
+// Memoized Team Filter Buttons Component
+const TeamFilters = memo(
+  ({
+    selectedCategory,
+    onCategoryChange,
+    isLoading,
+    categories,
+  }: {
+    selectedCategory: string
+    onCategoryChange: (category: string) => void
+    isLoading: boolean
+    categories: string[]
+  }) => {
+    const defaultFilters = [
+      { key: "all", label: "All Team" },
+      { key: "directors", label: "Leadership" },
+      { key: "management", label: "Management" },
+      { key: "technical", label: "Technical" },
+      { key: "operations", label: "Operations" },
+    ]
 
-  // Create filters based on available categories and defaults
-  const filters = defaultFilters.filter(filter => 
-    filter.key === 'all' || categories.includes(filter.key)
-  )
+    // Create filters based on available categories and defaults
+    const filters = defaultFilters.filter((filter) => filter.key === "all" || categories.includes(filter.key))
 
-  // Add any additional categories that aren't in the default list
-  categories.forEach(category => {
-    if (!defaultFilters.some(filter => filter.key === category)) {
-      filters.push({
-        key: category,
-        label: category.charAt(0).toUpperCase() + category.slice(1)
-      })
-    }
-  })
+    // Add any additional categories that aren't in the default list
+    categories.forEach((category) => {
+      if (!defaultFilters.some((filter) => filter.key === category)) {
+        filters.push({
+          key: category,
+          label: category.charAt(0).toUpperCase() + category.slice(1),
+        })
+      }
+    })
 
-  return (
-    <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-12">
-      {filters.map((filter) => (
-        <button
-          key={filter.key}
-          onClick={() => onCategoryChange(filter.key)}
-          disabled={isLoading}
-          className={`px-3 md:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 disabled:opacity-50 ${
-            selectedCategory === filter.key
-              ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-              : 'bg-white/80 text-gray-600 hover:bg-cyan-50/80 hover:text-cyan-700 border border-cyan-200/50 hover:border-cyan-300/70 shadow-md'
-          }`}
-        >
-          {filter.label}
-        </button>
-      ))}
-    </div>
-  )
-})
+    return (
+      <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-12">
+        {filters.map((filter) => (
+          <button
+            key={filter.key}
+            onClick={() => onCategoryChange(filter.key)}
+            disabled={isLoading}
+            className={`px-3 md:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 disabled:opacity-50 ${
+              selectedCategory === filter.key
+                ? "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/30"
+                : "bg-white/80 text-gray-600 hover:bg-cyan-50/80 hover:text-cyan-700 border border-cyan-200/50 hover:border-cyan-300/70 shadow-md"
+            }`}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+    )
+  },
+)
 
-TeamFilters.displayName = 'TeamFilters'
+TeamFilters.displayName = "TeamFilters"
 
 // Memoized Team Section Header
 const TeamSectionHeader = memo(() => (
@@ -197,29 +216,79 @@ const TeamSectionHeader = memo(() => (
       <Users className="w-4 h-4 mr-2" />
       <span className="font-semibold">Our Team</span>
     </div>
-    
+
     <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-4 md:mb-6">
       <span className="block">Meet the</span>
       <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
         Innovation Leaders
       </span>
     </h2>
-    
+
     <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-6 md:mb-8">
-      Our diverse team of experts brings together decades of experience in technology, 
-      engineering, and business transformation.
+      Our diverse team of experts brings together decades of experience in technology, engineering, and business
+      transformation.
     </p>
   </div>
 ))
 
-TeamSectionHeader.displayName = 'TeamSectionHeader'
+TeamSectionHeader.displayName = "TeamSectionHeader"
+
+interface AboutData {
+  title: string
+  ourstory: string
+  card1title: string
+  card1subtitle: string
+  card1desc: string
+  card1features: string[]
+  card2title: string
+  card2subtitle: string
+  card2desc: string
+  card2features: string[]
+  foundationdesc: string[]
+  partners: Array<{
+    name: string
+    logo: string
+    description?: string
+    website?: string
+    partnership_type?: string
+  }>
+}
 
 const AboutPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [aboutData, setAboutData] = useState<AboutData | null>(null)
+  const [isLoadingAbout, setIsLoadingAbout] = useState(true)
+  const [aboutError, setAboutError] = useState<string | null>(null)
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [filteredMembers, setFilteredMembers] = useState<TeamMember[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchAboutData = async () => {
+      try {
+        setIsLoadingAbout(true)
+        setAboutError(null)
+
+        const response = await fetch("/api/about")
+        const data = await response.json()
+
+        if (data.success && data.data && data.data.length > 0) {
+          setAboutData(data.data[0]) // Always one object as mentioned
+        } else {
+          throw new Error(data.message || "Failed to fetch about data")
+        }
+      } catch (error) {
+        console.error("Error fetching about data:", error)
+        setAboutError(error instanceof Error ? error.message : "Failed to load about data")
+      } finally {
+        setIsLoadingAbout(false)
+      }
+    }
+
+    fetchAboutData()
+  }, [])
 
   // Fetch team data from API
   useEffect(() => {
@@ -227,21 +296,21 @@ const AboutPage = () => {
       try {
         setIsLoading(true)
         setError(null)
-        
-        const response = await fetch('/api/team')
+
+        const response = await fetch("/api/team")
         const data = await response.json()
-        
+
         if (data.success) {
           // Filter only active team members
           const activeMembers = data.data.data.filter((member: TeamMember) => member.isActive)
           setTeamMembers(activeMembers)
           setFilteredMembers(activeMembers)
         } else {
-          throw new Error(data.message || 'Failed to fetch team data')
+          throw new Error(data.message || "Failed to fetch team data")
         }
       } catch (error) {
-        console.error('Error fetching team data:', error)
-        setError(error instanceof Error ? error.message : 'Failed to load team data')
+        console.error("Error fetching team data:", error)
+        setError(error instanceof Error ? error.message : "Failed to load team data")
         setTeamMembers([])
         setFilteredMembers([])
       } finally {
@@ -253,13 +322,16 @@ const AboutPage = () => {
   }, [])
 
   // Get unique categories from team members
-  const availableCategories = [...new Set(teamMembers.map(member => member.category))]
+  const availableCategories = [...new Set(teamMembers.map((member) => member.category))]
 
   // Memoized category change handler
-  const handleCategoryChange = useCallback((category: string) => {
-    if (category === selectedCategory) return // Don't do anything if same category
-    setSelectedCategory(category)
-  }, [selectedCategory])
+  const handleCategoryChange = useCallback(
+    (category: string) => {
+      if (category === selectedCategory) return // Don't do anything if same category
+      setSelectedCategory(category)
+    },
+    [selectedCategory],
+  )
 
   // IntersectionObserver setup
   useEffect(() => {
@@ -267,21 +339,21 @@ const AboutPage = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-in-up')
-            entry.target.classList.remove('opacity-0', 'translate-y-10')
+            entry.target.classList.add("animate-fade-in-up")
+            entry.target.classList.remove("opacity-0", "translate-y-10")
           }
         })
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     )
-    
+
     const observeElements = () => {
       observer.disconnect()
-      const elements = document.querySelectorAll('.animate-on-scroll')
+      const elements = document.querySelectorAll(".animate-on-scroll")
       elements.forEach((el) => {
-        el.classList.remove('animate-fade-in-up')
-        if (!el.classList.contains('opacity-0')) {
-          el.classList.add('opacity-0', 'translate-y-10')
+        el.classList.remove("animate-fade-in-up")
+        if (!el.classList.contains("opacity-0")) {
+          el.classList.add("opacity-0", "translate-y-10")
         }
         observer.observe(el)
       })
@@ -297,32 +369,67 @@ const AboutPage = () => {
 
   // Handle category filtering
   useEffect(() => {
-    if (selectedCategory === 'all') {
+    if (selectedCategory === "all") {
       setFilteredMembers([...teamMembers])
     } else {
-      const filtered = teamMembers.filter(member => member.category === selectedCategory)
+      const filtered = teamMembers.filter((member) => member.category === selectedCategory)
       setFilteredMembers([...filtered])
     }
   }, [selectedCategory, teamMembers])
 
-  const partners = [
-    { name: 'Dassault Systèmes', logo: '/images.png' },
-    { name: 'AWS', logo: '/aws.webp' },
-    { name: 'Gram Tarang', logo: '/download.jpeg' },
+  const partners = aboutData?.partners || [
+    { name: "Dassault Systèmes", logo: "/images.png" },
+    { name: "AWS", logo: "/aws.webp" },
+    { name: "Gram Tarang", logo: "/download.jpeg" },
   ]
+
+  if (isLoadingAbout) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-600 mx-auto mb-4"></div>
+          <p className="text-cyan-700 text-lg font-semibold">Loading about page...</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (aboutError) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-8 max-w-md mx-auto">
+            <div className="text-red-600 mb-4">
+              <Target className="w-16 h-16 mx-auto mb-4" />
+            </div>
+            <h3 className="text-xl font-semibold text-red-800 mb-2">Unable to load about data</h3>
+            <p className="text-red-600 mb-4">{aboutError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-cyan-50 to-cyan-100 relative overflow-hidden">
-      
       {/* Enhanced Background Grid Pattern */}
       <div className="absolute inset-0 opacity-8 lg:opacity-12">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
             linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
             linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
           `,
-          backgroundSize: '30px 30px'
-        }}></div>
+            backgroundSize: "30px 30px",
+          }}
+        ></div>
       </div>
 
       {/* Enhanced Floating Particles */}
@@ -335,18 +442,18 @@ const AboutPage = () => {
           { left: 5, top: 80, delay: 1.5, duration: 3.8 },
           { left: 90, top: 25, delay: 2.2, duration: 4.2 },
           { left: 35, top: 10, delay: 3, duration: 4.8 },
-          { left: 70, top: 85, delay: 1.8, duration: 3.2 }
+          { left: 70, top: 85, delay: 1.8, duration: 3.2 },
         ].map((particle, i) => (
           <div
             key={i}
             className={`absolute w-1 h-1 rounded-full animate-float hidden sm:block ${
-              i % 3 === 0 ? 'bg-cyan-400/50' : i % 3 === 1 ? 'bg-cyan-300/40' : 'bg-cyan-200/30'
+              i % 3 === 0 ? "bg-cyan-400/50" : i % 3 === 1 ? "bg-cyan-300/40" : "bg-cyan-200/30"
             }`}
             style={{
               left: `${particle.left}%`,
               top: `${particle.top}%`,
               animationDelay: `${particle.delay}s`,
-              animationDuration: `${particle.duration}s`
+              animationDuration: `${particle.duration}s`,
             }}
           ></div>
         ))}
@@ -362,12 +469,12 @@ const AboutPage = () => {
                 className="absolute left-0 w-px bg-gradient-to-b from-transparent via-cyan-500/25 to-transparent animate-data-flow"
                 style={{
                   left: `${i * 20}%`,
-                  height: '100%',
+                  height: "100%",
                   animationDelay: `${i * 0.8}s`,
-                  animationDuration: '3s'
+                  animationDuration: "3s",
                 }}
               ></div>
-            ))}                     
+            ))}
           </div>
         </div>
       </div>
@@ -381,9 +488,9 @@ const AboutPage = () => {
                 className="absolute right-0 w-px bg-gradient-to-b from-transparent via-cyan-500/25 to-transparent animate-data-flow"
                 style={{
                   right: `${i * 20}%`,
-                  height: '100%',
+                  height: "100%",
                   animationDelay: `${i * 0.8}s`,
-                  animationDuration: '3s'
+                  animationDuration: "3s",
                 }}
               ></div>
             ))}
@@ -395,62 +502,73 @@ const AboutPage = () => {
       <section className="relative z-10 pt-24 lg:pt-20 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center animate-on-scroll opacity-0 translate-y-10 relative">
-            
             <div className="relative z-10">
-              
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4 md:mb-6 leading-tight relative px-4">
-                <span className="block hover:scale-105 transition-transform duration-300">About</span>
+                <span className="block hover:scale-105 transition-transform duration-300">
+                  {aboutData?.title || "About"}
+                </span>
                 <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
                   GramTarang Technologies
                 </span>
-                
+
                 {/* Floating accent elements around title */}
                 <div className="absolute -top-2 md:-top-4 -left-2 md:-left-4 w-1 h-1 md:w-2 md:h-2 bg-cyan-400/50 rounded-full animate-pulse hidden lg:block"></div>
-                <div className="absolute -bottom-1 md:-bottom-2 -right-3 md:-right-6 w-1 h-1 bg-cyan-500/70 rounded-full animate-pulse hidden lg:block" style={{ animationDelay: '1s' }}></div>
+                <div
+                  className="absolute -bottom-1 md:-bottom-2 -right-3 md:-right-6 w-1 h-1 bg-cyan-500/70 rounded-full animate-pulse hidden lg:block"
+                  style={{ animationDelay: "1s" }}
+                ></div>
               </h1>
-              
+
               <div className="relative group px-4">
                 <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-6 md:mb-8 group-hover:text-gray-700 transition-colors duration-300">
                   Future-ready technology company delivering Industry 4.0 solutions for heavy industries
                 </p>
-                <div className="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 w-0 h-px bg-gradient-to-r from-cyan-500 to-cyan-600 group-hover:w-32 transition-all duration-500"> </div>
+                <div className="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 w-0 h-px bg-gradient-to-r from-cyan-500 to-cyan-600 group-hover:w-32 transition-all duration-500">
+                  {" "}
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 relative group px-4">
-                {/* <span className="group-hover:text-gray-600 transition-colors duration-300">Incubated with</span>
-                <div className="w-4 h-px sm:w-px sm:h-4 bg-cyan-500/60 group-hover:bg-cyan-500/90 transition-colors duration-300"></div>
-                <span className="text-cyan-600 font-semibold group-hover:text-cyan-700 transition-colors duration-300">Centurion University</span>
-                <div className="w-4 h-px sm:w-px sm:h-4 bg-cyan-500/60 group-hover:bg-cyan-500/90 transition-colors duration-300"></div>
-                <span className="group-hover:text-gray-600 transition-colors duration-300">Est. 2018</span> */}
-                
-               
+                {/* Static content kept as is */}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Our Story Section - Updated to Cyan Theme */}
+      {/* Our Story Section - Updated to use dynamic content */}
       <section className="relative z-10 py-2 md:py-2 lg:py-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-6 md:p-8 lg:p-12 overflow-hidden group hover:border-cyan-400/60 transition-all duration-500 shadow-lg shadow-cyan-500/10">
               {/* Enhanced Background Pattern */}
               <div className="absolute inset-0 opacity-6 group-hover:opacity-10 transition-opacity duration-500">
-                <div className="absolute inset-0" style={{
-                  backgroundImage: `
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: `
                     linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
                   `,
-                  backgroundSize: '20px 20px'
-                }}></div>
+                    backgroundSize: "20px 20px",
+                  }}
+                ></div>
               </div>
 
               {/* Enhanced Floating Corner Elements */}
               <div className="absolute top-4 left-4 w-3 h-3 bg-cyan-400/30 rounded-full animate-pulse"></div>
-              <div className="absolute top-6 right-8 w-2 h-2 bg-cyan-300/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-              <div className="absolute bottom-4 left-8 w-1 h-1 bg-cyan-200/50 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
-              <div className="absolute bottom-6 right-4 w-2 h-2 bg-cyan-400/35 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              <div
+                className="absolute top-6 right-8 w-2 h-2 bg-cyan-300/40 rounded-full animate-pulse"
+                style={{ animationDelay: "1s" }}
+              ></div>
+              <div
+                className="absolute bottom-4 left-8 w-1 h-1 bg-cyan-200/50 rounded-full animate-pulse"
+                style={{ animationDelay: "2s" }}
+              ></div>
+              <div
+                className="absolute bottom-6 right-4 w-2 h-2 bg-cyan-400/35 rounded-full animate-pulse"
+                style={{ animationDelay: "0.5s" }}
+              ></div>
 
               {/* Enhanced Tech Corner Lines */}
               <div className="absolute top-0 left-0 w-full h-full opacity-30 group-hover:opacity-50 transition-opacity duration-500 pointer-events-none">
@@ -466,7 +584,7 @@ const AboutPage = () => {
                     <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 inline-block">
                       Our Story
                     </span>
-                    
+
                     {/* Animated underline */}
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-cyan-600 group-hover:w-24 transition-all duration-500"></div>
                   </h2>
@@ -476,25 +594,24 @@ const AboutPage = () => {
                   <div className="space-y-6">
                     <div className="group">
                       <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-transparent group-hover:via-cyan-400/5 group-hover:to-transparent">
-                        GramTarang Technologies Pvt. Ltd., incubated by Centurion University, is a future-ready technology 
-                        company delivering Industry 4.0 solutions for heavy industries. Our expertise spans digital manufacturing, 
-                        industrial automation, precision automotive component design, and the development of on-demand, 
-                        customized digital products.
+                        {aboutData?.ourstory ||
+                          "GramTarang Technologies Pvt. Ltd., incubated by Centurion University, is a future-ready technology company delivering Industry 4.0 solutions for heavy industries. Our expertise spans digital manufacturing, industrial automation, precision automotive component design, and the development of on-demand, customized digital products."}
                       </p>
                     </div>
-                    
+
+                    {/* Static content kept as fallback */}
                     <div className="group">
                       <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-transparent group-hover:via-cyan-300/5 group-hover:to-transparent">
-                        We work in close partnership with leading global names such as Dassault Systèmes, Ashok Leyland, 
-                        Hyundai, AWS, HCL, and many more—serving as trusted system integration partners who help implement 
-                        complex projects from concept to completion.
+                        We work in close partnership with leading global names such as Dassault Systèmes, Ashok Leyland,
+                        Hyundai, AWS, HCL, and many more—serving as trusted system integration partners who help
+                        implement complex projects from concept to completion.
                       </p>
                     </div>
 
                     <div className="group">
                       <p className="text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300 relative p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-transparent group-hover:via-cyan-400/5 group-hover:to-transparent">
-                        Alongside technology deployment, we train and build a highly skilled workforce, aligned with current 
-                        and future industry needs.
+                        Alongside technology deployment, we train and build a highly skilled workforce, aligned with
+                        current and future industry needs.
                       </p>
                     </div>
                   </div>
@@ -505,10 +622,9 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Vision & Mission Section - Cyan Theme */}
+      {/* Vision & Mission Section - Updated to use dynamic content */}
       <section className="relative z-10 py-12 md:py-6 lg:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
           {/* Vision & Mission Header */}
           <div className="text-center mb-12 md:mb-16 max-w-4xl mx-auto">
             <div className="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-md">
@@ -522,43 +638,41 @@ const AboutPage = () => {
                 Purpose & Vision
               </span>
             </h2>
-            
+
             <p className="text-base md:text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-              Our mission and vision shape every decision, project, and partnership we undertake, 
-              guiding us toward a future of sustainable innovation.
+              Our mission and vision shape every decision, project, and partnership we undertake, guiding us toward a
+              future of sustainable innovation.
             </p>
           </div>
 
           {/* Vision & Mission Cards */}
           <div className="grid lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-            
-            {/* Vision Card */}
+            {/* Vision Card - Made dynamic */}
             <div className="relative group transition-all duration-700 hover:scale-105">
               <div className="glass-card relative backdrop-blur-xl overflow-hidden transition-all duration-500 border border-cyan-400/50 hover:border-cyan-500/70 shadow-lg shadow-cyan-500/15 bg-gradient-to-br from-white/80 via-cyan-50/60 to-white/70 rounded-3xl">
-                
                 {/* Multiple Glass Layers */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.4] via-white/[0.2] to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/[0.08] via-transparent to-cyan-300/[0.05]"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-white/[0.3] to-transparent"></div>
-                
+
                 {/* Header */}
                 <div className="p-6 md:p-8 pb-4 md:pb-6 relative z-10">
                   <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 group-hover:text-cyan-700 transition-colors duration-300">
-                    Our Vision
+                    {aboutData?.card2title || "Our Vision"}
                   </h3>
-                  
+
                   <div className="flex items-center gap-3 mb-4 md:mb-6">
                     <div className="p-2 md:p-3 rounded-xl bg-cyan-500/25 border border-cyan-400/50 backdrop-blur-sm shadow-md">
                       <Target className="w-6 h-6 md:w-8 md:h-8 text-cyan-600" />
                     </div>
                     <span className="text-gray-600 text-sm md:text-base">
-                      Future-focused aspirations
+                      {aboutData?.card2subtitle || "Future-focused aspirations"}
                     </span>
                   </div>
-                  
+
                   <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-6">
-                    To develop cost-effective, sustainable, and high-impact products 
-                    and accelerators that address complex and urgent societal challenges.
+                    {aboutData?.card2desc ||
+                      "To develop cost-effective, sustainable, and high-impact products and accelerators that address complex and urgent societal challenges."}
                   </p>
                 </div>
 
@@ -568,14 +682,16 @@ const AboutPage = () => {
                     <span className="w-2 h-2 bg-cyan-500 rounded-full mr-3"></span>
                     What drives us:
                   </h4>
-                  
+
                   <div className="space-y-3">
-                    {[
-                      "Local engineering talent development",
-                      "State-of-the-art technology platforms",
-                      "Transformative global solutions",
-                      "Sustainable innovation approach"
-                    ].map((feature, index) => (
+                    {(
+                      aboutData?.card2features || [
+                        "Local engineering talent development",
+                        "State-of-the-art technology platforms",
+                        "Transformative global solutions",
+                        "Sustainable innovation approach",
+                      ]
+                    ).map((feature, index) => (
                       <div key={index} className="flex items-start gap-3 group/item">
                         <div className="glass-check flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 backdrop-blur-sm bg-cyan-500/25 border border-cyan-400/60 shadow-sm">
                           <CheckCircle className="w-3 h-3 text-cyan-600" />
@@ -615,33 +731,32 @@ const AboutPage = () => {
               </div>
             </div>
 
-            {/* Mission Card */}
+            {/* Mission Card - Made dynamic */}
             <div className="relative group transition-all duration-700 hover:scale-105 lg:mt-8">
               <div className="glass-card relative backdrop-blur-xl overflow-hidden transition-all duration-500 border border-cyan-500/50 hover:border-cyan-600/70 shadow-lg shadow-cyan-500/15 bg-gradient-to-br from-white/80 via-cyan-50/60 to-white/70 rounded-3xl">
-                
                 {/* Multiple Glass Layers */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.4] via-white/[0.2] to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-tl from-cyan-600/[0.08] via-transparent to-cyan-400/[0.05]"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-white/[0.3] to-transparent"></div>
-                
+
                 {/* Header */}
                 <div className="p-6 md:p-8 pb-4 md:pb-6 relative z-10">
                   <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 group-hover:text-cyan-700 transition-colors duration-300">
-                    Our Mission
+                    {aboutData?.card1title || "Our Mission"}
                   </h3>
-                  
+
                   <div className="flex items-center gap-3 mb-4 md:mb-6">
                     <div className="p-2 md:p-3 rounded-xl bg-cyan-600/25 border border-cyan-500/50 backdrop-blur-sm shadow-md">
                       <Lightbulb className="w-6 h-6 md:w-8 md:h-8 text-cyan-700" />
                     </div>
                     <span className="text-gray-600 text-sm md:text-base">
-                      Present-day commitment
+                      {aboutData?.card1subtitle || "Present-day commitment"}
                     </span>
                   </div>
-                  
+
                   <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-6">
-                    We bridge the gap between cutting-edge technology and practical 
-                    industry applications, creating skilled workforce and driving innovation.
+                    {aboutData?.card1desc ||
+                      "We bridge the gap between cutting-edge technology and practical industry applications, creating skilled workforce and driving innovation."}
                   </p>
                 </div>
 
@@ -651,16 +766,18 @@ const AboutPage = () => {
                     <span className="w-2 h-2 bg-cyan-600 rounded-full mr-3"></span>
                     What we deliver:
                   </h4>
-                  
+
                   <div className="space-y-3">
-                    {[
-                      "Electric vehicle manufacturing solutions",
-                      "Digital automation for agriculture",
-                      "Scientific consulting excellence",
-                      "Digital transformation leadership",
-                      "Workforce development programs",
-                      "Technology partnership guidance"
-                    ].map((feature, index) => (
+                    {(
+                      aboutData?.card1features || [
+                        "Electric vehicle manufacturing solutions",
+                        "Digital automation for agriculture",
+                        "Scientific consulting excellence",
+                        "Digital transformation leadership",
+                        "Workforce development programs",
+                        "Technology partnership guidance",
+                      ]
+                    ).map((feature, index) => (
                       <div key={index} className="flex items-start gap-3 group/item">
                         <div className="glass-check flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 backdrop-blur-sm bg-cyan-600/25 border border-cyan-500/60 shadow-sm">
                           <CheckCircle className="w-3 h-3 text-cyan-700" />
@@ -702,45 +819,60 @@ const AboutPage = () => {
       <section className="relative z-10 py-6 md:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
-            
             {/* Content */}
             <div className="animate-on-scroll opacity-0 translate-y-10">
               <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500/20 via-cyan-400/20 to-cyan-600/20 backdrop-blur-sm border border-cyan-400/40 rounded-full text-sm text-cyan-700 mb-6 shadow-md">
                 <Briefcase className="w-4 h-4 mr-2" />
                 <span className="font-semibold">Our Foundation</span>
               </div>
-              
-            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-6 leading-tight">
+
+              <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 mb-6 leading-tight">
                 <span className="block">Incubated by</span>
                 <span className="block bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-700 bg-clip-text text-transparent">
                   Excellence,
                 </span>
                 <span className="block">Driven by Innovation</span>
               </h2>
-              
+
               <div className="space-y-6 text-gray-600 leading-relaxed">
-                <div className="group p-4 md:p-6 bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl hover:border-cyan-400/70 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-500/15">
-                  <p className="text-base md:text-lg">
-                    <strong className="text-gray-800">GramTarang Technologies Pvt Ltd</strong> is a forward-thinking company 
-                    incubated by <strong className="text-cyan-700">Centurion University</strong>, representing the pinnacle 
-                    of academic excellence merged with industry innovation.
-                  </p>
-                </div>
-                
-                <div className="group p-4 md:p-6 bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl hover:border-cyan-400/70 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-500/15">
-                  <p className="text-base md:text-lg">
-                    We specialize in cutting-edge technology platforms and provide comprehensive <strong className="text-cyan-700">Industry 4.0 solutions</strong> 
-                    to heavy industries, encompassing digital manufacturing, automation, intricate automotive component design, 
-                    and on-demand customized digital products.
-                  </p>
-                </div>
-                
-                <div className="group p-4 md:p-6 bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl hover:border-cyan-400/70 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-500/15">
-                  <p className="text-base md:text-lg">
-                    Our expertise spans <strong className="text-cyan-700">niche engineering solutions</strong> including product design, 
-                    modeling, prototyping, visualization, optimization, simulation, and digital project management systems.
-                  </p>
-                </div>
+                {aboutData?.foundationdesc ? (
+                  aboutData.foundationdesc.map((desc, index) => (
+                    <div
+                      key={index}
+                      className="group p-4 md:p-6 bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl hover:border-cyan-400/70 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-500/15"
+                    >
+                      <p className="text-base md:text-lg">{desc}</p>
+                    </div>
+                  ))
+                ) : (
+                  // Fallback to static content
+                  <>
+                    <div className="group p-4 md:p-6 bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl hover:border-cyan-400/70 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-500/15">
+                      <p className="text-base md:text-lg">
+                        <strong className="text-gray-800">GramTarang Technologies Pvt Ltd</strong> is a forward-thinking
+                        company incubated by <strong className="text-cyan-700">Centurion University</strong>,
+                        representing the pinnacle of academic excellence merged with industry innovation.
+                      </p>
+                    </div>
+
+                    <div className="group p-4 md:p-6 bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl hover:border-cyan-400/70 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-500/15">
+                      <p className="text-base md:text-lg">
+                        We specialize in cutting-edge technology platforms and provide comprehensive{" "}
+                        <strong className="text-cyan-700">Industry 4.0 solutions</strong>
+                        to heavy industries, encompassing digital manufacturing, automation, intricate automotive
+                        component design, and on-demand customized digital products.
+                      </p>
+                    </div>
+
+                    <div className="group p-4 md:p-6 bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl hover:border-cyan-400/70 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-500/15">
+                      <p className="text-base md:text-lg">
+                        Our expertise spans <strong className="text-cyan-700">niche engineering solutions</strong>{" "}
+                        including product design, modeling, prototyping, visualization, optimization, simulation, and
+                        digital project management systems.
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
@@ -761,29 +893,52 @@ const AboutPage = () => {
             </div>
 
             {/* Enhanced Visual Element */}
-            <div className="animate-on-scroll opacity-0 translate-y-10" style={{ animationDelay: '0.2s' }}>
+            <div className="animate-on-scroll opacity-0 translate-y-10" style={{ animationDelay: "0.2s" }}>
               <div className="relative">
                 <div className="bg-white/80 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-6 md:p-8 overflow-hidden hover:border-cyan-400/60 transition-all duration-500 group shadow-lg shadow-cyan-500/10">
                   <div className="absolute inset-0 opacity-6 group-hover:opacity-10 transition-opacity duration-500">
-                    <div className="absolute inset-0" style={{
-                      backgroundImage: `
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundImage: `
                         linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
                       `,
-                      backgroundSize: '20px 20px'
-                    }}></div>
+                        backgroundSize: "20px 20px",
+                      }}
+                    ></div>
                   </div>
-                  
+
                   {/* Innovation Timeline */}
                   <div className="relative z-10 space-y-6">
                     <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-6 text-center">Innovation Journey</h3>
-                    
+
                     {[
-                      { year: "1", milestone: "Company Incubation", desc: "Founded under Centurion University", icon: Building },
-                      { year: "2", milestone: "Industry Partnerships", desc: "Strategic alliances with tech leaders", icon: Users },
-                      { year: "3", milestone: "Digital Transformation", desc: "Advanced automation solutions", icon: Settings },
+                      {
+                        year: "1",
+                        milestone: "Company Incubation",
+                        desc: "Founded under Centurion University",
+                        icon: Building,
+                      },
+                      {
+                        year: "2",
+                        milestone: "Industry Partnerships",
+                        desc: "Strategic alliances with tech leaders",
+                        icon: Users,
+                      },
+                      {
+                        year: "3",
+                        milestone: "Digital Transformation",
+                        desc: "Advanced automation solutions",
+                        icon: Settings,
+                      },
                       { year: "4", milestone: "Global Expansion", desc: "International project delivery", icon: Globe },
-                      { year: "5", milestone: "Innovation Leadership", desc: "Pioneering Industry 4.0 solutions", icon: Lightbulb }
+                      {
+                        year: "5",
+                        milestone: "Innovation Leadership",
+                        desc: "Pioneering Industry 4.0 solutions",
+                        icon: Lightbulb,
+                      },
                     ].map((item, index) => (
                       <div key={index} className="flex items-start space-x-4 group/item">
                         <div className="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-cyan-500/25 to-cyan-600/25 backdrop-blur-sm border border-cyan-400/40 rounded-xl flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300 shadow-md">
@@ -794,7 +949,9 @@ const AboutPage = () => {
                             <span className="text-cyan-600 font-bold text-sm">{item.year}</span>
                             <div className="h-px bg-gradient-to-r from-cyan-500/60 to-transparent flex-1"></div>
                           </div>
-                          <h4 className="text-gray-800 font-semibold text-sm md:text-base mb-1 group-hover/item:text-cyan-700 transition-colors duration-300">{item.milestone}</h4>
+                          <h4 className="text-gray-800 font-semibold text-sm md:text-base mb-1 group-hover/item:text-cyan-700 transition-colors duration-300">
+                            {item.milestone}
+                          </h4>
                           <p className="text-gray-600 text-xs md:text-sm">{item.desc}</p>
                         </div>
                       </div>
@@ -803,7 +960,10 @@ const AboutPage = () => {
 
                   {/* Decorative Elements */}
                   <div className="absolute top-4 right-4 w-3 h-3 bg-cyan-400/30 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-4 left-4 w-2 h-2 bg-cyan-300/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+                  <div
+                    className="absolute bottom-4 left-4 w-2 h-2 bg-cyan-300/40 rounded-full animate-pulse"
+                    style={{ animationDelay: "1s" }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -811,27 +971,39 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Enhanced Partners Section - Cyan Theme */}
+      {/* Enhanced Partners Section - Made fully dynamic */}
       <section className="relative z-10 py-6 md:py-6 lg:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-on-scroll opacity-0 translate-y-10">
             <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-6 md:p-8 lg:p-12 overflow-hidden group hover:border-cyan-400/60 transition-all duration-500 shadow-lg shadow-cyan-500/10">
               {/* Enhanced Background Effects */}
               <div className="absolute inset-0 opacity-6 group-hover:opacity-10 transition-opacity duration-500">
-                <div className="absolute inset-0" style={{
-                  backgroundImage: `
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: `
                     linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px)
                   `,
-                  backgroundSize: '20px 20px'
-                }}></div>
+                    backgroundSize: "20px 20px",
+                  }}
+                ></div>
               </div>
 
               {/* Enhanced Floating Elements */}
               <div className="absolute top-4 left-4 w-3 h-3 bg-cyan-400/30 rounded-full animate-pulse"></div>
-              <div className="absolute top-6 right-8 w-2 h-2 bg-cyan-300/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-              <div className="absolute bottom-4 left-8 w-1 h-1 bg-cyan-200/50 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
-              <div className="absolute bottom-6 right-4 w-2 h-2 bg-cyan-400/35 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              <div
+                className="absolute top-6 right-8 w-2 h-2 bg-cyan-300/40 rounded-full animate-pulse"
+                style={{ animationDelay: "1s" }}
+              ></div>
+              <div
+                className="absolute bottom-4 left-8 w-1 h-1 bg-cyan-200/50 rounded-full animate-pulse"
+                style={{ animationDelay: "2s" }}
+              ></div>
+              <div
+                className="absolute bottom-6 right-4 w-2 h-2 bg-cyan-400/35 rounded-full animate-pulse"
+                style={{ animationDelay: "0.5s" }}
+              ></div>
 
               <div className="relative z-10">
                 <div className="text-center mb-8 md:mb-12">
@@ -851,20 +1023,26 @@ const AboutPage = () => {
                     <div
                       key={index}
                       className="group relative bg-white/90 backdrop-blur-sm border border-cyan-200/60 rounded-2xl p-6 md:p-8 hover:border-cyan-400/70 hover:bg-white/95 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/20 min-w-[200px] max-w-[280px] flex-1"
-                    >                      
+                    >
                       <div className="relative z-10 text-center">
                         <div className="h-16 md:h-20 flex items-center justify-center mb-4 md:mb-6">
-                          <Image
-                            src={partner.logo}
+                          <img
+                            src={partner.logo || "/placeholder.svg"}
                             alt={partner.name}
                             width={120}
                             height={80}
                             className="object-contain filter brightness-90 group-hover:brightness-110 transition-all duration-300 group-hover:scale-105 max-w-full h-auto border rounded-2xl"
-                          /> 
+                          />
                         </div>
                         <p className="text-gray-700 text-base md:text-lg font-semibold group-hover:text-cyan-700 transition-colors duration-300">
                           {partner.name}
                         </p>
+                        {partner.description && <p className="text-gray-500 text-sm mt-2">{partner.description}</p>}
+                        {partner.partnership_type && (
+                          <span className="inline-block mt-2 px-3 py-1 bg-cyan-100 text-cyan-700 text-xs rounded-full">
+                            {partner.partnership_type}
+                          </span>
+                        )}
                       </div>
 
                       {/* Corner Accent */}
@@ -881,7 +1059,6 @@ const AboutPage = () => {
       {/* Optimized Team Section */}
       <section className="relative z-10 py-6 md:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          
           {/* Static Header - Won't Re-render */}
           <TeamSectionHeader />
 
@@ -908,7 +1085,7 @@ const AboutPage = () => {
           {!error && (
             <>
               {/* Memoized Filter Buttons */}
-              <TeamFilters 
+              <TeamFilters
                 selectedCategory={selectedCategory}
                 onCategoryChange={handleCategoryChange}
                 isLoading={isLoading}
@@ -916,10 +1093,7 @@ const AboutPage = () => {
               />
 
               {/* Memoized Team Cards - Only this will re-render */}
-              <TeamCards 
-                filteredMembers={filteredMembers}
-                isLoading={isLoading}
-              />
+              <TeamCards filteredMembers={filteredMembers} isLoading={isLoading} />
             </>
           )}
         </div>
@@ -932,28 +1106,31 @@ const AboutPage = () => {
             <div className="bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-8 md:p-12 lg:p-16 overflow-hidden group hover:border-cyan-400/60 transition-all duration-500 shadow-lg shadow-cyan-500/10">
               {/* Subtle background pattern */}
               <div className="absolute inset-0 opacity-6">
-                <div className="absolute inset-0" style={{
-                  backgroundImage: `
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: `
                     linear-gradient(rgba(6,182,212,0.06) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(6,182,212,0.06) 1px, transparent 1px)
                   `,
-                  backgroundSize: '30px 30px'
-                }}></div>
+                    backgroundSize: "30px 30px",
+                  }}
+                ></div>
               </div>
-              
+
               {/* Floating Particles */}
               <div className="absolute inset-0 pointer-events-none">
                 {[...Array(8)].map((_, i) => (
                   <div
                     key={i}
                     className={`absolute w-1 h-1 rounded-full animate-float ${
-                      i % 2 === 0 ? 'bg-cyan-400/60' : 'bg-cyan-200/40'
+                      i % 2 === 0 ? "bg-cyan-400/60" : "bg-cyan-200/40"
                     }`}
                     style={{
-                      left: `${10 + (i * 12)}%`,
-                      top: `${15 + (i * 8)}%`,
+                      left: `${10 + i * 12}%`,
+                      top: `${15 + i * 8}%`,
                       animationDelay: `${i * 0.5}s`,
-                      animationDuration: `${3 + (i % 3)}s`
+                      animationDuration: `${3 + (i % 3)}s`,
                     }}
                   ></div>
                 ))}
@@ -966,12 +1143,12 @@ const AboutPage = () => {
                     Your Business?
                   </span>
                 </h2>
-                
+
                 <p className="text-lg md:text-xl text-gray-600 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-                  Partner with GT Technologies to unlock the full potential of digital innovation 
-                  and Industry 4.0 solutions tailored to your unique challenges.
+                  Partner with GT Technologies to unlock the full potential of digital innovation and Industry 4.0
+                  solutions tailored to your unique challenges.
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/contact"
