@@ -8,7 +8,7 @@ const IndustryCategorySchema = new mongoose.Schema({
     color: { type: String, default: "cyan" }, // for theming
     order: { type: Number, default: 0 }, // for sorting
     isActive: { type: Boolean, default: true },
-    
+    imageUrl: { type: String, required: false },
     // Admin tracking
     lastEditedAuthor: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },

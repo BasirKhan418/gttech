@@ -9,7 +9,9 @@ import {
   Eye,
   Target,
   CheckCircle,
-  Star
+  Star,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react'
 
 interface Industry {
@@ -26,6 +28,7 @@ interface Industry {
   isFeatured: boolean
   slug: string
   createdAt: string
+  imageUrl?: string
 }
 
 interface Category {
@@ -42,6 +45,7 @@ const CategoryPage = () => {
   const [category, setCategory] = useState<Category | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [expandedCards, setExpandedCards] = useState<{ [key: string]: boolean }>({})
 
   useEffect(() => {
     if (params.category) {
@@ -74,6 +78,20 @@ const CategoryPage = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const toggleExpanded = (cardId: string, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setExpandedCards(prev => ({
+      ...prev,
+      [cardId]: !prev[cardId]
+    }))
+  }
+
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text
+    return text.substr(0, maxLength) + '...'
   }
 
   if (loading) {
@@ -184,100 +202,135 @@ const CategoryPage = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {industries.map((industry, index) => (
-                <div
-                  key={industry._id}
-                  className="opacity-0 translate-y-10"
-                  style={{ 
-                    animation: `fadeInUp 1s ease-out ${index * 0.1}s forwards`
-                  }}
-                >
-                  <Link href={`/industries/${industry.category}/${industry.slug}`}>
-                    <div className="group relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/15">
-                      
-                      {/* Image Section */}
-                      <div className="relative h-48 overflow-hidden">
-                        <img
-                          src={industry.poster}
-                          alt={industry.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
+              {industries.map((industry, index) => {
+                const isExpanded = expandedCards[industry._id]
+                const maxTitleLength = 45
+                const maxDescLength = 100
+                const imageSource = industry.imageUrl || industry.poster
+
+                return (
+                  <div
+                    key={industry._id}
+                    className="opacity-0 translate-y-10"
+                    style={{ 
+                      animation: `fadeInUp 1s ease-out ${index * 0.1}s forwards`
+                    }}
+                  >
+                    <Link href={`/industries/${industry.category}/${industry.slug}`}>
+                      <div className="group relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/15 h-full flex flex-col">
                         
-                        {/* Status Badges */}
-                        <div className="absolute top-3 left-3 flex gap-2">
-                          {industry.isFeatured && (
-                            <div className="px-3 py-1 bg-yellow-500/90 text-white text-xs font-medium rounded-full border border-yellow-400/40 backdrop-blur-sm flex items-center gap-1">
-                              <Star className="w-3 h-3" />
-                              Featured
-                            </div>
-                          )}
-                        </div>
-
-                        {/* View Indicator */}
-                        <div className="absolute top-3 right-3 p-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
-                          <Eye className="w-4 h-4 text-cyan-600" />
-                        </div>
-                      </div>
-
-                      {/* Content Section */}
-                      <div className="p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-cyan-700 transition-colors duration-300">
-                          {industry.title}
-                        </h3>
-                        <p className="text-sm text-cyan-600 font-medium mb-3">{industry.subtitle}</p>
-                        
-                        <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                          {industry.description}
-                        </p>
-
-                        {/* Highlights Preview */}
-                        {industry.highlights && industry.highlights.length > 0 && (
-                          <div className="mb-4">
-                            <div className="space-y-1">
-                              {industry.highlights.slice(0, 2).map((highlight, idx) => (
-                                <div key={idx} className="flex items-center text-xs text-gray-600">
-                                  <CheckCircle className="w-3 h-3 text-cyan-600 mr-2 flex-shrink-0" />
-                                  <span className="truncate">{highlight}</span>
-                                </div>
-                              ))}
-                              {industry.highlights.length > 2 && (
-                                <p className="text-xs text-cyan-600 font-medium ml-5">
-                                  +{industry.highlights.length - 2} more features
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Technologies */}
-                        {industry.technologies && industry.technologies.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mb-4">
-                            {industry.technologies.slice(0, 3).map((tech, idx) => (
-                              <span key={idx} className="px-2 py-1 bg-cyan-100/80 text-cyan-700 text-xs rounded-md">
-                                {tech}
-                              </span>
-                            ))}
-                            {industry.technologies.length > 3 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
-                                +{industry.technologies.length - 3}
-                              </span>
+                        {/* Image Section */}
+                        <div className="relative h-48 sm:h-52 overflow-hidden">
+                          <img
+                            src={imageSource}
+                            alt={industry.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
+                          
+                          {/* Status Badges */}
+                          <div className="absolute top-3 left-3 flex gap-2">
+                            {industry.isFeatured && (
+                              <div className="px-3 py-1 bg-yellow-500/90 text-white text-xs font-medium rounded-full border border-yellow-400/40 backdrop-blur-sm flex items-center gap-1">
+                                <Star className="w-3 h-3" />
+                                Featured
+                              </div>
                             )}
                           </div>
-                        )}
 
-                        {/* CTA */}
-                        <div className="flex items-center justify-between">
-                          <span className="text-cyan-600 font-semibold text-sm group-hover:text-cyan-700 transition-colors duration-300">
-                            Explore Solution
-                          </span>
-                          <ArrowRight className="w-4 h-4 text-cyan-600 group-hover:translate-x-1 group-hover:text-cyan-700 transition-all duration-300" />
+                          {/* View Indicator */}
+                          <div className="absolute top-3 right-3 p-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
+                            <Eye className="w-4 h-4 text-cyan-600" />
+                          </div>
+                        </div>
+
+                        {/* Content Section */}
+                        <div className="p-6 flex-1 flex flex-col">
+                          <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 group-hover:text-cyan-700 transition-colors duration-300 min-h-[3rem] leading-tight">
+                            {industry.title.length > maxTitleLength
+                              ? `${industry.title.substring(0, maxTitleLength)}...`
+                              : industry.title
+                            }
+                          </h3>
+                          <p className="text-sm text-cyan-600 font-medium mb-3">{industry.subtitle}</p>
+                          
+                          <div className="flex-1 mb-4">
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                              {isExpanded 
+                                ? industry.description
+                                : industry.description.length > maxDescLength
+                                ? truncateText(industry.description, maxDescLength)
+                                : industry.description
+                              }
+                            </p>
+                            
+                            {industry.description.length > maxDescLength && (
+                              <button
+                                onClick={(e) => toggleExpanded(industry._id, e)}
+                                className="mt-2 flex items-center text-xs text-cyan-600 font-medium hover:underline transition-colors duration-300"
+                              >
+                                {isExpanded ? (
+                                  <>
+                                    Read Less <ChevronUp className="w-3 h-3 ml-1" />
+                                  </>
+                                ) : (
+                                  <>
+                                    Read More <ChevronDown className="w-3 h-3 ml-1" />
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Highlights Preview */}
+                          {industry.highlights && industry.highlights.length > 0 && (
+                            <div className="mb-4">
+                              <div className="space-y-1">
+                                {industry.highlights.slice(0, 2).map((highlight, idx) => (
+                                  <div key={idx} className="flex items-center text-xs text-gray-600">
+                                    <CheckCircle className="w-3 h-3 text-cyan-600 mr-2 flex-shrink-0" />
+                                    <span className="truncate">{highlight}</span>
+                                  </div>
+                                ))}
+                                {industry.highlights.length > 2 && (
+                                  <p className="text-xs text-cyan-600 font-medium ml-5">
+                                    +{industry.highlights.length - 2} more features
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Technologies */}
+                          {industry.technologies && industry.technologies.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-4">
+                              {industry.technologies.slice(0, 3).map((tech, idx) => (
+                                <span key={idx} className="px-2 py-1 bg-cyan-100/80 text-cyan-700 text-xs rounded-md">
+                                  {tech}
+                                </span>
+                              ))}
+                              {industry.technologies.length > 3 && (
+                                <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
+                                  +{industry.technologies.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                          {/* CTA */}
+                          <div className="flex items-center justify-between mt-auto">
+                            <span className="text-cyan-600 font-semibold text-sm group-hover:text-cyan-700 transition-colors duration-300">
+                              Explore Solution
+                            </span>
+                            <ArrowRight className="w-4 h-4 text-cyan-600 group-hover:translate-x-1 group-hover:text-cyan-700 transition-all duration-300" />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+                    </Link>
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>

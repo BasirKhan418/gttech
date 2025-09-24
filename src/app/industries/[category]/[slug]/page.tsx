@@ -176,7 +176,7 @@ const IndustryDetailPage = () => {
       {/* Main Content */}
       <div className="relative z-10 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
             
             {/* Main Content Column */}
             <div className="xl:col-span-2 space-y-8">
@@ -336,128 +336,14 @@ const IndustryDetailPage = () => {
               )}
             </div>
 
-            {/* Sidebar */}
-            <div className="xl:col-span-1 space-y-6">
-              
-              {/* Action Buttons */}
-              <div className="bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-6 sticky top-8 shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
-                <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
-                
-                <div className="relative z-10 space-y-4">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Get This Solution</h3>
-                  
-                  <Link
-                    href="/gaq"
-                    className="block w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-xl font-semibold text-center hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-lg"
-                  >
-                    Request Implementation
-                  </Link>
-                  
-                  <button
-                    onClick={handleShare}
-                    className="w-full px-6 py-3 bg-white/80 border border-cyan-400/60 text-cyan-700 rounded-xl font-semibold hover:bg-cyan-50/80 hover:border-cyan-500/70 transition-all duration-300 flex items-center justify-center gap-2 backdrop-blur-sm"
-                  >
-                    <Share2 className="w-4 h-4" />
-                    Share Solution
-                  </button>
-                  
-                  <Link
-                    href={`/industries/${industry.category}`}
-                    className="block w-full px-6 py-3 bg-gray-100/80 border border-gray-300/60 text-gray-700 rounded-xl font-semibold text-center hover:bg-gray-200/80 hover:text-gray-800 transition-all duration-300 backdrop-blur-sm"
-                  >
-                    View Category
-                  </Link>
-                </div>
-              </div>
-
-              {/* Industry Info */}
-              <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-6 shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
-                <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
-                
-                <div className="relative z-10">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Industry Details</h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between items-start">
-                      <span className="text-gray-600">Category:</span>
-                      <span className="text-cyan-700 font-semibold capitalize">{industry.category}</span>
-                    </div>
-                    <div className="flex justify-between items-start">
-                      <span className="text-gray-600">Last Updated:</span>
-                      <span className="text-cyan-700 font-semibold">{new Date(industry.updatedAt).toLocaleDateString()}</span>
-                    </div>
-                    {industry.highlights && (
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-600">Features:</span>
-                        <span className="text-cyan-700 font-semibold">{industry.highlights.length} items</span>
-                      </div>
-                    )}
-                    {industry.technologies && (
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-600">Technologies:</span>
-                        <span className="text-cyan-700 font-semibold">{industry.technologies.length} tools</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-start">
-                      <span className="text-gray-600">Status:</span>
-                      <span className="text-green-600 font-semibold">Available</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Related Industries */}
-              <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-6 shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
-                <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>
-                
-                <div className="relative z-10">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Quick Links</h3>
-                  <div className="space-y-3">
-                    <Link
-                      href="/industries"
-                      className="flex items-center justify-between p-3 bg-cyan-50/80 rounded-lg border border-cyan-200/60 hover:bg-cyan-100/80 transition-colors duration-200 group"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-cyan-600" />
-                        <span className="text-cyan-700 font-medium">All Industries</span>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-cyan-600 group-hover:translate-x-1 transition-transform duration-200" />
-                    </Link>
-                    
-                    <Link
-                      href="/services"
-                      className="flex items-center justify-between p-3 bg-gray-50/80 rounded-lg border border-gray-200/60 hover:bg-gray-100/80 transition-colors duration-200 group"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Cog className="w-4 h-4 text-gray-600" />
-                        <span className="text-gray-700 font-medium">Our Services</span>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-gray-600 group-hover:translate-x-1 transition-transform duration-200" />
-                    </Link>
-                    
-                    <Link
-                      href="/case-studies"
-                      className="flex items-center justify-between p-3 bg-purple-50/80 rounded-lg border border-purple-200/60 hover:bg-purple-100/80 transition-colors duration-200 group"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Target className="w-4 h-4 text-purple-600" />
-                        <span className="text-purple-700 font-medium">Case Studies</span>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-purple-600 group-hover:translate-x-1 transition-transform duration-200" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
           </div>
         </div>
       </div>
 
       {/* Related Solutions CTA */}
       <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           <div className="relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl p-12 overflow-hidden shadow-2xl">
             <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
             <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/8 via-transparent to-cyan-300/5"></div>

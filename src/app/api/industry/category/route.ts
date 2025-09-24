@@ -82,7 +82,7 @@ export const POST = async (req: NextRequest) => {
             ...body, 
             slug,
             lastEditedAuthor: userdata.data._id, 
-            author: userdata.data._id 
+            author: userdata.data._id,
         });
         
         return NextResponse.json({ success: true, message: "Industry category added successfully" });

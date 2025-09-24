@@ -70,6 +70,7 @@ interface Industry {
 }
 
 interface Category {
+  imageUrl: any
   _id: string
   name: string
   slug: string
@@ -639,49 +640,82 @@ const AdminIndustriesPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCategories.map((category) => (
-                <Card key={category._id} className="group hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
+                <Card key={category._id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  {/* Category Image */}
+                  <div className="relative h-32 bg-muted overflow-hidden">
+                    {category.imageUrl ? (
+                      <img
+                        src={category.imageUrl}
+                        alt={category.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted-foreground/10">
+                        <Tag className="w-8 h-8 text-muted-foreground" />
+                      </div>
+                    )}
+                    
+                    {/* Status Badge */}
+                    <div className="absolute top-2 left-2">
+                      <Badge variant={category.isActive ? "default" : "secondary"} className="text-xs">
+                        {category.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleEditCategory(category)}
+                        className="h-7 w-7 p-0"
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => setDeleteItem({type: 'category', item: category})}
+                        className="h-7 w-7 p-0"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant={category.isActive ? "default" : "secondary"}>
-                            {category.isActive ? "Active" : "Inactive"}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">
-                            Order: {category.order}
-                          </span>
-                        </div>
                         <CardTitle className="text-lg">{category.name}</CardTitle>
                         <p className="text-sm text-muted-foreground mt-1">{category.slug}</p>
                       </div>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleEditCategory(category)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setDeleteItem({type: 'category', item: category})}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                      <div className="flex items-center gap-2">
+                        {/* <Badge variant="outline" className="text-xs">
+                          Order: {category.order}
+                        </Badge> */}
                       </div>
                     </div>
                   </CardHeader>
 
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm mb-4">
+                  <CardContent className="pt-0">
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                       {category.description}
                     </p>
                     
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Color: {category.color}</span>
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="w-3 h-3 rounded-full border"
+                          style={{ backgroundColor: category.color === 'cyan' ? '#06b6d4' : 
+                                   category.color === 'blue' ? '#3b82f6' : 
+                                   category.color === 'green' ? '#10b981' : 
+                                   category.color === 'purple' ? '#8b5cf6' : 
+                                   category.color === 'orange' ? '#f97316' : 
+                                   category.color === 'red' ? '#ef4444' : 
+                                   category.color === 'yellow' ? '#eab308' : '#6b7280' }}
+                        />
+                        <span className="capitalize">{category.color}</span>
+                      </div>
                       <span>{new Date(category.createdAt).toLocaleDateString()}</span>
                     </div>
                   </CardContent>
