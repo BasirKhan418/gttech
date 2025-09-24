@@ -182,9 +182,10 @@ const Footer = () => {
             </div>
 
             <div className="flex items-center space-x-2 text-sm text-cyan-200/80">
-              <span>Made with</span>
-              <span className="text-cyan-400 animate-pulse">❤️</span>
-              <span>in India</span>
+              <span>Made with ❤️ By</span>
+              <Link href="https://www.devsomeware.com/" target="_blank" className="text-cyan-400 hover:underline">
+                DevSomeware
+              </Link>
             </div>
           </div>
         </div>
