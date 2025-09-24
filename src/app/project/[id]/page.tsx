@@ -826,9 +826,14 @@ const ProjectDetailPage = () => {
                           {subproduct.title}
                         </h4>
                         
-                        <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-4 line-clamp-3 group-hover:text-gray-700 transition-colors duration-300">
+                        <div className="h-16 sm:h-20 overflow-y-auto pr-2" style={{
+                            scrollbarWidth: 'thin',
+                            scrollbarColor: '#67e8f9 #f3f4f6'
+                          }}>
+                        <p className= "text-sm sm:text-base text-gray-600 leading-relaxed">
                           {subproduct.description}
                         </p>
+                        </div>
 
                         {/* CTA Button */}
                         {subproduct.learnMoreLink && (
@@ -836,10 +841,10 @@ const ProjectDetailPage = () => {
                             href={subproduct.learnMoreLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center w-full px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25"
+                            className="inline-flex items-center justify-center w-full text-cyan-600 hover:text-cyan-700 font-semibold text-sm sm:text-base underline hover:underline transition-colors duration-200"
                           >
                             To Know More
-                            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                            <ArrowRight className="w-4 h-4 ml-2" />
                           </a>
                         )}
                       </div>

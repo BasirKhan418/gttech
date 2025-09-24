@@ -7,15 +7,9 @@ const Footer = () => {
   const footerLinks = {
     company: [
       { name: 'About Us', href: '/about' },
-      { name: 'Our Team', href: '/team' },
+      { name: 'Our Team', href: '/about#team' },
       { name: 'Careers', href: '/career' },
       { name: 'Gallery', href: '/gallery' }
-    ],
-    industries: [
-      { name: 'Automotive', href: '/industries/automotive' },
-      { name: 'Aerospace', href: '/industries/aerospace' },
-      { name: 'Railways', href: '/industries/railways' },
-      { name: 'Smart Cities', href: '/industries/smartcities' }
     ],
     // support: [
     //   { name: 'Contact Us', href: '/contact' },
@@ -93,8 +87,8 @@ const Footer = () => {
 
             {/* Links Grid */}
             <div className="lg:col-span-8">
-              <div className="grid md:grid-cols-4 gap-8">
-                <div>
+              <div className=" grid md:grid-cols-2 gap-8">
+                <div className='pl-24'>
                   <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Company</h3>
                   <ul className="space-y-4">
                     {footerLinks.company.map((link) => (
@@ -108,6 +102,39 @@ const Footer = () => {
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                {/* Google Maps Section */}
+                <div>
+                  <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Find Us</h3>
+                  <div className="bg-white/10 backdrop-blur-sm border border-cyan-300/30 rounded-lg p-4 shadow-lg">
+                    <div className="relative overflow-hidden rounded-lg">
+                      <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3790.4510453593493!2d83.3899553757916!3d18.189185179211773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3bef5e7fab5d93%3A0x8539c45d69778c2f!2sCenturion%20University%20Vizianagaram%20-%20BTech%20Engineering%20College%2C%20Paramedical%20Courses!5e0!3m2!1sen!2sin!4v1758739619186!5m2!1sen!2sin"
+                        width="300"
+                        height="200"
+                        style={{ border: 0 }}
+                        allowFullScreen={true}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        className="w-full h-[200px] rounded-lg"
+                      ></iframe>
+                    </div>
+                    <div className="mt-4 space-y-2 text-sm text-cyan-100/80">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-cyan-400">📍</span>
+                        <span>Your Office Address Here</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-cyan-400">📞</span>
+                        <span>+1 (555) 123-4567</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-cyan-400">✉️</span>
+                        <span>info@gttech.com</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                {/*<div>
@@ -170,20 +197,20 @@ const Footer = () => {
             </div>
             
             <div className="flex items-center space-x-6 text-sm text-cyan-200/80">
-              <Link href="/privacy" className="hover:text-cyan-100 hover:text-white transition-colors duration-300">
+              <Link href="/privacy" className="hover:text-white transition-colors duration-300">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-cyan-100 hover:text-white transition-colors duration-300">
+              <Link href="/terms" className="hover:text-white transition-colors duration-300">
                 Terms of Service
               </Link>
-              <Link href="/cookies" className="hover:text-cyan-100 hover:text-white transition-colors duration-300">
+              <Link href="/cookies" className="hover:text-white transition-colors duration-300">
                 Cookie Policy
               </Link>
             </div>
 
             <div className="flex items-center space-x-2 text-sm text-cyan-200/80">
               <span>Made with ❤️ By</span>
-              <Link href="https://www.devsomeware.com/" target="_blank" className="text-cyan-400 hover:underline">
+              <Link href="https://saas.devsomeware.com" target="_blank" className="text-cyan-400 hover:underline">
                 DevSomeware
               </Link>
             </div>
@@ -191,7 +218,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom gradient overlay */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600"></div>
     </footer>
   )

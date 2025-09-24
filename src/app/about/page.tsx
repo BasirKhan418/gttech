@@ -377,6 +377,16 @@ const AboutPage = () => {
     }
   }, [selectedCategory, teamMembers])
 
+  useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.replace("#", "");
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, []);
+
   const partners = aboutData?.partners || [
     { name: "Dassault Systèmes", logo: "/images.png" },
     { name: "AWS", logo: "/aws.webp" },
@@ -1056,13 +1066,10 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Optimized Team Section */}
-      <section className="relative z-10 py-6 md:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+      <section id="team" className="relative z-10 py-6 md:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Static Header - Won't Re-render */}
           <TeamSectionHeader />
 
-          {/* Error State */}
           {error && (
             <div className="text-center py-12">
               <div className="bg-red-50 border border-red-200 rounded-2xl p-8 max-w-md mx-auto">
