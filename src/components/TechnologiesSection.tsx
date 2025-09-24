@@ -1,10 +1,45 @@
 'use client'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
+
+interface Industry {
+  name: string;
+  imageUrl?: string;
+  slug: string;
+  order: number;
+}
 
 const TechnologiesSection = () => {
+  const [industries, setIndustries] = useState<Industry[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const industries = [
+  useEffect(() => {
+    const fetchIndustries = async () => {
+      try {
+        const response = await fetch('/api/industry/category')
+        const data = await response.json()
+        
+        if (data.success) {
+          // Sort by order field, then by name
+          const sortedIndustries = data.data.sort((a: { order: number; name: string }, b: { order: number; name: any }) => {
+            if (a.order !== b.order) return a.order - b.order
+            return a.name.localeCompare(b.name)
+          })
+          setIndustries(sortedIndustries)
+        }
+      } catch (err) {
+        console.error('Error fetching industries:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchIndustries()
+  }, [])
+
+  // Fallback industries for loading or error states
+  const fallbackIndustries = [
     { name: 'Automotive', image: '/truck.jpg', color: 'from-cyan-100 via-white to-cyan-50' },
     { name: 'Aerospace', image: '/d.webp', color: 'from-cyan-100 via-white to-cyan-50' },
     { name: 'Railways', image: '/train.jpg', color: 'from-cyan-100 via-white to-cyan-50' },
@@ -15,8 +50,15 @@ const TechnologiesSection = () => {
     { name: 'Mining', image: '/mining.jpg', color: 'from-cyan-100 via-white to-cyan-50' },
     { name: 'Information technology', image: '/it.jpg', color: 'from-cyan-100 via-white to-cyan-50' },
     { name: 'High end skill development', image: '/high.jpg', color: 'from-cyan-100 via-white to-cyan-50' },
-    
   ]
+
+  // Use dynamic industries if loaded, otherwise use fallback
+  const displayIndustries = !loading && industries.length > 0 ? industries.map(industry => ({
+    name: industry.name,
+    image: industry.imageUrl || '/default-industry.jpg',
+    color: 'from-cyan-100 via-white to-cyan-50',
+    slug: industry.slug
+  })) : fallbackIndustries.map(industry => ({ ...industry, slug: industry.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') }))
 
   const partners = [
     { name: 'AWS', logo: '/aws.webp' },
@@ -124,10 +166,11 @@ const TechnologiesSection = () => {
           <div className="relative overflow-hidden rounded-3xl bg-white/60 backdrop-blur-sm border border-cyan-300/40 p-8 shadow-xl">
             {/* Animated Industries Display */}
             <div className="flex animate-scroll-industries space-x-8 items-center">
-              {[...industries, ...industries].map((industry, index) => (
-                <div
+              {[...displayIndustries, ...displayIndustries].map((industry, index) => (
+                <Link
                   key={index}
-                  className="flex-shrink-0 group relative bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl p-6 hover:scale-110 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/20 overflow-hidden hover:border-cyan-400/80 w-48"
+                  href={`/industries/${industry.slug}`}
+                  className="flex-shrink-0 group relative bg-white/80 backdrop-blur-sm border border-cyan-200/60 rounded-2xl p-6 hover:scale-110 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/20 overflow-hidden hover:border-cyan-400/80 w-48 cursor-pointer"
                   style={{
                     animationDelay: `${index * 0.1}s`
                   }}
@@ -163,7 +206,7 @@ const TechnologiesSection = () => {
 
                   <div className="relative z-10 text-center">
                     <div className="mb-4 flex justify-center overflow-hidden rounded-xl bg-cyan-50/50 p-2 border border-cyan-200/30">
-                      <Image
+                      <img
                         src={industry.image}
                         alt={industry.name}
                         width={140}
@@ -198,7 +241,7 @@ const TechnologiesSection = () => {
 
                   {/* Holographic Effect */}
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-400/8 via-transparent to-cyan-500/8 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                </div>
+                </Link>
               ))}
             </div>
 
