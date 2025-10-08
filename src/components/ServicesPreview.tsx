@@ -325,7 +325,7 @@ const ServicesPreview = () => {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/gta"
+                  href="/contatct"
                   className="glass-button group px-8 py-4 bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white rounded-full font-semibold text-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-cyan-500/30 backdrop-blur-sm border border-cyan-400/60"
                 >
                   Start Your Project

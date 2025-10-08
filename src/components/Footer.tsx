@@ -95,7 +95,7 @@ const Footer = () => {
                       <li key={link.name}>
                         <Link
                           href={link.href}
-                          className="text-cyan-200/80 hover:text-white transition-all duration-300 hover:translate-x-1 transform inline-block hover:text-cyan-100"
+                          className="text-cyan-200/80 transition-all duration-300 hover:translate-x-1 transform inline-block hover:text-cyan-100"
                         >
                           {link.name}
                         </Link>
@@ -104,32 +104,67 @@ const Footer = () => {
                   </ul>
                 </div>
 
-                {/* Google Maps Section */}
+                {/* Addresses Section */}
                 <div>
-                  <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Find Us</h3>
+                  <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Our Locations</h3>
                   <div className="bg-white/10 backdrop-blur-sm border border-cyan-300/30 rounded-lg p-4 shadow-lg">
-                    <div className="relative overflow-hidden rounded-lg">
-                      <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3790.4510453593493!2d83.3899553757916!3d18.189185179211773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3bef5e7fab5d93%3A0x8539c45d69778c2f!2sCenturion%20University%20Vizianagaram%20-%20BTech%20Engineering%20College%2C%20Paramedical%20Courses!5e0!3m2!1sen!2sin!4v1758739619186!5m2!1sen!2sin"
-                        width="300"
-                        height="200"
-                        style={{ border: 0 }}
-                        allowFullScreen={true}
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        className="w-full h-[200px] rounded-lg"
-                      ></iframe>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Address 1 */}
+                      <div className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
+                        <div className="font-semibold text-cyan-200">Head Office</div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-cyan-400 mt-0.5">📍</span>
+                          <span>123 Business District, Tech Hub, Mumbai, Maharashtra 400001</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-cyan-400">📞</span>
+                          <span>+91 98765 43210</span>
+                        </div>
+                      </div>
+
+                      {/* Address 2 */}
+                      <div className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
+                        <div className="font-semibold text-cyan-200">Delhi Branch</div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-cyan-400 mt-0.5">📍</span>
+                          <span>456 Corporate Park, Gurgaon, Haryana 122001</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-cyan-400">📞</span>
+                          <span>+91 87654 32109</span>
+                        </div>
+                      </div>
+
+                      {/* Address 3 */}
+                      <div className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
+                        <div className="font-semibold text-cyan-200">Bangalore Office</div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-cyan-400 mt-0.5">📍</span>
+                          <span>789 IT Corridor, Whitefield, Bangalore, Karnataka 560066</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-cyan-400">📞</span>
+                          <span>+91 76543 21098</span>
+                        </div>
+                      </div>
+
+                      {/* Address 4 */}
+                      <div className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
+                        <div className="font-semibold text-cyan-200">Pune Center</div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-cyan-400 mt-0.5">📍</span>
+                          <span>321 Innovation Hub, Hinjewadi, Pune, Maharashtra 411057</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-cyan-400">📞</span>
+                          <span>+91 65432 10987</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-4 space-y-2 text-sm text-cyan-100/80">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-cyan-400">📍</span>
-                        <span>Your Office Address Here</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-cyan-400">📞</span>
-                        <span>+1 (555) 123-4567</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
+                    
+                    {/* General Contact */}
+                    <div className="mt-4 pt-4 border-t border-cyan-300/20 text-center">
+                      <div className="flex items-center justify-center space-x-2 text-sm text-cyan-100/80">
                         <span className="text-cyan-400">✉️</span>
                         <span>info@gttech.com</span>
                       </div>
