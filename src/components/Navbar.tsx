@@ -23,7 +23,7 @@ const Navbar = () => {
     { name: 'Services', href: '/services' },
     { name: 'Industry & Value Solution', href: '/industries' },
     { name: 'Products', href: '/project', hasDropdown: true },
-    { name: 'Future Skills', href: 'https://future-skills-7ae85.web.app', external: true, target: '_blank' },
+    { name: 'Future Skills', href: 'https://futureskills.thegttech.com', external: true, target: '_blank' },
     { name: 'Contact', href: '/contact' }
   ]
 
