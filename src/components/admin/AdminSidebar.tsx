@@ -36,7 +36,8 @@ import {
   Bell,
   Activity,
   TrendingUp,
-  Zap
+  Zap,
+  MapPin
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -151,6 +152,14 @@ const AdminSidebar = () => {
       color: 'text-emerald-600',
       subItems: [
         { name: 'All Teams', href: '/admin/teams', icon: Users2 }
+      ]
+    },
+    {
+      name: 'Address Management',
+      icon: MapPin,
+      color: 'text-orange-600',
+      subItems: [
+        { name: 'All Addresses', href: '/admin/addresses', icon: MapPin }
       ]
     },
     {
