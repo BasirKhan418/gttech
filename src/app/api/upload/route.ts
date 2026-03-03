@@ -8,11 +8,13 @@ const s3Client = new S3Client({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
+  
 });
 
 export async function POST(request: NextRequest) {
   try {
     const { filename, contentType } = await request.json();
+    console.log('Received upload request for:', filename, contentType);
 
     if (!filename || !contentType) {
       return NextResponse.json(
