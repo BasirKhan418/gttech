@@ -1,9 +1,47 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import AdminLogin from '../../utils/admin/login-page';
 
+interface Address {
+  _id: string
+  name: string
+  address: string
+  phone: string
+  email?: string
+  city: string
+  state: string
+  country: string
+  pincode: string
+  isActive: boolean
+  displayOrder: number
+}
+
 const Footer = () => {
+  const [addresses, setAddresses] = useState<Address[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchAddresses()
+  }, [])
+
+  const fetchAddresses = async () => {
+    try {
+      const response = await fetch("/api/address")
+      const result = await response.json()
+
+      if (result.success && Array.isArray(result.data.data)) {
+        setAddresses(result.data.data)
+      } else {
+        setAddresses([])
+      }
+    } catch (error) {
+      console.error("Error fetching addresses:", error)
+      setAddresses([])
+    } finally {
+      setLoading(false)
+    }
+  }
   const footerLinks = {
     company: [
       { name: 'About Us', href: '/about' },
@@ -108,67 +146,47 @@ const Footer = () => {
                 <div>
                   <h3 className="text-white font-semibold text-lg mb-6 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">Our Locations</h3>
                   <div className="bg-white/10 backdrop-blur-sm border border-cyan-300/30 rounded-lg p-4 shadow-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Address 1 */}
-                      <div className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
-                        <div className="font-semibold text-cyan-200">Head Office</div>
-                        <div className="flex items-start space-x-2">
-                          <span className="text-cyan-400 mt-0.5">📍</span>
-                          <span>123 Business District, Tech Hub, Mumbai, Maharashtra 400001</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-cyan-400">📞</span>
-                          <span>+91 98765 43210</span>
-                        </div>
+                    {loading ? (
+                      <div className="text-center py-8">
+                        <div className="text-cyan-100/80">Loading locations...</div>
                       </div>
-
-                      {/* Address 2 */}
-                      <div className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
-                        <div className="font-semibold text-cyan-200">Delhi Branch</div>
-                        <div className="flex items-start space-x-2">
-                          <span className="text-cyan-400 mt-0.5">📍</span>
-                          <span>456 Corporate Park, Gurgaon, Haryana 122001</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-cyan-400">📞</span>
-                          <span>+91 87654 32109</span>
-                        </div>
+                    ) : addresses.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="text-cyan-100/80">No locations available</div>
                       </div>
-
-                      {/* Address 3 */}
-                      <div className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
-                        <div className="font-semibold text-cyan-200">Bangalore Office</div>
-                        <div className="flex items-start space-x-2">
-                          <span className="text-cyan-400 mt-0.5">📍</span>
-                          <span>789 IT Corridor, Whitefield, Bangalore, Karnataka 560066</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-cyan-400">📞</span>
-                          <span>+91 76543 21098</span>
-                        </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {addresses.map((address) => (
+                          <div key={address._id} className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
+                            <div className="font-semibold text-cyan-200">{address.name}</div>
+                            <div className="flex items-start space-x-2">
+                              <span className="text-cyan-400 mt-0.5">📍</span>
+                              <span>{address.address}, {address.city}, {address.state} {address.pincode}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-cyan-400">📞</span>
+                              <span>{address.phone}</span>
+                            </div>
+                            {address.email && (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-cyan-400">✉️</span>
+                                <span>{address.email}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-
-                      {/* Address 4 */}
-                      <div className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
-                        <div className="font-semibold text-cyan-200">Pune Center</div>
-                        <div className="flex items-start space-x-2">
-                          <span className="text-cyan-400 mt-0.5">📍</span>
-                          <span>321 Innovation Hub, Hinjewadi, Pune, Maharashtra 411057</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-cyan-400">📞</span>
-                          <span>+91 65432 10987</span>
-                        </div>
-                      </div>
-                    </div>
+                    )}
                     
-                    {/* General Contact */}
-                    <div className="mt-4 pt-4 border-t border-cyan-300/20 text-center">
-                      <div className="flex items-center justify-center space-x-2 text-sm text-cyan-100/80">
-                        <span className="text-cyan-400">✉️</span>
-                        <span>info@gttech.com</span>
+                    {/* General Contact - only show if there are addresses */}
+                    {!loading && addresses.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-cyan-300/20 text-center">
+                        <div className="flex items-center justify-center space-x-2 text-sm text-cyan-100/80">
+                          <span className="text-cyan-400">✉️</span>
+                          <span>info@gttech.com</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
