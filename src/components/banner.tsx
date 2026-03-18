@@ -222,21 +222,6 @@ const DynamicBannerSection = () => {
           <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed animate-fade-in-up line-clamp-3" style={{ animationDelay: '0.4s' }}>
             {banner.description.length > 120 ? banner.description.substring(0, 120) + '...' : banner.description}
           </p>
-
-          {/* CTA Button */}
-          <div className="animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-            <Link
-              href={banner.buttonLink}
-              className="group inline-flex items-center px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 glass-button bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white rounded-full font-semibold text-sm sm:text-base md:text-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-cyan-500/30 backdrop-blur-sm border border-cyan-400/40"
-            >
-              {banner.buttonText}
-              <span className="ml-2 sm:ml-3 group-hover:translate-x-1 sm:group-hover:translate-x-2 transition-transform duration-300">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-              </span>
-            </Link>
-          </div>
         </div>
 
         {/* Image Section */}

@@ -49,19 +49,11 @@ const Footer = () => {
       { name: 'Careers', href: '/career' },
       { name: 'Gallery', href: '/gallery' }
     ],
-    // support: [
-    //   { name: 'Contact Us', href: '/contact' },
-    //   { name: 'Support Center', href: '/support' },
-    //   { name: 'Documentation', href: '/docs' },
-    //   { name: 'Privacy Policy', href: '/privacy' }
-    // ]
+
   }
 
   const socialLinks = [
-    { name: 'LinkedIn', href: '#', icon: '💼' },
-    { name: 'Twitter', href: '#', icon: '🐦' },
-    { name: 'GitHub', href: '#', icon: '💻' },
-    { name: 'YouTube', href: '#', icon: '📺' }
+    { name: 'LinkedIn', href: 'https://www.linkedin.com/company/gramtarang-technologies/?viewAsMember=true', icon: '🔗' },
   ]
 
   return (
@@ -110,17 +102,19 @@ const Footer = () => {
                 Industry 4.0 technologies, and innovative design services across multiple industries.
               </p>
 
-              <div className="flex space-x-4">
+                <div className="flex space-x-4">
                 {socialLinks.map((social) => (
-                  <Link
-                    key={social.name}
-                    href={social.href}
-                    className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-cyan-300/30 rounded-lg flex items-center justify-center text-xl hover:bg-cyan-400/20 hover:border-cyan-300/50 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-cyan-500/20"
+                  <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-cyan-300/30 rounded-lg flex items-center justify-center text-xl hover:bg-cyan-400/20 hover:border-cyan-300/50 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-cyan-500/20"
                   >
-                    {social.icon}
-                  </Link>
+                  {social.icon}
+                  </a>
                 ))}
-              </div>
+                </div>
             </div>
 
             {/* Links Grid */}
@@ -177,16 +171,7 @@ const Footer = () => {
                         ))}
                       </div>
                     )}
-                    
-                    {/* General Contact - only show if there are addresses */}
-                    {!loading && addresses.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-cyan-300/20 text-center">
-                        <div className="flex items-center justify-center space-x-2 text-sm text-cyan-100/80">
-                          <span className="text-cyan-400">✉️</span>
-                          <span>info@gttech.com</span>
-                        </div>
-                      </div>
-                    )}
+
                   </div>
                 </div>
 
@@ -250,20 +235,20 @@ const Footer = () => {
             </div>
             
             <div className="flex items-center space-x-6 text-sm text-cyan-200/80">
-              <Link href="/privacy" className="hover:text-white transition-colors duration-300">
+              <Link href="#" className="hover:text-white transition-colors duration-300">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-white transition-colors duration-300">
+              <Link href="#" className="hover:text-white transition-colors duration-300">
                 Terms of Service
               </Link>
-              <Link href="/cookies" className="hover:text-white transition-colors duration-300">
+              <Link href="#" className="hover:text-white transition-colors duration-300">
                 Cookie Policy
               </Link>
             </div>
 
             <div className="flex items-center space-x-2 text-sm text-cyan-200/80">
               <span>Made with ❤️ By</span>
-              <Link href="https://saas.devsomeware.com" target="_blank" className="text-cyan-400 hover:underline">
+              <Link href="https://devsomeware.com" target="_blank" className="text-cyan-400 hover:underline">
                 DevSomeware
               </Link>
             </div>

@@ -4,12 +4,12 @@ import Link from 'next/link'
 
 // GT Tech specific constants
 const CAL_LINKS = {
-  discovery: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true",
-  strategy: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true", 
-  enterprise: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true",
-  consultation: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true",
-  kickoff: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true",
-  followup: "https://cal.com/swagat-dash-8nt1wl/discovery-call?overlayCalendar=true"
+  discovery: "https://cal.com/gttech/gram-tarang-technology",
+  strategy: "https://cal.com/gttech/gram-tarang-technology", 
+  enterprise: "https://cal.com/gttech/gram-tarang-technology",
+  consultation: "https://cal.com/gttech/gram-tarang-technology",
+  kickoff: "https://cal.com/gttech/gram-tarang-technology",
+  followup: "https://cal.com/gttech/gram-tarang-technology"
 } as const;
 
 const CONSULTATION_PACKAGES = [
@@ -191,13 +191,6 @@ const ServicesPreview = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-white/[0.4] via-white/[0.2] to-transparent"></div>
                     <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/[0.08] via-transparent to-cyan-300/[0.05]"></div>
                     <div className="absolute inset-0 bg-gradient-to-b from-white/[0.3] to-transparent"></div>
-                    
-                    {/* Premium Badge */}
-                    {isEnterprise && (
-                      <div className="absolute top-6 right-6 px-4 py-2 bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 backdrop-blur-sm text-white text-xs font-bold rounded-full border border-cyan-400/60 shadow-lg">
-                        ✨ ENTERPRISE
-                      </div>
-                    )}
 
                     {/* Header */}
                     <div className="p-8 pb-6 relative z-10">
