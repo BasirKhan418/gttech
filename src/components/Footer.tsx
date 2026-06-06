@@ -17,6 +17,22 @@ interface Address {
   displayOrder: number
 }
 
+const FALLBACK_ADDRESSES: Address[] = [
+  {
+    _id: 'fallback-vizag',
+    name: 'Visakhapatnam',
+    address: '501, Aakruti Vijayalaxmi Apartment',
+    phone: '+91 7979078994',
+    email: 'info@thegttech.com',
+    city: 'Visakhapatnam',
+    state: 'Andhra Pradesh',
+    country: 'India',
+    pincode: '530017',
+    isActive: true,
+    displayOrder: 1,
+  },
+]
+
 const Footer = () => {
   const [addresses, setAddresses] = useState<Address[]>([])
   const [loading, setLoading] = useState(true)
@@ -30,14 +46,14 @@ const Footer = () => {
       const response = await fetch("/api/address")
       const result = await response.json()
 
-      if (result.success && Array.isArray(result.data.data)) {
+      if (result.success && Array.isArray(result.data.data) && result.data.data.length > 0) {
         setAddresses(result.data.data)
       } else {
-        setAddresses([])
+        setAddresses(FALLBACK_ADDRESSES)
       }
     } catch (error) {
       console.error("Error fetching addresses:", error)
-      setAddresses([])
+      setAddresses(FALLBACK_ADDRESSES)
     } finally {
       setLoading(false)
     }
@@ -149,7 +165,7 @@ const Footer = () => {
                         <div className="text-cyan-100/80">No locations available</div>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className={`grid gap-4 ${addresses.length === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}>
                         {addresses.map((address) => (
                           <div key={address._id} className="space-y-2 text-sm text-cyan-100/80 p-3 bg-white/5 rounded-lg border border-cyan-300/20">
                             <div className="font-semibold text-cyan-200">{address.name}</div>

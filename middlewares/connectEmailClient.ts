@@ -1,18 +1,19 @@
 import nodemailer from 'nodemailer';
+
 const ConnectEmailClient = async () => {
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST||"",
+      host: 'smtp.gmail.com',
       port: 587,
-      secure: false, 
+      secure: false,
       auth: {
-        user: process.env.EMAIL || "", 
-        pass: process.env.EMAIL_PASS || "",
+        user: process.env.EMAIL || '',
+        pass: process.env.EMAIL_PASS || '',
       },
     });
     return transporter;
   } catch (error) {
-    console.error("Error connecting to email client:", error);
+    console.error('Error connecting to email client:', error);
   }
 };
 

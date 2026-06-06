@@ -716,6 +716,13 @@ const Chatbot = ({
         className="fixed bottom-6 right-6 z-50 group"
         aria-label="Open chat"
       >
+        {/* Tooltip */}
+        <div className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200 pointer-events-none whitespace-nowrap">
+          <div className="bg-gray-900 text-white text-sm font-medium px-3 py-1.5 rounded-lg shadow-lg">
+            GT Virtual Assistant
+            <div className="absolute top-full right-5 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900" />
+          </div>
+        </div>
         <div className="relative w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center">
           <MessageCircle className="w-6 h-6 text-white" />
           <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />

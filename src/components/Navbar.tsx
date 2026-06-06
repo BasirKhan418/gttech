@@ -53,10 +53,10 @@ const Navbar = () => {
   }
 
   return (
-    <nav className={` fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      isScrolled 
-        ? 'backdrop-blur-xl bg-white border-b border-cyan-300/60 shadow-lg shadow-cyan-500/25' 
-        : 'backdrop-blur-md bg-white/50'
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      isScrolled
+        ? 'backdrop-blur-xl bg-white/95 border-b border-cyan-300/60 shadow-lg shadow-cyan-500/20'
+        : 'backdrop-blur-md bg-white/70 border-b border-cyan-200/30'
     }`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
@@ -116,15 +116,13 @@ const Navbar = () => {
                               href={category.href}
                               className="flex items-center px-4 py-3 text-gray-700 hover:text-cyan-700 hover:bg-cyan-100/50 transition-all duration-300 group/item"
                             >
-                              <span className="text-base 2xl:text-lg mr-3 group-hover/item:scale-110 transition-transform duration-300">
-                              </span>
                               <span className="font-medium text-sm 2xl:text-base group-hover/item:translate-x-1 transition-transform duration-300">
                                 {category.name}
                               </span>
-                              <svg 
+                              <svg
                                 className="ml-auto w-3 h-3 2xl:w-4 2xl:h-4 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all duration-300"
-                                fill="none" 
-                                stroke="currentColor" 
+                                fill="none"
+                                stroke="currentColor"
                                 viewBox="0 0 24 24"
                               >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -198,15 +196,13 @@ const Navbar = () => {
                               href={category.href}
                               className="flex items-center px-4 py-3 text-gray-700 hover:text-cyan-700 hover:bg-cyan-100/50 transition-all duration-300 group/item"
                             >
-                              <span className="text-base 2xl:text-lg mr-3 group-hover/item:scale-110 transition-transform duration-300">
-                              </span>
                               <span className="font-medium text-sm 2xl:text-base group-hover/item:translate-x-1 transition-transform duration-300">
                                 {category.name}
                               </span>
-                              <svg 
+                              <svg
                                 className="ml-auto w-3 h-3 2xl:w-4 2xl:h-4 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all duration-300"
-                                fill="none" 
-                                stroke="currentColor" 
+                                fill="none"
+                                stroke="currentColor"
                                 viewBox="0 0 24 24"
                               >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -243,10 +239,10 @@ const Navbar = () => {
           {/* Desktop CTA Button */}
           <div className="hidden lg:flex items-center space-x-2 lg:space-x-4">
             <Link
-              href="/contact"
+              href="/enquiry"
               className="px-4 lg:px-6 py-2 text-sm lg:text-base bg-gradient-to-r from-cyan-500/80 to-cyan-600/80 backdrop-blur-lg border border-cyan-400/40 rounded-full text-white hover:from-cyan-600/90 hover:to-cyan-700/90 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-cyan-500/30"
             >
-              Get Started
+              Enquiry
             </Link>
           </div>
 
@@ -309,11 +305,11 @@ const Navbar = () => {
             ))}
             <div className="px-3 sm:px-4 pt-2">
               <Link
-                href="/contact"
+                href="/enquiry"
                 className="block w-full text-center px-4 sm:px-6 py-2 text-sm sm:text-base bg-gradient-to-r from-cyan-500/80 to-cyan-600/80 text-white rounded-full hover:from-cyan-600/90 hover:to-cyan-700/90 transition-all duration-300 shadow-lg hover:shadow-cyan-500/30 backdrop-blur-lg"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Get Started
+                Enquiry
               </Link>
             </div>
           </div>
