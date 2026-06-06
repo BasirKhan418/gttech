@@ -174,10 +174,21 @@ const EnquiryPage = () => {
   }
 
   const validateForm = (): boolean => {
+    // Mandatory per webhook: full_name and phone
     if (!formData.fullName.trim() || formData.fullName.length < 2) {
-      setErrorMessage('Please enter your full name (minimum 2 characters)')
+      setErrorMessage('Full name is required (minimum 2 characters)')
       return false
     }
+    if (!formData.mobile.trim()) {
+      setErrorMessage('Phone number is required')
+      return false
+    }
+    const cleanPhone = formData.mobile.replace(/[^\d]/g, '')
+    if (cleanPhone.length < 10) {
+      setErrorMessage('Invalid phone number. Must be at least 10 digits.')
+      return false
+    }
+    // Additional form validations
     if (!formData.organizationName.trim()) {
       setErrorMessage('Please enter your organization / institute name')
       return false
@@ -198,25 +209,31 @@ const EnquiryPage = () => {
       setErrorMessage('Please describe your requirement (minimum 10 characters)')
       return false
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email)) {
-      setErrorMessage('Please enter a valid email address')
-      return false
-    }
-    const phoneRegex = /^[+]?[\d\s\-()]{10,15}$/
-    if (!phoneRegex.test(formData.mobile.replace(/\s/g, ''))) {
-      setErrorMessage('Please enter a valid mobile number')
-      return false
-    }
-    if (!formData.city.trim()) {
-      setErrorMessage('Please enter your city')
-      return false
-    }
-    if (!formData.state.trim()) {
-      setErrorMessage('Please enter your state')
-      return false
+    if (formData.email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.email)) {
+        setErrorMessage('Please enter a valid email address')
+        return false
+      }
     }
     return true
+  }
+
+  const resetForm = () => {
+    setFormData({
+      fullName: '',
+      organizationName: '',
+      designation: '',
+      industrySector: '',
+      interestedIn: [],
+      productSolution: '',
+      businessRequirement: '',
+      briefRequirement: '',
+      email: '',
+      mobile: '',
+      city: '',
+      state: '',
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -230,31 +247,30 @@ const EnquiryPage = () => {
     setErrorMessage('')
 
     try {
-      const response = await fetch('/api/contact', {
+      // Map form fields to webhook field names
+      const payload = {
+        full_name: formData.fullName.trim(),
+        organization_name: formData.organizationName.trim(),
+        designation: formData.designation,
+        industry_sector: formData.industrySector,
+        interested_in: formData.interestedIn,
+        email: formData.email.trim(),
+        phone: formData.mobile.trim(),
+      }
+
+      const response = await fetch('/api/enquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
-      const result: SubmitResponse = await response.json()
+      const result = await response.json()
+
       if (result.success) {
         setSubmitStatus('success')
-        setFormData({
-          fullName: '',
-          organizationName: '',
-          designation: '',
-          industrySector: '',
-          interestedIn: [],
-          productSolution: '',
-          businessRequirement: '',
-          briefRequirement: '',
-          email: '',
-          mobile: '',
-          city: '',
-          state: '',
-        })
+        resetForm()
         setTimeout(() => setSubmitStatus('idle'), 6000)
       } else {
-        throw new Error(result.message || 'Failed to submit enquiry')
+        throw new Error(result.error || result.message || 'Failed to submit enquiry')
       }
     } catch (error) {
       setSubmitStatus('error')
