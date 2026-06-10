@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const ProjectSchema = new mongoose.Schema({
     // Basic fields
     title: { type: String, required: true },
+    slug: { type: String, required: false },
     category: { type: String, required: true },
     description: { type: String, required: true },
     poster: { type: String, required: true },
@@ -53,6 +54,7 @@ const ProjectSchema = new mongoose.Schema({
 ProjectSchema.index({ isActive: 1, createdAt: -1 });
 ProjectSchema.index({ category: 1 });
 ProjectSchema.index({ isFeatured: 1 });
+ProjectSchema.index({ slug: 1 }, { sparse: true });
 ProjectSchema.index({ 'author': 1 });
 ProjectSchema.index({ 'lastEditedAuthor': 1 });
 

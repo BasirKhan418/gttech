@@ -54,28 +54,16 @@ const INDUSTRY_SECTORS = [
 
 const INTEREST_CATEGORIES = [
   {
-    name: 'Digital Engineering',
-    options: ['CAD/CAM/CAE Solutions', 'PLM & Digital Thread', 'Digital Twin', 'Simulation & Virtual Testing'],
-  },
-  {
-    name: 'Industry 4.0',
-    options: ['Smart Manufacturing', 'Industrial Automation', 'IoT Solutions', 'AI & Analytics'],
-  },
-  {
-    name: 'Immersive Technologies',
-    options: ['AR/VR/MR Solutions', 'Training Simulators', 'Virtual Factory'],
-  },
-  {
-    name: 'Innovation & Product Development',
-    options: ['Product Design & Development', 'Reverse Engineering', 'Additive Manufacturing / 3D Printing', 'Prototyping'],
+    name: 'Software Products',
+    options: ['BIOVIA', 'GEOVIA', 'GT HRMS', 'GT LMS'],
   },
   {
     name: 'Academia & Skilling',
     options: ['Centre of Excellence Setup', 'Faculty Development Program', 'Student Skill Development', 'Industry Certification Programs'],
   },
   {
-    name: 'Engineering Services',
-    options: ['Design Outsourcing', 'Resource Augmentation', 'Project Support', 'Consulting Services'],
+    name: 'Industrial Services',
+    options: ['Product Design & Development', 'Consulting', 'AR/VR/MR Solutions', 'Resource Augmentation'],
   },
 ]
 

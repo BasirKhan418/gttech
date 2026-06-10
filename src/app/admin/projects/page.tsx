@@ -357,7 +357,7 @@ const AdminProjectsPage = () => {
                     <Button
                       size="sm"
                       variant="secondary"
-                      onClick={() => window.open(`/projects/${project._id}`, '_blank')}
+                      onClick={() => window.open(`/project/${project.slug || project._id}`, '_blank')}
                       className="h-8 w-8 p-0"
                     >
                       <Eye className="w-4 h-4" />

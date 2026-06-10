@@ -427,7 +427,7 @@ const CategoryPage = () => {
                 >
                   {viewMode === "grid" ? (
                     // Grid View Card
-                    <Link href={`/project/${project._id}`}>
+                    <Link href={`/project/${project.slug || project._id}`}>
                       <div className="group relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-3xl overflow-hidden hover:border-cyan-400/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/15 hover:bg-white/80">
                         {/* Glass Effects */}
                         <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
@@ -512,7 +512,7 @@ const CategoryPage = () => {
                     </Link>
                   ) : (
                     // List View Card
-                    <Link href={`/project/${project._id}`}>
+                    <Link href={`/project/${project.slug || project._id}`}>
                       <div className="group relative bg-white/70 backdrop-blur-sm border border-cyan-300/50 rounded-2xl overflow-hidden hover:border-cyan-400/70 transition-all duration-300 hover:shadow-xl">
                         <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/30 to-cyan-50/20"></div>
 

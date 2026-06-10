@@ -92,14 +92,17 @@ const ProjectDetailPage = () => {
     }
   }, [params.id])
 
-  const fetchProjectDetail = async (id: string) => {
+  const fetchProjectDetail = async (slug: string) => {
     try {
       setLoading(true)
       const response = await fetch("/api/project")
       const data = await response.json()
 
       if (data.success) {
-        const project = data.data.find((item: Project) => item._id === id)
+        // Match by slug first, then fall back to _id for old links
+        const project = data.data.find(
+          (item: Project) => item.slug === slug || item._id === slug
+        )
         if (project && project.isActive) {
           setProjectDetail(project)
         } else {
