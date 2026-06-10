@@ -42,6 +42,7 @@ interface Project {
   poster: string
   images: string[]
   icon?: string
+  slug?: string
   technologies?: string[]
   features?: string[]
   isActive: boolean

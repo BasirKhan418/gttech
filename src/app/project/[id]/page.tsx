@@ -34,6 +34,7 @@ import {
 interface Project {
   subproducts?: { image: string; title: string; description: string; learnMoreLink?: string }[]
   _id: string
+  slug?: string
   title: string
   category: string
   description: string
