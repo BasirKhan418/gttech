@@ -29,6 +29,10 @@ import {
   Wrench,
   ShirtIcon,
   Scissors,
+  X,
+  ZoomIn,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 
 interface Project {
@@ -77,6 +81,33 @@ interface Project {
   colors?: string[]
   fabric?: string[]
   careInstructions?: string[]
+
+  // Extended EV fields (stored via strict:false)
+  evCategory?: string
+  motorWatt?: string
+  motorRPM?: string
+  topSpeed?: string
+  peakMotorTorque?: string
+  peakTorqueAtWheel?: string
+  maxAmp?: string
+  maxVoltage?: string
+  vehicleDimensions?: string
+  wheelBase?: string
+  groundClearance?: string
+  vehicleWeight?: string
+  loadCapacity?: string
+  bodyType?: string
+  tyreSize?: string
+  differential?: string
+  trackWidth?: string
+  turningRadius?: string
+  certifiedRange?: string
+  onRoadRange?: string
+  gradability?: string
+  frontSuspension?: string
+  rearSuspension?: string
+  brakeType?: string
+  parkingBrake?: string
 }
 
 const ProjectDetailPage = () => {
@@ -85,12 +116,40 @@ const ProjectDetailPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxImg, setLightboxImg] = useState("")
+  const [lightboxIndex, setLightboxIndex] = useState(0)
 
   useEffect(() => {
     if (params.id) {
       fetchProjectDetail(params.id as string)
     }
   }, [params.id])
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (!lightboxOpen) return
+      if (e.key === "Escape") setLightboxOpen(false)
+      if (e.key === "ArrowRight") navigateLightbox(1)
+      if (e.key === "ArrowLeft") navigateLightbox(-1)
+    }
+    window.addEventListener("keydown", handleKey)
+    return () => window.removeEventListener("keydown", handleKey)
+  }, [lightboxOpen, lightboxIndex, projectDetail])
+
+  const openLightbox = (images: string[], index: number) => {
+    setLightboxImg(images[index])
+    setLightboxIndex(index)
+    setLightboxOpen(true)
+  }
+
+  const navigateLightbox = (dir: number) => {
+    if (!projectDetail?.images) return
+    const imgs = projectDetail.images
+    const next = (lightboxIndex + dir + imgs.length) % imgs.length
+    setLightboxIndex(next)
+    setLightboxImg(imgs[next])
+  }
 
   const fetchProjectDetail = async (slug: string) => {
     try {
@@ -336,40 +395,270 @@ const ProjectDetailPage = () => {
       case "electric vehicles":
         return (
           <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-            {/* Vehicle Specifications */}
-            <div className="bg-white/70 backdrop-blur-sm border border-green-300/50 rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xl">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
-                <Car className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mr-2 sm:mr-3" />
-                Vehicle Specifications
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-                {project.batteryCapacity && (
-                  <div className="p-3 sm:p-4 bg-green-500/10 rounded-lg sm:rounded-xl border border-green-400/30 text-center">
-                    <Battery className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mx-auto mb-2" />
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Battery Capacity</p>
-                    <p className="font-bold text-green-700 text-sm sm:text-base">{project.batteryCapacity}</p>
-                  </div>
+            {/* Quick Stats Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              {project.certifiedRange && (
+                <div className="p-3 sm:p-4 bg-green-500/10 rounded-xl border border-green-400/30 text-center">
+                  <ArrowRight className="w-6 h-6 text-green-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-500 mb-0.5">Certified Range</p>
+                  <p className="font-bold text-green-700 text-sm sm:text-base">{project.certifiedRange}</p>
+                </div>
+              )}
+              {project.topSpeed && (
+                <div className="p-3 sm:p-4 bg-blue-500/10 rounded-xl border border-blue-400/30 text-center">
+                  <Zap className="w-6 h-6 text-blue-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-500 mb-0.5">Top Speed</p>
+                  <p className="font-bold text-blue-700 text-sm sm:text-base">{project.topSpeed}</p>
+                </div>
+              )}
+              {project.loadCapacity && (
+                <div className="p-3 sm:p-4 bg-orange-500/10 rounded-xl border border-orange-400/30 text-center">
+                  <Package className="w-6 h-6 text-orange-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-500 mb-0.5">Load Capacity</p>
+                  <p className="font-bold text-orange-700 text-sm sm:text-base">{project.loadCapacity}</p>
+                </div>
+              )}
+              {project.chargingTime && (
+                <div className="p-3 sm:p-4 bg-purple-500/10 rounded-xl border border-purple-400/30 text-center">
+                  <Clock className="w-6 h-6 text-purple-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-500 mb-0.5">Charging Time</p>
+                  <p className="font-bold text-purple-700 text-sm sm:text-base">{project.chargingTime}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Full Technical Specifications Table */}
+            <div className="bg-white/70 backdrop-blur-sm border border-green-300/50 rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl">
+              <div className="bg-gradient-to-r from-green-600 to-green-500 px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold text-white flex items-center">
+                  <Car className="w-5 h-5 mr-2" />
+                  Technical Specifications
+                  {project.evCategory && (
+                    <span className="ml-3 text-xs sm:text-sm font-medium bg-white/20 text-white px-2 py-0.5 rounded-full">
+                      {project.evCategory}
+                    </span>
+                  )}
+                </h3>
+              </div>
+
+              <div className="divide-y divide-gray-100">
+                {/* Motor Section */}
+                {(project.motorType || project.motorWatt || project.motorRPM || project.topSpeed || project.peakMotorTorque) && (
+                  <>
+                    <div className="bg-green-50/60 px-4 sm:px-6 py-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-green-800 uppercase tracking-wider flex items-center">
+                        <Zap className="w-3.5 h-3.5 mr-1.5" />Motor
+                      </h4>
+                    </div>
+                    {project.motorType && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Type Motor</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.motorType}</span>
+                      </div>
+                    )}
+                    {project.motorWatt && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Watt</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.motorWatt} W</span>
+                      </div>
+                    )}
+                    {project.motorRPM && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">RPM</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.motorRPM}</span>
+                      </div>
+                    )}
+                    {project.topSpeed && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Top Speed</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.topSpeed}</span>
+                      </div>
+                    )}
+                    {project.peakMotorTorque && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Peak Motor Torque</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.peakMotorTorque}</span>
+                      </div>
+                    )}
+                    {project.peakTorqueAtWheel && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Peak Torque (at Wheel)</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.peakTorqueAtWheel}</span>
+                      </div>
+                    )}
+                  </>
                 )}
-                {project.range && (
-                  <div className="p-3 sm:p-4 bg-green-500/10 rounded-lg sm:rounded-xl border border-green-400/30 text-center">
-                    <ArrowRight className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mx-auto mb-2" />
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Range</p>
-                    <p className="font-bold text-green-700 text-sm sm:text-base">{project.range}</p>
-                  </div>
+
+                {/* Battery Section */}
+                {(project.batteryCapacity || project.maxAmp || project.maxVoltage || project.chargingTime) && (
+                  <>
+                    <div className="bg-blue-50/60 px-4 sm:px-6 py-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-blue-800 uppercase tracking-wider flex items-center">
+                        <Battery className="w-3.5 h-3.5 mr-1.5" />Battery
+                      </h4>
+                    </div>
+                    <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                      <span className="text-sm text-gray-600 w-1/2 font-medium">Type</span>
+                      <span className="text-sm text-gray-800 font-semibold">Lithium Ion Battery</span>
+                    </div>
+                    {project.maxAmp && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Maximum Amp</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.maxAmp}</span>
+                      </div>
+                    )}
+                    {project.maxVoltage && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Maximum Voltage</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.maxVoltage}</span>
+                      </div>
+                    )}
+                    {project.chargingTime && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Charging Time</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.chargingTime}</span>
+                      </div>
+                    )}
+                  </>
                 )}
-                {project.chargingTime && (
-                  <div className="p-3 sm:p-4 bg-green-500/10 rounded-lg sm:rounded-xl border border-green-400/30 text-center">
-                    <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mx-auto mb-2" />
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Charging Time</p>
-                    <p className="font-bold text-green-700 text-sm sm:text-base">{project.chargingTime}</p>
-                  </div>
+
+                {/* Dimensions Section */}
+                {(project.vehicleDimensions || project.wheelBase || project.groundClearance || project.vehicleWeight || project.loadCapacity || project.tyreSize || project.differential || project.trackWidth || project.turningRadius) && (
+                  <>
+                    <div className="bg-orange-50/60 px-4 sm:px-6 py-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-orange-800 uppercase tracking-wider flex items-center">
+                        <Ruler className="w-3.5 h-3.5 mr-1.5" />Dimensions
+                      </h4>
+                    </div>
+                    {project.vehicleDimensions && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Dimension L×B×H</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.vehicleDimensions}</span>
+                      </div>
+                    )}
+                    {project.wheelBase && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Wheel Base</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.wheelBase}</span>
+                      </div>
+                    )}
+                    {project.groundClearance && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Ground Clearance</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.groundClearance}</span>
+                      </div>
+                    )}
+                    {project.vehicleWeight && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Vehicle Weight</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.vehicleWeight}</span>
+                      </div>
+                    )}
+                    {project.loadCapacity && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Load Capacity</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.loadCapacity}</span>
+                      </div>
+                    )}
+                    {project.bodyType && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Body</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.bodyType}</span>
+                      </div>
+                    )}
+                    {project.tyreSize && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Tyre Size</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.tyreSize}</span>
+                      </div>
+                    )}
+                    {project.differential && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Differential</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.differential}</span>
+                      </div>
+                    )}
+                    {project.trackWidth && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Track Width</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.trackWidth}</span>
+                      </div>
+                    )}
+                    {project.turningRadius && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Turning Radius</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.turningRadius}</span>
+                      </div>
+                    )}
+                  </>
                 )}
-                {project.motorType && (
-                  <div className="p-3 sm:p-4 bg-green-500/10 rounded-lg sm:rounded-xl border border-green-400/30 text-center">
-                    <Settings className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mx-auto mb-2" />
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Motor Type</p>
-                    <p className="font-bold text-green-700 text-sm sm:text-base">{project.motorType}</p>
-                  </div>
+
+                {/* Performance Section */}
+                {(project.certifiedRange || project.onRoadRange || project.gradability) && (
+                  <>
+                    <div className="bg-green-50/60 px-4 sm:px-6 py-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-green-800 uppercase tracking-wider flex items-center">
+                        <ArrowRight className="w-3.5 h-3.5 mr-1.5" />Performance
+                      </h4>
+                    </div>
+                    {project.certifiedRange && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Certified Range</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.certifiedRange}</span>
+                      </div>
+                    )}
+                    {project.onRoadRange && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">On Road Range</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.onRoadRange}</span>
+                      </div>
+                    )}
+                    {project.gradability && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Gradability</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.gradability}</span>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Suspension & Brakes Section */}
+                {(project.frontSuspension || project.rearSuspension || project.brakeType || project.parkingBrake) && (
+                  <>
+                    <div className="bg-gray-50/80 px-4 sm:px-6 py-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-gray-700 uppercase tracking-wider flex items-center">
+                        <Wrench className="w-3.5 h-3.5 mr-1.5" />Suspension &amp; Brakes
+                      </h4>
+                    </div>
+                    {project.frontSuspension && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Front Suspension</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.frontSuspension}</span>
+                      </div>
+                    )}
+                    {project.rearSuspension && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Rear Suspension</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.rearSuspension}</span>
+                      </div>
+                    )}
+                    {project.brakeType && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Brake</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.brakeType}</span>
+                      </div>
+                    )}
+                    {project.parkingBrake && (
+                      <div className="flex items-center px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-gray-50/50">
+                        <span className="text-sm text-gray-600 w-1/2 font-medium">Parking Brake</span>
+                        <span className="text-sm text-gray-800 font-semibold">{project.parkingBrake}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center px-4 sm:px-6 py-3 bg-green-50/30">
+                      <span className="text-sm text-gray-600 w-1/2 font-medium">Price for Dealer</span>
+                      <span className="text-sm font-semibold text-green-700">Please contact to get the price</span>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -670,13 +959,21 @@ const ProjectDetailPage = () => {
             {/* Main Image */}
             {projectDetail.poster && (
               <div className="relative rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden bg-white/70 backdrop-blur-sm border border-cyan-600/50 p-2 sm:p-3 lg:p-4 shadow-xl">
-                <div className="relative h-48 sm:h-64 md:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[32rem] rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden">
+                <div
+                  className="relative h-48 sm:h-64 md:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[32rem] rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden cursor-zoom-in group"
+                  onClick={() => openLightbox([projectDetail.poster, ...(projectDetail.images || [])], 0)}
+                >
                   <img
                     src={projectDetail.poster || "/placeholder.svg"}
                     alt={projectDetail.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-black/40 backdrop-blur-sm rounded-full p-3">
+                      <ZoomIn className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -762,24 +1059,33 @@ const ProjectDetailPage = () => {
                   <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 lg:mb-6 flex items-center">
                     <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-600 mr-2 sm:mr-3" />
                     Product Gallery
+                    <span className="ml-2 text-xs sm:text-sm font-normal text-gray-400">— scroll or click to view full size</span>
                   </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                  {/* Horizontal scroll gallery */}
+                  <div
+                    className="flex gap-3 sm:gap-4 overflow-x-auto pb-3 snap-x snap-mandatory scroll-smooth"
+                    style={{ scrollbarWidth: "thin", scrollbarColor: "#06b6d4 #e5e7eb" }}
+                  >
                     {projectDetail.images.map((image, index) => (
                       <div
                         key={index}
-                        className="relative h-36 sm:h-48 lg:h-56 rounded-lg sm:rounded-xl overflow-hidden bg-white/50 border border-cyan-600/40 hover:border-cyan-400/60 transition-all duration-300 cursor-pointer group shadow-lg hover:shadow-xl"
-                        onClick={() => setCurrentImageIndex(index)}
+                        className="relative flex-shrink-0 w-56 sm:w-72 lg:w-80 h-44 sm:h-52 lg:h-60 rounded-lg sm:rounded-xl overflow-hidden bg-white/50 border border-cyan-600/40 hover:border-cyan-400/70 transition-all duration-300 cursor-pointer group shadow-lg hover:shadow-xl snap-start"
+                        onClick={() => openLightbox(projectDetail.images!, index)}
                       >
                         <img
                           src={image || "/placeholder.svg"}
                           alt={`${projectDetail.title} - Image ${index + 1}`}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg" }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/80 rounded-full flex items-center justify-center backdrop-blur-sm">
-                            <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                          <div className="bg-black/40 backdrop-blur-sm rounded-full p-2.5">
+                            <ZoomIn className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                           </div>
+                        </div>
+                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-1.5 py-0.5 rounded-md">
+                          {index + 1}/{projectDetail.images!.length}
                         </div>
                       </div>
                     ))}
@@ -901,6 +1207,66 @@ const ProjectDetailPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Lightbox Modal */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/92 backdrop-blur-md"
+          onClick={() => setLightboxOpen(false)}
+        >
+          {/* Close button */}
+          <button
+            className="absolute top-4 right-4 z-10 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+            onClick={() => setLightboxOpen(false)}
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+
+          {/* Prev button */}
+          {projectDetail?.images && projectDetail.images.length > 1 && (
+            <button
+              className="absolute left-3 sm:left-6 z-10 p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              onClick={(e) => { e.stopPropagation(); navigateLightbox(-1) }}
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+          )}
+
+          {/* Image */}
+          <div
+            className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={lightboxImg}
+              alt="Full size view"
+              className="max-w-full max-h-[88vh] object-contain rounded-xl shadow-2xl select-none"
+              draggable={false}
+            />
+            {projectDetail?.images && projectDetail.images.length > 1 && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {projectDetail.images.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`w-2 h-2 rounded-full transition-all ${i === lightboxIndex ? "bg-white scale-125" : "bg-white/40"}`}
+                    onClick={(e) => { e.stopPropagation(); setLightboxIndex(i); setLightboxImg(projectDetail.images![i]) }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Next button */}
+          {projectDetail?.images && projectDetail.images.length > 1 && (
+            <button
+              className="absolute right-3 sm:right-6 z-10 p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              onClick={(e) => { e.stopPropagation(); navigateLightbox(1) }}
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Custom Styles */}
       <style jsx>{`

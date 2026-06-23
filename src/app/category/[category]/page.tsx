@@ -444,21 +444,21 @@ const CategoryPage = () => {
 
                         {/* Image Section */}
                         {project.poster && (
-                          <div className="relative h-48 overflow-hidden">
+                          <div className="relative h-44 overflow-hidden bg-white flex items-center justify-center">
                             <img
                               src={project.poster || "/placeholder.svg"}
                               alt={project.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-2"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement
                                 target.src = "/placeholder.svg"
                               }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/30 via-transparent to-transparent"></div>
 
                             {/* View Indicator */}
-                            <div className="absolute top-4 left-4 p-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
-                              <Eye className="w-4 h-4 text-cyan-600" />
+                            <div className="absolute top-3 left-3 p-1.5 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
+                              <Eye className="w-3.5 h-3.5 text-cyan-600" />
                             </div>
                           </div>
                         )}

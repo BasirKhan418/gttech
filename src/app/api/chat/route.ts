@@ -21,7 +21,7 @@ GT Technologies offers:
 - Training and Certification programs
 - Research & Development centers
 
-PARTNERSHIPS: Dassault Systems, AWS, Gram Tarang, Centurion University
+PARTNERSHIPS: Dassault Systems, AWS, GT, Centurion University
 
 Be friendly, professional, and helpful. For detailed consultations or pricing, direct users to contact through the official contact page.`;
 

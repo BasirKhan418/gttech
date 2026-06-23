@@ -63,10 +63,10 @@ const TechnologiesSection = () => {
   const partners = [
     { name: 'AWS', logo: '/aws.webp' },
     { name: 'Dassault Systèmes', logo: '/images.png' },
-    { name: 'Gram Tarang', logo: '/download.jpeg' },
+    { name: 'GT', logo: '/download.jpeg' },
     { name: 'AWS', logo: '/aws.webp' }, 
     { name: 'Dassault Systèmes', logo: '/images.png' },
-    { name: 'Gram Tarang', logo: '/download.jpeg' }
+    { name: 'GT', logo: '/download.jpeg' }
   ]
 
   return (

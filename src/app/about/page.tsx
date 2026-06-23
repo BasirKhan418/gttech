@@ -390,7 +390,7 @@ const AboutPage = () => {
   const partners = aboutData?.partners || [
     { name: "Dassault Systèmes", logo: "/images.png" },
     { name: "AWS", logo: "/aws.webp" },
-    { name: "Gram Tarang", logo: "/download.jpeg" },
+    { name: "GT", logo: "/download.jpeg" },
   ]
 
   if (isLoadingAbout) {

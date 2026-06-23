@@ -28,7 +28,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" className="relative" suppressHydrationWarning>
-      <body className={dmSans.className}>
+      <body className={dmSans.className} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

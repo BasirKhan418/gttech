@@ -1,9 +1,10 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { 
-  ArrowRight, 
-  Folder, 
+import Image from 'next/image'
+import {
+  ArrowRight,
+  Folder,
   CheckCircle,
   Eye,
   Calendar,
@@ -111,6 +112,7 @@ const ProjectsPage = () => {
         name: "Electric Vehicles",
         value: "electric vehicles",
         icon: Car,
+        image: "/gt-emobility.jpeg",
         color: "from-green-500 to-green-600",
         description: "Sustainable transportation solutions",
       },
@@ -310,10 +312,20 @@ const ProjectsPage = () => {
                       <div className="relative z-10 p-8">
                         {/* Icon and Count */}
                         <div className="flex items-center justify-between mb-6">
-                          <div
-                            className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${category.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                          >
-                            <IconComponent className="w-8 h-8 text-white" />
+                          <div className="group-hover:scale-110 transition-transform duration-300">
+                            {(category as any).image ? (
+                              <Image
+                                src={(category as any).image}
+                                alt={category.name}
+                                width={120}
+                                height={56}
+                                className="object-contain"
+                              />
+                            ) : (
+                              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${category.color} flex items-center justify-center shadow-lg`}>
+                                <IconComponent className="w-8 h-8 text-white" />
+                              </div>
+                            )}
                           </div>
                           <div className="text-right">
                             <div className="text-3xl font-bold text-gray-800 group-hover:text-cyan-700 transition-colors duration-300">
